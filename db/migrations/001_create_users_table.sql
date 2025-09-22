@@ -1,7 +1,13 @@
--- Migration: Create users table
+-- Migration: Create users table (DEPRECATED)
 -- Description: Initial users table for authentication and user management
 -- Created: 2024-10-01
+-- Status: DEPRECATED - Use 002_create_users_table_multi_tenant.sql instead
+-- Note: This table is deprecated in favor of the multi-tenant users table
+-- TODO: Remove this migration after data migration to multi-tenant structure
 
+-- DEPRECATED: This table is replaced by the multi-tenant users table
+-- All code below is commented out as this migration is deprecated
+/*
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -37,3 +43,4 @@ CREATE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
+*/
