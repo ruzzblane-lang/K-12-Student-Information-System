@@ -6,9 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const studentController = require('../controllers/studentController');
-const authMiddleware = require('../../middleware/auth');
-const rbacMiddleware = require('../../middleware/rbac');
-const tenantContextMiddleware = require('../../middleware/tenantContext');
+const { authMiddleware } = require('../../middleware/auth');
+const { rbacMiddleware } = require('../../middleware/rbac');
+const { tenantContextMiddleware } = require('../../middleware/tenantContext');
 const { 
   createStudentValidation,
   updateStudentValidation,

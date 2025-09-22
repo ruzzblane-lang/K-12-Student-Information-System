@@ -130,7 +130,7 @@ export const validateEmail = (email) => {
 };
 
 export const validatePhone = (phone) => {
-  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
   return phoneRegex.test(phone);
 };
 

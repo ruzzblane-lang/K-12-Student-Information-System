@@ -1,0 +1,74 @@
+{
+  "name": "@school-sis/react-hooks",
+  "version": "1.0.0",
+  "description": "React hooks for K-12 Student Information System integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.esm.js",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "school",
+    "education",
+    "sis",
+    "student-information-system",
+    "api",
+    "typescript"
+  ],
+  "author": "School SIS Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/school-sis/react-hooks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/school-sis/react-hooks/issues"
+  },
+  "homepage": "https://github.com/school-sis/react-hooks#readme",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "dependencies": {
+    "@school-sis/sdk": "^1.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@types/jest": "^29.5.8",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jest": "^29.7.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rollup": "^4.6.1",
+    "rollup-plugin-dts": "^6.1.0",
+    "ts-jest": "^29.1.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

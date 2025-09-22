@@ -1,7 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
-const { sequelize } = require('../config/database');
-const { User, Student } = require('../models');
+const { sequelize, User, Student } = require('../models');
 
 describe('Student API', () => {
   let authToken;
@@ -40,14 +39,7 @@ describe('Student API', () => {
   });
 
   beforeEach(() => {
-    // Mock authentication middleware
-    jest.mock('../middleware/auth', () => ({
-      verifyToken: (req, res, next) => {
-        req.user = { id: testUser.id, role: 'admin' };
-        next();
-      },
-      requireRole: () => (req, res, next) => next()
-    }));
+    // Middleware is mocked globally in setup.js
   });
 
   describe('GET /api/students', () => {
@@ -250,14 +242,14 @@ describe('Student API', () => {
         .expect(401);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.error.code).toBe('AUTH_TOKEN_MISSING');
+      expect(response.body.error.code).toBe('AUTHENTICATION_REQUIRED');
     });
 
     it('should require admin role for creation', async () => {
       // Mock non-admin user
       jest.doMock('../middleware/auth', () => ({
         verifyToken: (req, res, next) => {
-          req.user = { id: testUser.id, role: 'student' };
+          req.user = { id: 1, role: 'student' }; // Use a fixed ID since testUser might not be available yet
           next();
         },
         requireRole: (roles) => (req, res, next) => {

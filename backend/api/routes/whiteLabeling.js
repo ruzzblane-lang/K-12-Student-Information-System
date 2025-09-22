@@ -6,9 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const whiteLabelingController = require('../controllers/whiteLabelingController');
-const authMiddleware = require('../../middleware/auth');
-const rbacMiddleware = require('../../middleware/rbac');
-const tenantContextMiddleware = require('../../middleware/tenantContext');
+const { authMiddleware } = require('../../middleware/auth');
+const { rbacMiddleware } = require('../../middleware/rbac');
+const { tenantContextMiddleware } = require('../../middleware/tenantContext');
 const { general } = require('../../middleware/rateLimiting');
 
 // Apply authentication and tenant context to all routes

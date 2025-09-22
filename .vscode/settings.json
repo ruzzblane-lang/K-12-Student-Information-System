@@ -1,0 +1,4 @@
+{
+    "cursor.composer.queueMessageDefaultBehavior": "queue",
+    "cursor.composer.shouldChimeAfterChatFinishes": true
+}

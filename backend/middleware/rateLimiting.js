@@ -149,16 +149,16 @@ const createRoleBasedRateLimit = (configs) => {
       // Different limits based on user role
       if (req.user) {
         switch (req.user.role) {
-          case 'super_admin':
-            return configs.superAdmin || configs.max * 10;
-          case 'tenant_admin':
-            return configs.tenantAdmin || configs.max * 5;
-          case 'principal':
-            return configs.principal || configs.max * 3;
-          case 'teacher':
-            return configs.teacher || configs.max * 2;
-          default:
-            return configs.max;
+        case 'super_admin':
+          return configs.superAdmin || configs.max * 10;
+        case 'tenant_admin':
+          return configs.tenantAdmin || configs.max * 5;
+        case 'principal':
+          return configs.principal || configs.max * 3;
+        case 'teacher':
+          return configs.teacher || configs.max * 2;
+        default:
+          return configs.max;
         }
       }
       return configs.max;

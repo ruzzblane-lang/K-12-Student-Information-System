@@ -146,13 +146,8 @@ class StudentService {
    * Delete student (soft delete)
    */
   async deleteStudent(id) {
-    try {
-      // Mock implementation - in real app, this would soft delete
-      return true;
-    } catch (error) {
-      console.error('Error deleting student:', error);
-      throw error;
-    }
+    // Mock implementation - in real app, this would soft delete
+    return true;
   }
 
   /**
@@ -340,13 +335,8 @@ class StudentService {
    * Unenroll student from a course section
    */
   async unenrollStudent(studentId, enrollmentId) {
-    try {
-      // Mock implementation
-      return true;
-    } catch (error) {
-      console.error('Error unenrolling student:', error);
-      throw error;
-    }
+    // Mock implementation
+    return true;
   }
 }
 

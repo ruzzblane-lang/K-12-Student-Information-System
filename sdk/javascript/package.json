@@ -1,0 +1,65 @@
+{
+  "name": "@school-sis/sdk",
+  "version": "1.0.0",
+  "description": "Official JavaScript/TypeScript SDK for K-12 Student Information System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.esm.js",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "school",
+    "education",
+    "sis",
+    "student-information-system",
+    "api",
+    "sdk",
+    "typescript"
+  ],
+  "author": "School SIS Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/school-sis/sdk-javascript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/school-sis/sdk-javascript/issues"
+  },
+  "homepage": "https://github.com/school-sis/sdk-javascript#readme",
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@types/jest": "^29.5.8",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "rollup": "^4.6.1",
+    "rollup-plugin-dts": "^6.1.0",
+    "ts-jest": "^29.1.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.2"
+  },
+  "peerDependencies": {
+    "axios": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

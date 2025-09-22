@@ -69,9 +69,8 @@ class WhiteLabelingService {
    * Generate CSS for tenant branding
    */
   async generateTenantCSS(tenantId) {
-    try {
-      // Mock implementation
-      return `
+    // Mock implementation
+    return `
 :root {
   --primary-color: #1e40af;
   --secondary-color: #3b82f6;
@@ -103,11 +102,7 @@ class WhiteLabelingService {
   opacity: 0.9;
   transform: translateY(-2px);
 }
-      `;
-    } catch (error) {
-      console.error('Error generating CSS:', error);
-      throw error;
-    }
+    `;
   }
 
   /**
