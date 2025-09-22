@@ -428,6 +428,18 @@ class StudentController {
   async deleteStudent(req, res) {
     try {
       const { id } = req.params;
+      
+      // Validate UUID format
+      if (!validator.isUUID(id)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_STUDENT_ID',
+            message: 'Student ID must be a valid UUID'
+          }
+        });
+      }
+
       const deleted = await studentService.deleteStudent(id);
 
       if (!deleted) {
@@ -445,14 +457,7 @@ class StudentController {
         message: 'Student deleted successfully'
       });
     } catch (error) {
-      console.error('Error deleting student:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'DELETE_STUDENT_ERROR',
-          message: 'Failed to delete student'
-        }
-      });
+      StudentController.handleError(error, req, res, 'deleteStudent');
     }
   }
 
@@ -460,23 +465,47 @@ class StudentController {
   async getStudentGrades(req, res) {
     try {
       const { id } = req.params;
-      const { term_id } = req.query;
       
-      const grades = await studentService.getStudentGrades(id, term_id);
+      // Validate UUID format
+      if (!validator.isUUID(id)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_STUDENT_ID',
+            message: 'Student ID must be a valid UUID'
+          }
+        });
+      }
+
+      // Validate and sanitize query parameters
+      const { sanitized, errors } = StudentController.validateAndSanitizeQuery(req.query);
+      
+      if (errors.length > 0) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_QUERY_PARAMETERS',
+            message: 'Invalid query parameters',
+            details: errors
+          }
+        });
+      }
+
+      const { term_id, page = 1, limit = 20 } = sanitized;
+      
+      const grades = await studentService.getStudentGrades(id, {
+        term_id,
+        page,
+        limit
+      });
 
       res.json({
         success: true,
-        data: grades
+        data: grades.data,
+        pagination: grades.pagination
       });
     } catch (error) {
-      console.error('Error fetching student grades:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'FETCH_GRADES_ERROR',
-          message: 'Failed to fetch student grades'
-        }
-      });
+      StudentController.handleError(error, req, res, 'getStudentGrades');
     }
   }
 
@@ -484,27 +513,49 @@ class StudentController {
   async getStudentAttendance(req, res) {
     try {
       const { id } = req.params;
-      const { start_date, end_date, course_section_id } = req.query;
+      
+      // Validate UUID format
+      if (!validator.isUUID(id)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_STUDENT_ID',
+            message: 'Student ID must be a valid UUID'
+          }
+        });
+      }
+
+      // Validate and sanitize query parameters
+      const { sanitized, errors } = StudentController.validateAndSanitizeQuery(req.query);
+      
+      if (errors.length > 0) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_QUERY_PARAMETERS',
+            message: 'Invalid query parameters',
+            details: errors
+          }
+        });
+      }
+
+      const { start_date, end_date, course_section_id, page = 1, limit = 50 } = sanitized;
       
       const attendance = await studentService.getStudentAttendance(id, {
         start_date,
         end_date,
-        course_section_id
+        course_section_id,
+        page,
+        limit
       });
 
       res.json({
         success: true,
-        data: attendance
+        data: attendance.data,
+        pagination: attendance.pagination
       });
     } catch (error) {
-      console.error('Error fetching student attendance:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'FETCH_ATTENDANCE_ERROR',
-          message: 'Failed to fetch student attendance'
-        }
-      });
+      StudentController.handleError(error, req, res, 'getStudentAttendance');
     }
   }
 
@@ -512,23 +563,47 @@ class StudentController {
   async getStudentEnrollments(req, res) {
     try {
       const { id } = req.params;
-      const { term_id } = req.query;
       
-      const enrollments = await studentService.getStudentEnrollments(id, term_id);
+      // Validate UUID format
+      if (!validator.isUUID(id)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_STUDENT_ID',
+            message: 'Student ID must be a valid UUID'
+          }
+        });
+      }
+
+      // Validate and sanitize query parameters
+      const { sanitized, errors } = StudentController.validateAndSanitizeQuery(req.query);
+      
+      if (errors.length > 0) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_QUERY_PARAMETERS',
+            message: 'Invalid query parameters',
+            details: errors
+          }
+        });
+      }
+
+      const { term_id, page = 1, limit = 20 } = sanitized;
+      
+      const enrollments = await studentService.getStudentEnrollments(id, {
+        term_id,
+        page,
+        limit
+      });
 
       res.json({
         success: true,
-        data: enrollments
+        data: enrollments.data,
+        pagination: enrollments.pagination
       });
     } catch (error) {
-      console.error('Error fetching student enrollments:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'FETCH_ENROLLMENTS_ERROR',
-          message: 'Failed to fetch student enrollments'
-        }
-      });
+      StudentController.handleError(error, req, res, 'getStudentEnrollments');
     }
   }
 
@@ -548,7 +623,30 @@ class StudentController {
       }
 
       const { id } = req.params;
+      
+      // Validate UUID format
+      if (!validator.isUUID(id)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_STUDENT_ID',
+            message: 'Student ID must be a valid UUID'
+          }
+        });
+      }
+
       const { course_section_id } = req.body;
+      
+      // Validate course section ID
+      if (!validator.isUUID(course_section_id)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_COURSE_SECTION_ID',
+            message: 'Course section ID must be a valid UUID'
+          }
+        });
+      }
       
       const enrollment = await studentService.enrollStudent(id, course_section_id);
 
@@ -558,14 +656,7 @@ class StudentController {
         message: 'Student enrolled successfully'
       });
     } catch (error) {
-      console.error('Error enrolling student:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'ENROLL_STUDENT_ERROR',
-          message: 'Failed to enroll student'
-        }
-      });
+      StudentController.handleError(error, req, res, 'enrollStudent');
     }
   }
 
@@ -573,6 +664,27 @@ class StudentController {
   async unenrollStudent(req, res) {
     try {
       const { id, enrollmentId } = req.params;
+      
+      // Validate UUID formats
+      if (!validator.isUUID(id)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_STUDENT_ID',
+            message: 'Student ID must be a valid UUID'
+          }
+        });
+      }
+
+      if (!validator.isUUID(enrollmentId)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_ENROLLMENT_ID',
+            message: 'Enrollment ID must be a valid UUID'
+          }
+        });
+      }
       
       const unenrolled = await studentService.unenrollStudent(id, enrollmentId);
 
@@ -591,14 +703,7 @@ class StudentController {
         message: 'Student unenrolled successfully'
       });
     } catch (error) {
-      console.error('Error unenrolling student:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'UNENROLL_STUDENT_ERROR',
-          message: 'Failed to unenroll student'
-        }
-      });
+      StudentController.handleError(error, req, res, 'unenrollStudent');
     }
   }
 }
