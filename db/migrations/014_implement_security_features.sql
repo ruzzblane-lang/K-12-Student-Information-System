@@ -1,6 +1,7 @@
 -- Migration: Implement security features and encryption
 -- Description: Add encryption for sensitive columns and data masking capabilities
 -- Created: 2024-01-15
+-- Enhanced: 2024-09-22 (Added JSONB encryption, enhanced masked view triggers)
 
 -- =============================================================================
 -- ENCRYPTION FUNCTIONS
@@ -68,6 +69,52 @@ BEGIN
     
     -- Return hashed data with salt
     RETURN crypt(data, hash_salt);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to encrypt JSONB fields containing sensitive data
+CREATE OR REPLACE FUNCTION encrypt_jsonb_sensitive_data(jsonb_data JSONB, sensitive_fields TEXT[])
+RETURNS JSONB AS $$
+DECLARE
+    result JSONB := jsonb_data;
+    field TEXT;
+    field_value TEXT;
+BEGIN
+    -- Encrypt specified sensitive fields in JSONB
+    FOREACH field IN ARRAY sensitive_fields
+    LOOP
+        IF result ? field THEN
+            field_value := result ->> field;
+            IF field_value IS NOT NULL AND field_value != '' THEN
+                result := result || jsonb_build_object(field, encrypt_sensitive_data(field_value));
+            END IF;
+        END IF;
+    END LOOP;
+    
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to decrypt JSONB fields containing sensitive data
+CREATE OR REPLACE FUNCTION decrypt_jsonb_sensitive_data(jsonb_data JSONB, sensitive_fields TEXT[])
+RETURNS JSONB AS $$
+DECLARE
+    result JSONB := jsonb_data;
+    field TEXT;
+    field_value TEXT;
+BEGIN
+    -- Decrypt specified sensitive fields in JSONB
+    FOREACH field IN ARRAY sensitive_fields
+    LOOP
+        IF result ? field THEN
+            field_value := result ->> field;
+            IF field_value IS NOT NULL AND field_value != '' THEN
+                result := result || jsonb_build_object(field, decrypt_sensitive_data(field_value));
+            END IF;
+        END IF;
+    END LOOP;
+    
+    RETURN result;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -204,7 +251,12 @@ SELECT
     mask_email(parent_guardian_2_email) as parent_guardian_2_email,
     parent_guardian_2_relationship,
     photo_url,
-    documents,
+    -- Encrypt sensitive documents in JSONB
+    CASE 
+        WHEN documents IS NOT NULL THEN 
+            encrypt_jsonb_sensitive_data(documents, ARRAY['content', 'notes', 'private_notes'])
+        ELSE NULL
+    END as documents,
     created_at,
     updated_at,
     deleted_at,
@@ -351,6 +403,38 @@ CREATE TRIGGER trigger_encrypt_teachers_sensitive_data
     FOR EACH ROW
     EXECUTE FUNCTION encrypt_sensitive_data_trigger();
 
+-- Enhanced trigger to encrypt JSONB documents automatically
+CREATE OR REPLACE FUNCTION encrypt_jsonb_documents_trigger()
+RETURNS TRIGGER AS $$
+DECLARE
+    sensitive_fields TEXT[] := ARRAY['content', 'notes', 'private_notes', 'medical_info', 'behavioral_notes'];
+BEGIN
+    -- Encrypt sensitive fields in documents JSONB column
+    IF NEW.documents IS NOT NULL THEN
+        NEW.documents := encrypt_jsonb_sensitive_data(NEW.documents, sensitive_fields);
+    END IF;
+    
+    -- Encrypt sensitive fields in other JSONB columns if they exist
+    IF TG_TABLE_NAME = 'teachers' AND NEW.intervention_capabilities IS NOT NULL THEN
+        NEW.intervention_capabilities := encrypt_jsonb_sensitive_data(NEW.intervention_capabilities, ARRAY['notes', 'private_notes']);
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Apply JSONB encryption triggers to students table
+CREATE TRIGGER trigger_encrypt_students_jsonb_documents
+    BEFORE INSERT OR UPDATE ON students
+    FOR EACH ROW
+    EXECUTE FUNCTION encrypt_jsonb_documents_trigger();
+
+-- Apply JSONB encryption triggers to teachers table
+CREATE TRIGGER trigger_encrypt_teachers_jsonb_documents
+    BEFORE INSERT OR UPDATE ON teachers
+    FOR EACH ROW
+    EXECUTE FUNCTION encrypt_jsonb_documents_trigger();
+
 -- =============================================================================
 -- ACCESS CONTROL FUNCTIONS
 -- =============================================================================
@@ -469,6 +553,8 @@ ALTER VIEW users_masked SET (security_invoker = true);
 GRANT EXECUTE ON FUNCTION encrypt_sensitive_data(TEXT, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION decrypt_sensitive_data(TEXT, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION hash_sensitive_data(TEXT, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION encrypt_jsonb_sensitive_data(JSONB, TEXT[]) TO authenticated;
+GRANT EXECUTE ON FUNCTION decrypt_jsonb_sensitive_data(JSONB, TEXT[]) TO authenticated;
 GRANT EXECUTE ON FUNCTION mask_email(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION mask_phone(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION mask_name(TEXT) TO authenticated;
@@ -476,6 +562,7 @@ GRANT EXECUTE ON FUNCTION mask_ssn(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION can_view_sensitive_data(UUID, TEXT, UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_decrypted_ssn(UUID, TEXT, UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION log_sensitive_data_access(UUID, TEXT, UUID, TEXT, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION enforce_masked_view_usage() TO authenticated;
 
 -- Grant select permissions on masked views
 GRANT SELECT ON students_masked TO authenticated;
@@ -492,6 +579,8 @@ GRANT SELECT ON users_masked TO authenticated;
 --    - encrypt_sensitive_data(): Encrypts data using AES encryption
 --    - decrypt_sensitive_data(): Decrypts data using AES encryption
 --    - hash_sensitive_data(): One-way hashing for passwords and sensitive data
+--    - encrypt_jsonb_sensitive_data(): Encrypts specific fields in JSONB columns
+--    - decrypt_jsonb_sensitive_data(): Decrypts specific fields in JSONB columns
 -- 
 -- 2. DATA MASKING:
 --    - mask_email(): Masks email addresses (j***@e***.com)
@@ -516,7 +605,9 @@ GRANT SELECT ON users_masked TO authenticated;
 -- 
 -- 6. SECURITY TRIGGERS:
 --    - Automatically encrypt sensitive data on insert/update
+--    - Automatically encrypt JSONB documents and sensitive fields
 --    - Ensures data is encrypted before storage
+--    - Enforces masked view usage for non-privileged roles
 -- 
 -- USAGE EXAMPLES:
 -- 

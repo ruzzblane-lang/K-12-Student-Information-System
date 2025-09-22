@@ -1,6 +1,7 @@
 -- Migration: Implement Row-Level Security (RLS) policies
 -- Description: Database-level multi-tenant data isolation using RLS policies
 -- Created: 2024-01-15
+-- Enhanced: 2024-09-22 (Integrated with masked views, stricter policies for grades/alerts)
 
 -- Enable Row-Level Security on all tenant-specific tables
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
@@ -123,15 +124,38 @@ CREATE POLICY enrollment_tenant_isolation_policy ON enrollments
         tenant_id = get_current_tenant_id()
     );
 
--- RLS Policy for grades table
--- Users can only access grades in their tenant
-CREATE POLICY grade_tenant_isolation_policy ON grades
+-- Enhanced RLS Policy for grades table with stricter access control
+-- Stricter policies for non-teacher roles to protect sensitive academic data
+CREATE POLICY grade_comprehensive_access_policy ON grades
     FOR ALL TO authenticated
     USING (
         -- Super admins can access all grades
         is_super_admin() OR
-        -- Regular users can only access grades in their tenant
-        tenant_id = get_current_tenant_id()
+        -- Tenant isolation with role-based access
+        (tenant_id = get_current_tenant_id() AND
+         CASE current_setting('app.current_user_role', true)
+             WHEN 'admin' THEN TRUE
+             WHEN 'teacher' THEN TRUE
+             WHEN 'counselor' THEN TRUE
+             WHEN 'parent' THEN 
+                 -- Parents can only see their own children's grades
+                 EXISTS (
+                     SELECT 1 FROM students s 
+                     WHERE s.id = grades.student_id 
+                     AND s.tenant_id = get_current_tenant_id()
+                     AND (s.parent_guardian_1_email = current_setting('app.current_user_email', true) OR
+                          s.parent_guardian_2_email = current_setting('app.current_user_email', true))
+                 )
+             WHEN 'student' THEN 
+                 -- Students can only see their own grades
+                 student_id IN (
+                     SELECT s.id FROM students s 
+                     JOIN users u ON s.user_id = u.id 
+                     WHERE u.id = get_current_user_id() 
+                     AND u.tenant_id = get_current_tenant_id()
+                 )
+             ELSE FALSE
+         END)
     );
 
 -- RLS Policy for attendance table
@@ -145,16 +169,119 @@ CREATE POLICY attendance_tenant_isolation_policy ON attendance
         tenant_id = get_current_tenant_id()
     );
 
--- RLS Policy for audit_logs table
--- Users can only access audit logs in their tenant
-CREATE POLICY audit_log_tenant_isolation_policy ON audit_logs
+-- Enhanced RLS Policy for audit_logs table with role-based access
+CREATE POLICY audit_log_comprehensive_access_policy ON audit_logs
     FOR ALL TO authenticated
     USING (
         -- Super admins can access all audit logs
         is_super_admin() OR
-        -- Regular users can only access audit logs in their tenant
-        tenant_id = get_current_tenant_id()
+        -- Tenant isolation with role-based access
+        (tenant_id = get_current_tenant_id() AND
+         CASE current_setting('app.current_user_role', true)
+             WHEN 'admin' THEN TRUE
+             WHEN 'counselor' THEN TRUE
+             ELSE FALSE -- Only admins and counselors can access audit logs
+         END)
     );
+
+-- =============================================================================
+-- ENHANCED RLS POLICIES FOR ALERTS (if alerts table exists)
+-- =============================================================================
+
+-- Enhanced RLS Policy for alerts table with strict access control
+-- Alerts contain sensitive information about student risks and issues
+CREATE POLICY alerts_comprehensive_access_policy ON alerts
+    FOR ALL TO authenticated
+    USING (
+        -- Super admins can access all alerts
+        is_super_admin() OR
+        -- Tenant isolation with role-based access
+        (tenant_id = get_current_tenant_id() AND
+         CASE current_setting('app.current_user_role', true)
+             WHEN 'admin' THEN TRUE
+             WHEN 'counselor' THEN TRUE
+             WHEN 'teacher' THEN 
+                 -- Teachers can see alerts for students in their classes
+                 EXISTS (
+                     SELECT 1 FROM classes c
+                     JOIN enrollments e ON c.id = e.class_id
+                     WHERE e.student_id = alerts.student_id
+                     AND c.teacher_id IN (
+                         SELECT t.id FROM teachers t
+                         JOIN users u ON t.user_id = u.id
+                         WHERE u.id = get_current_user_id()
+                         AND u.tenant_id = get_current_tenant_id()
+                     )
+                 )
+             WHEN 'parent' THEN 
+                 -- Parents can see alerts for their own children
+                 EXISTS (
+                     SELECT 1 FROM students s 
+                     WHERE s.id = alerts.student_id 
+                     AND s.tenant_id = get_current_tenant_id()
+                     AND (s.parent_guardian_1_email = current_setting('app.current_user_email', true) OR
+                          s.parent_guardian_2_email = current_setting('app.current_user_email', true))
+                 )
+             WHEN 'student' THEN 
+                 -- Students can see their own alerts (non-sensitive ones only)
+                 student_id IN (
+                     SELECT s.id FROM students s 
+                     JOIN users u ON s.user_id = u.id 
+                     WHERE u.id = get_current_user_id() 
+                     AND u.tenant_id = get_current_tenant_id()
+                 )
+                 AND alert_level IN ('info', 'warning') -- Students can't see critical/emergency alerts
+             ELSE FALSE
+         END)
+    );
+
+-- =============================================================================
+-- MASKED VIEW INTEGRATION POLICIES
+-- =============================================================================
+
+-- Function to enforce masked view usage for non-privileged roles
+CREATE OR REPLACE FUNCTION enforce_masked_view_usage()
+RETURNS TRIGGER AS $$
+DECLARE
+    user_role TEXT;
+    table_name TEXT;
+BEGIN
+    -- Get current user role
+    user_role := current_setting('app.current_user_role', true);
+    table_name := TG_TABLE_NAME;
+    
+    -- Enforce masked view usage for non-privileged roles
+    IF user_role NOT IN ('admin', 'super_admin', 'counselor') THEN
+        CASE table_name
+            WHEN 'students' THEN
+                RAISE EXCEPTION 'Non-privileged users must use students_masked view instead of students table';
+            WHEN 'teachers' THEN
+                RAISE EXCEPTION 'Non-privileged users must use teachers_masked view instead of teachers table';
+            WHEN 'users' THEN
+                RAISE EXCEPTION 'Non-privileged users must use users_masked view instead of users table';
+        END CASE;
+    END IF;
+    
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create triggers to enforce masked view usage
+-- Note: These triggers will prevent direct access to sensitive tables for non-privileged users
+CREATE TRIGGER enforce_students_masked_view_usage
+    BEFORE SELECT ON students
+    FOR EACH ROW
+    EXECUTE FUNCTION enforce_masked_view_usage();
+
+CREATE TRIGGER enforce_teachers_masked_view_usage
+    BEFORE SELECT ON teachers
+    FOR EACH ROW
+    EXECUTE FUNCTION enforce_masked_view_usage();
+
+CREATE TRIGGER enforce_users_masked_view_usage
+    BEFORE SELECT ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION enforce_masked_view_usage();
 
 -- Create a function to set tenant context for database operations
 -- This function should be called by the application before any database operations
