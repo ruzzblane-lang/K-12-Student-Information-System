@@ -36,6 +36,273 @@ The API automatically resolves tenant context through:
 3. **Header**: `X-Tenant-ID: tenant-uuid` or `X-Tenant-Slug: springfield`
 4. **JWT Token**: Contains `tenantId` claim
 
+## White-Labeling API
+
+### Base URL: `/api/white-labeling`
+
+The white-labeling API provides comprehensive branding and customization capabilities for tenants.
+
+#### Get Branding Configuration
+```http
+GET /api/white-labeling/branding
+Authorization: Bearer <jwt_token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "tenant_id": "uuid",
+    "name": "Springfield High School",
+    "school_name": "Springfield High School",
+    "domain": "springfield.sisplatform.com",
+    "subdomain": "springfield",
+    "logo_url": "https://cdn.example.com/springfield-logo.png",
+    "colors": {
+      "primary": "#1e40af",
+      "secondary": "#3b82f6",
+      "header_background": "#ffffff",
+      "footer_background": "#f8fafc",
+      "text": "#1f2937",
+      "link": "#3b82f6",
+      "button": "#1e40af",
+      "button_text": "#ffffff",
+      "accent": "#10b981",
+      "border": "#e5e7eb"
+    },
+    "typography": {
+      "font_family": "Inter, system-ui, sans-serif",
+      "font_size_base": "16px"
+    },
+    "custom_content": {
+      "footer_text": "© 2024 Springfield High School. All rights reserved.",
+      "welcome_message": "Welcome to Springfield High School Portal!",
+      "login_message": "Please sign in to access your student account."
+    },
+    "white_label_config": {
+      "enabled": true,
+      "level": "advanced",
+      "custom_domain_verified": true,
+      "ssl_certificate_status": "active"
+    }
+  }
+}
+```
+
+#### Update Branding Configuration
+```http
+PUT /api/white-labeling/branding
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "colors": {
+    "primary": "#dc2626",
+    "secondary": "#ef4444",
+    "button": "#dc2626",
+    "button_text": "#ffffff"
+  },
+  "logo_url": "https://cdn.example.com/new-logo.png",
+  "custom_content": {
+    "welcome_message": "Welcome to our updated portal!"
+  }
+}
+```
+
+#### Get Generated CSS
+```http
+GET /api/white-labeling/css/{tenantId}
+```
+
+**Response:** CSS content with custom variables and styles.
+
+#### Upload Branding Asset
+```http
+POST /api/white-labeling/upload-asset
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "asset_type": "logo",
+  "file_data": "base64_encoded_file_data"
+}
+```
+
+#### Validate Custom Domain
+```http
+POST /api/white-labeling/validate-domain
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "domain": "portal.springfield.edu"
+}
+```
+
+#### Setup Custom Domain
+```http
+POST /api/white-labeling/setup-custom-domain
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "domain": "portal.springfield.edu",
+  "verification_code": "abc123def456"
+}
+```
+
+#### Update Email Templates
+```http
+PUT /api/white-labeling/email-templates
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "templates": {
+    "welcome": {
+      "subject": "Welcome to {{school_name}} Student Portal",
+      "template": "<html><body>Welcome {{first_name}}!</body></html>",
+      "from_name": "{{school_name}} Administration"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password - {{school_name}}",
+      "template": "<html><body>Click here to reset: {{reset_link}}</body></html>"
+    }
+  }
+}
+```
+
+#### Update Dashboard Widgets
+```http
+PUT /api/white-labeling/dashboard-widgets
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "enabled_widgets": ["grades", "attendance", "announcements", "calendar"],
+  "layout": "grid",
+  "widget_order": ["announcements", "grades", "attendance", "calendar"],
+  "custom_widgets": [
+    {
+      "id": "school_news",
+      "title": "School News",
+      "type": "rss_feed",
+      "config": {"url": "https://springfield.edu/news/rss"}
+    }
+  ]
+}
+```
+
+#### Update Navigation Menu
+```http
+PUT /api/white-labeling/navigation-menu
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "main_menu": [
+    {"label": "Dashboard", "url": "/dashboard", "icon": "home"},
+    {"label": "Grades", "url": "/grades", "icon": "chart"},
+    {"label": "Attendance", "url": "/attendance", "icon": "calendar"}
+  ],
+  "footer_menu": [
+    {"label": "About", "url": "/about"},
+    {"label": "Contact", "url": "/contact"},
+    {"label": "Privacy Policy", "url": "/privacy"}
+  ]
+}
+```
+
+#### Update Support Contact
+```http
+PUT /api/white-labeling/support-contact
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "email": "support@springfield.edu",
+  "phone": "+1-555-123-4567",
+  "hours": "Monday-Friday 8AM-5PM",
+  "chat_enabled": true,
+  "ticket_system": "zendesk",
+  "knowledge_base_url": "https://help.springfield.edu"
+}
+```
+
+#### Update Social Media
+```http
+PUT /api/white-labeling/social-media
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "facebook": "https://facebook.com/springfieldhigh",
+  "twitter": "https://twitter.com/springfieldhigh",
+  "instagram": "https://instagram.com/springfieldhigh",
+  "linkedin": "https://linkedin.com/school/springfield-high"
+}
+```
+
+#### Update Analytics Configuration
+```http
+PUT /api/white-labeling/analytics
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "google_analytics_id": "GA-XXXXXXXXX",
+  "google_tag_manager_id": "GTM-XXXXXXX",
+  "facebook_pixel_id": "123456789",
+  "custom_events": ["login", "grade_view", "attendance_check"]
+}
+```
+
+#### Update Legal Documents
+```http
+PUT /api/white-labeling/legal-documents
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "terms_of_service": "Terms of Service content...",
+  "privacy_policy": "Privacy Policy content..."
+}
+```
+
+#### Get Branding Preview
+```http
+GET /api/white-labeling/preview/{tenantId}
+Authorization: Bearer <jwt_token>
+```
+
+#### Reset to Defaults
+```http
+POST /api/white-labeling/reset-to-defaults
+Authorization: Bearer <jwt_token>
+```
+
+#### Export Configuration
+```http
+GET /api/white-labeling/export-config
+Authorization: Bearer <jwt_token>
+```
+
+#### Import Configuration
+```http
+POST /api/white-labeling/import-config
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "config": {
+    "version": "1.0",
+    "branding_config": { /* branding configuration */ }
+  },
+  "overwrite_existing": false
+}
+```
+
 ## Common Response Format
 
 ### Success Response

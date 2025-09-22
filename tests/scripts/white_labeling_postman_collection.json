@@ -1,0 +1,442 @@
+{
+  "info": {
+    "name": "K-12 SIS White-Labeling API",
+    "description": "Complete white-labeling API collection for K-12 Student Information System",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "your-jwt-token-here",
+      "type": "string"
+    },
+    {
+      "key": "tenant_id",
+      "value": "your-tenant-uuid-here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Branding Configuration",
+      "item": [
+        {
+          "name": "Get Branding Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/white-labeling/branding",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "branding"]
+            },
+            "description": "Retrieve the current branding configuration for the tenant"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Branding Configuration",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"colors\": {\n    \"primary\": \"#dc2626\",\n    \"secondary\": \"#ef4444\",\n    \"header_background\": \"#ffffff\",\n    \"footer_background\": \"#f8fafc\",\n    \"text\": \"#1f2937\",\n    \"link\": \"#dc2626\",\n    \"button\": \"#dc2626\",\n    \"button_text\": \"#ffffff\",\n    \"accent\": \"#059669\",\n    \"border\": \"#e5e7eb\"\n  },\n  \"logo_url\": \"https://cdn.example.com/springfield-logo.png\",\n  \"custom_content\": {\n    \"footer_text\": \"© 2024 Springfield High School. All rights reserved.\",\n    \"welcome_message\": \"Welcome to Springfield High School Student Portal!\",\n    \"login_message\": \"Please sign in to access your student account.\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/branding",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "branding"]
+            },
+            "description": "Update the branding configuration for the tenant"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Generated CSS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/white-labeling/css/{{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "css", "{{tenant_id}}"]
+            },
+            "description": "Get the generated CSS for the tenant's branding"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Asset Management",
+      "item": [
+        {
+          "name": "Upload Branding Asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_type\": \"logo\",\n  \"file_data\": \"base64_encoded_file_data_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/upload-asset",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "upload-asset"]
+            },
+            "description": "Upload a branding asset (logo, favicon, etc.)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Custom Domain",
+      "item": [
+        {
+          "name": "Validate Custom Domain",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"domain\": \"portal.springfield.edu\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/validate-domain",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "validate-domain"]
+            },
+            "description": "Validate if a custom domain is available"
+          },
+          "response": []
+        },
+        {
+          "name": "Setup Custom Domain",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"domain\": \"portal.springfield.edu\",\n  \"verification_code\": \"abc123def456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/setup-custom-domain",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "setup-custom-domain"]
+            },
+            "description": "Setup a custom domain for the tenant"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Domain Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/white-labeling/domain-status/portal.springfield.edu",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "domain-status", "portal.springfield.edu"]
+            },
+            "description": "Get the status of a custom domain and SSL certificate"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Email Templates",
+      "item": [
+        {
+          "name": "Update Email Templates",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templates\": {\n    \"welcome\": {\n      \"subject\": \"Welcome to {{school_name}} Student Portal\",\n      \"template\": \"<html><body style=\\\"font-family: Arial, sans-serif;\\\"><h1>Welcome {{first_name}}!</h1><p>Welcome to {{school_name}} Student Portal. You can now access your grades, attendance, and other important information.</p><p>Best regards,<br>{{school_name}} Administration</p></body></html>\",\n      \"from_name\": \"{{school_name}} Administration\"\n    },\n    \"password_reset\": {\n      \"subject\": \"Reset Your Password - {{school_name}}\",\n      \"template\": \"<html><body style=\\\"font-family: Arial, sans-serif;\\\"><h1>Password Reset Request</h1><p>Hello {{first_name}},</p><p>You requested to reset your password for {{school_name}} Student Portal.</p><p><a href=\\\"{{reset_link}}\\\" style=\\\"background-color: #dc2626; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;\\\">Reset Password</a></p><p>If you did not request this, please ignore this email.</p></body></html>\"\n    },\n    \"grade_notification\": {\n      \"subject\": \"New Grade Posted - {{school_name}}\",\n      \"template\": \"<html><body style=\\\"font-family: Arial, sans-serif;\\\"><h1>New Grade Posted</h1><p>Hello {{parent_name}},</p><p>A new grade has been posted for {{student_name}} in {{class_name}}.</p><p>Grade: {{grade}}<br>Assignment: {{assignment_name}}</p><p>Log in to view more details.</p></body></html>\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/email-templates",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "email-templates"]
+            },
+            "description": "Update custom email templates"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard Widgets",
+      "item": [
+        {
+          "name": "Update Dashboard Widgets",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled_widgets\": [\"grades\", \"attendance\", \"announcements\", \"calendar\", \"upcoming_assignments\"],\n  \"layout\": \"grid\",\n  \"widget_order\": [\"announcements\", \"grades\", \"attendance\", \"upcoming_assignments\", \"calendar\"],\n  \"custom_widgets\": [\n    {\n      \"id\": \"school_news\",\n      \"title\": \"School News\",\n      \"type\": \"rss_feed\",\n      \"config\": {\n        \"url\": \"https://springfield.edu/news/rss\",\n        \"max_items\": 5,\n        \"show_images\": true\n      }\n    },\n    {\n      \"id\": \"weather\",\n      \"title\": \"Weather\",\n      \"type\": \"weather_widget\",\n      \"config\": {\n        \"location\": \"Springfield, IL\",\n        \"units\": \"fahrenheit\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/dashboard-widgets",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "dashboard-widgets"]
+            },
+            "description": "Update dashboard widget configuration"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Navigation Menu",
+      "item": [
+        {
+          "name": "Update Navigation Menu",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"main_menu\": [\n    {\n      \"label\": \"Dashboard\",\n      \"url\": \"/dashboard\",\n      \"icon\": \"home\",\n      \"order\": 1\n    },\n    {\n      \"label\": \"Grades\",\n      \"url\": \"/grades\",\n      \"icon\": \"chart-bar\",\n      \"order\": 2\n    },\n    {\n      \"label\": \"Attendance\",\n      \"url\": \"/attendance\",\n      \"icon\": \"calendar\",\n      \"order\": 3\n    },\n    {\n      \"label\": \"Assignments\",\n      \"url\": \"/assignments\",\n      \"icon\": \"clipboard-list\",\n      \"order\": 4\n    },\n    {\n      \"label\": \"Messages\",\n      \"url\": \"/messages\",\n      \"icon\": \"chat\",\n      \"order\": 5\n    }\n  ],\n  \"footer_menu\": [\n    {\n      \"label\": \"About Us\",\n      \"url\": \"/about\",\n      \"order\": 1\n    },\n    {\n      \"label\": \"Contact\",\n      \"url\": \"/contact\",\n      \"order\": 2\n    },\n    {\n      \"label\": \"Privacy Policy\",\n      \"url\": \"/privacy\",\n      \"order\": 3\n    },\n    {\n      \"label\": \"Terms of Service\",\n      \"url\": \"/terms\",\n      \"order\": 4\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/navigation-menu",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "navigation-menu"]
+            },
+            "description": "Update navigation menu configuration"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Support & Social",
+      "item": [
+        {
+          "name": "Update Support Contact",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"support@springfield.edu\",\n  \"phone\": \"+1-217-555-0123\",\n  \"hours\": \"Monday-Friday 8:00 AM - 5:00 PM CST\",\n  \"chat_enabled\": true,\n  \"ticket_system\": \"zendesk\",\n  \"knowledge_base_url\": \"https://help.springfield.edu\",\n  \"emergency_contact\": {\n    \"phone\": \"+1-217-555-9111\",\n    \"available\": \"24/7 for emergencies\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/support-contact",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "support-contact"]
+            },
+            "description": "Update support contact information"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Social Media",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"facebook\": \"https://facebook.com/springfieldhighschool\",\n  \"twitter\": \"https://twitter.com/springfieldhigh\",\n  \"instagram\": \"https://instagram.com/springfieldhighschool\",\n  \"linkedin\": \"https://linkedin.com/school/springfield-high-school\",\n  \"youtube\": \"https://youtube.com/springfieldhighschool\",\n  \"tiktok\": \"https://tiktok.com/@springfieldhigh\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/social-media",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "social-media"]
+            },
+            "description": "Update social media links"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Legal",
+      "item": [
+        {
+          "name": "Update Analytics Configuration",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"google_analytics_id\": \"GA-123456789-1\",\n  \"google_tag_manager_id\": \"GTM-ABC123\",\n  \"facebook_pixel_id\": \"123456789012345\",\n  \"custom_events\": [\n    \"login\",\n    \"logout\",\n    \"grade_view\",\n    \"attendance_check\",\n    \"assignment_submit\",\n    \"message_send\"\n  ],\n  \"heatmap_tracking\": true,\n  \"session_recording\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/analytics",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "analytics"]
+            },
+            "description": "Update analytics configuration"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Legal Documents",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"terms_of_service\": \"These Terms of Service govern your use of the Springfield High School Student Information System. By accessing or using our services, you agree to be bound by these terms...\",\n  \"privacy_policy\": \"This Privacy Policy describes how Springfield High School collects, uses, and protects your personal information when you use our Student Information System...\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/legal-documents",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "legal-documents"]
+            },
+            "description": "Update legal documents (Terms of Service, Privacy Policy)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Configuration Management",
+      "item": [
+        {
+          "name": "Get Branding Preview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/white-labeling/preview/{{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "preview", "{{tenant_id}}"]
+            },
+            "description": "Get branding preview for the tenant"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset to Defaults",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/white-labeling/reset-to-defaults",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "reset-to-defaults"]
+            },
+            "description": "Reset tenant branding to default values"
+          },
+          "response": []
+        },
+        {
+          "name": "Export Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/white-labeling/export-config",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "export-config"]
+            },
+            "description": "Export tenant branding configuration"
+          },
+          "response": []
+        },
+        {
+          "name": "Import Configuration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"config\": {\n    \"version\": \"1.0\",\n    \"exported_at\": \"2024-01-15T10:30:00Z\",\n    \"tenant_id\": \"{{tenant_id}}\",\n    \"branding_config\": {\n      \"colors\": {\n        \"primary\": \"#dc2626\",\n        \"secondary\": \"#ef4444\"\n      },\n      \"logo_url\": \"https://cdn.example.com/logo.png\"\n    }\n  },\n  \"overwrite_existing\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/white-labeling/import-config",
+              "host": ["{{base_url}}"],
+              "path": ["white-labeling", "import-config"]
+            },
+            "description": "Import tenant branding configuration"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

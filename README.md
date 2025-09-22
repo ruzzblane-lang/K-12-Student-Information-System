@@ -190,7 +190,10 @@ Visit **http://localhost:3000/api/docs** for interactive API documentation (Swag
 - **Rate Limiting**: Protection against abuse and brute force attacks
 
 ### **Commercial Features**
-- **White-Label API**: Custom branding and configuration per tenant
+- **Complete White-Labeling**: Custom branding, colors, logos, domains, and content per tenant
+- **Custom Domain Support**: Full custom domain setup with SSL certificate management
+- **Email Template Customization**: Branded email templates with dynamic content
+- **Dashboard Customization**: Custom widgets, layouts, and navigation menus
 - **Subscription Management**: Plan-based feature access and limits
 - **API Versioning**: Backward compatibility and gradual rollouts
 - **Webhook Support**: Real-time notifications for external systems
@@ -234,9 +237,10 @@ Visit **http://localhost:3000/api/docs** for interactive API documentation (Swag
 
 ### **Core Documentation**
 - [Multi-Tenant Architecture](./docs/Multi-Tenant-Architecture.md) - Complete multi-tenant design
-- [API Specification](./docs/API-Specification.md) - Full REST API documentation
+- [API Specification](./docs/API-Specification.md) - Full REST API documentation including white-labeling
 - [Database Schema](./docs/Database-Schema.md) - Database design and relationships
 - [Authentication & RBAC](./docs/Authentication-RBAC.md) - Security and permissions
+- [White-Labeling Implementation Guide](./docs/White-Labeling-Implementation-Guide.md) - Complete white-labeling documentation
 
 ### **Development Documentation**
 - [Testing Guide](./docs/Testing-Guide.md) - Testing without frontend
