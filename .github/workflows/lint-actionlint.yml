@@ -15,5 +15,3 @@ jobs:
 
     - name: Run actionlint
       uses: devops-actions/actionlint@v2
-      with:
-        args: --config-file .github/actionlint.yml
