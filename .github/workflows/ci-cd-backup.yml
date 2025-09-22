@@ -87,26 +87,34 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Setup deployment environment
+    - name: Validate secrets
       run: |
-        echo "Setting up deployment environment..."
-        echo "Environment: ${{ github.ref_name }}"
-        echo "Commit: ${{ github.sha }}"
-        echo "Timestamp: $(date)"
+        echo "Validating required secrets..."
+        # Check if secrets are available
+        if [ -z "${DB_HOST:-}" ]; then
+          echo "Error: DB_HOST secret is not set"
+          exit 1
+        fi
+        if [ -z "${JWT_SECRET:-}" ]; then
+          echo "Error: JWT_SECRET secret is not set"
+          exit 1
+        fi
+        echo "All required secrets are present"
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
     
     - name: Deploy to production
       run: |
         echo "Deploying to production..."
-        echo "Database configuration: ${DB_HOST}:${DB_PORT}/${DB_NAME}"
-        echo "JWT configuration: $([ -n "${JWT_SECRET}" ] && echo "Configured" || echo "Missing")"
-        echo "Encryption: $([ -n "${ENCRYPTION_KEY}" ] && echo "Configured" || echo "Missing")"
-        echo "SMTP: $([ -n "${SMTP_HOST}" ] && echo "Configured" || echo "Missing")"
-        
+        echo "Environment: ${{ github.ref_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Database Host: ${DB_HOST}"
+        echo "Database Name: ${DB_NAME}"
+        echo "JWT Secret configured: $([ -n "${JWT_SECRET}" ] && echo "Yes" || echo "No")"
         # Add your deployment commands here
         # This could be deploying to AWS, DigitalOcean, etc.
-        
-        echo "✅ Deployment completed successfully!"
-        echo "🚀 Application is now live in production"
+        echo "Deployment completed successfully!"
       env:
         NODE_ENV: production
         # Database configuration
