@@ -1,6 +1,6 @@
 /**
  * Student Service
- * Handles business logic for student operations
+ * Handles business logic for _student operations
  */
 
 class StudentService {
@@ -9,10 +9,10 @@ class StudentService {
    */
   async getAllStudents({ page = 1, limit = 10, filters = {} }) {
     try {
-      // Mock implementation - in real app, this would query the database
+      // Mock implementation - in real app, this would _query the database
       const mockStudents = [
         {
-          id: '1',
+          _id: '1',
           first_name: 'John',
           last_name: 'Doe',
           email: 'john.doe@example.com',
@@ -21,7 +21,7 @@ class StudentService {
           created_at: new Date().toISOString()
         },
         {
-          id: '2',
+          _id: '2',
           first_name: 'Jane',
           last_name: 'Smith',
           email: 'jane.smith@example.com',
@@ -74,13 +74,13 @@ class StudentService {
   }
 
   /**
-   * Get student by ID
+   * Get _student by ID
    */
-  async getStudentById(id) {
+  async getStudentById(_id) {
     try {
       // Mock implementation
       const mockStudent = {
-        id,
+        _id,
         first_name: 'John',
         last_name: 'Doe',
         email: 'john.doe@example.com',
@@ -98,19 +98,19 @@ class StudentService {
 
       return mockStudent;
     } catch (error) {
-      console.error('Error getting student by ID:', error);
+      console.error('Error getting _student by ID:', error);
       throw error;
     }
   }
 
   /**
-   * Create a new student
+   * Create a new _student
    */
   async createStudent(studentData) {
     try {
       // Mock implementation
       const newStudent = {
-        id: Date.now().toString(),
+        _id: Date.now().toString(),
         ...studentData,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -118,50 +118,50 @@ class StudentService {
 
       return newStudent;
     } catch (error) {
-      console.error('Error creating student:', error);
+      console.error('Error creating _student:', error);
       throw error;
     }
   }
 
   /**
-   * Update student
+   * Update _student
    */
-  async updateStudent(id, updateData) {
+  async updateStudent(_id, updateData) {
     try {
       // Mock implementation
       const updatedStudent = {
-        id,
+        _id,
         ...updateData,
         updated_at: new Date().toISOString()
       };
 
       return updatedStudent;
     } catch (error) {
-      console.error('Error updating student:', error);
+      console.error('Error updating _student:', error);
       throw error;
     }
   }
 
   /**
-   * Delete student (soft delete)
+   * Delete _student (soft delete)
    */
-  async deleteStudent(id) {
+  async deleteStudent(_id) {
     // Mock implementation - in real app, this would soft delete
     return true;
   }
 
   /**
-   * Get student grades with pagination
+   * Get _student grades with pagination
    */
-  async getStudentGrades(studentId, options = {}) {
+  async getStudentGrades(_studentId, _options = {}) {
     try {
-      const { term_id, page = 1, limit = 20 } = options;
+      const { _term_id, page = 1, limit = 20 } = _options;
       
       // Mock implementation
       const mockGrades = [
         {
-          id: '1',
-          student_id: studentId,
+          _id: '1',
+          student_id: _studentId,
           class_id: 'class-1',
           assignment_id: 'assignment-1',
           grade: 'A',
@@ -170,8 +170,8 @@ class StudentService {
           created_at: new Date().toISOString()
         },
         {
-          id: '2',
-          student_id: studentId,
+          _id: '2',
+          student_id: _studentId,
           class_id: 'class-2',
           assignment_id: 'assignment-2',
           grade: 'B+',
@@ -198,23 +198,23 @@ class StudentService {
         }
       };
     } catch (error) {
-      console.error('Error getting student grades:', error);
+      console.error('Error getting _student grades:', error);
       throw error;
     }
   }
 
   /**
-   * Get student attendance with pagination
+   * Get _student attendance with pagination
    */
-  async getStudentAttendance(studentId, options = {}) {
+  async getStudentAttendance(_studentId, _options = {}) {
     try {
-      const { start_date, end_date, course_section_id, page = 1, limit = 50 } = options;
+      const { _start_date, _end_date, _course_section_id, page = 1, limit = 50 } = _options;
       
       // Mock implementation
       const mockAttendance = [
         {
-          id: '1',
-          student_id: studentId,
+          _id: '1',
+          student_id: _studentId,
           class_id: 'class-1',
           attendance_date: '2024-01-15',
           status: 'present',
@@ -222,8 +222,8 @@ class StudentService {
           created_at: new Date().toISOString()
         },
         {
-          id: '2',
-          student_id: studentId,
+          _id: '2',
+          student_id: _studentId,
           class_id: 'class-1',
           attendance_date: '2024-01-16',
           status: 'absent',
@@ -251,23 +251,23 @@ class StudentService {
         }
       };
     } catch (error) {
-      console.error('Error getting student attendance:', error);
+      console.error('Error getting _student attendance:', error);
       throw error;
     }
   }
 
   /**
-   * Get student enrollments with pagination
+   * Get _student enrollments with pagination
    */
-  async getStudentEnrollments(studentId, options = {}) {
+  async getStudentEnrollments(_studentId, _options = {}) {
     try {
-      const { term_id, page = 1, limit = 20 } = options;
+      const { _term_id, page = 1, limit = 20 } = _options;
       
       // Mock implementation
       const mockEnrollments = [
         {
-          id: '1',
-          student_id: studentId,
+          _id: '1',
+          student_id: _studentId,
           class_id: 'class-1',
           class_name: 'Mathematics 8',
           teacher_name: 'Ms. Johnson',
@@ -276,8 +276,8 @@ class StudentService {
           created_at: new Date().toISOString()
         },
         {
-          id: '2',
-          student_id: studentId,
+          _id: '2',
+          student_id: _studentId,
           class_id: 'class-2',
           class_name: 'English 8',
           teacher_name: 'Mr. Smith',
@@ -304,21 +304,21 @@ class StudentService {
         }
       };
     } catch (error) {
-      console.error('Error getting student enrollments:', error);
+      console.error('Error getting _student enrollments:', error);
       throw error;
     }
   }
 
   /**
-   * Enroll student in a course section
+   * Enroll _student in a course section
    */
-  async enrollStudent(studentId, courseSectionId) {
+  async enrollStudent(_studentId, courseSectionId) {
     try {
       // Mock implementation
       const enrollment = {
-        id: Date.now().toString(),
-        student_id: studentId,
-        course_section_id: courseSectionId,
+        _id: Date.now().toString(),
+        student_id: _studentId,
+        _course_section_id: courseSectionId,
         enrollment_date: new Date().toISOString(),
         status: 'active',
         created_at: new Date().toISOString()
@@ -326,15 +326,15 @@ class StudentService {
 
       return enrollment;
     } catch (error) {
-      console.error('Error enrolling student:', error);
+      console.error('Error enrolling _student:', error);
       throw error;
     }
   }
 
   /**
-   * Unenroll student from a course section
+   * Unenroll _student from a course section
    */
-  async unenrollStudent(studentId, enrollmentId) {
+  async unenrollStudent(_studentId, _enrollmentId) {
     // Mock implementation
     return true;
   }

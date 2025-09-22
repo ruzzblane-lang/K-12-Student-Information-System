@@ -16,7 +16,7 @@ const mockIndexedDB = () => {
         transaction: jest.fn(() => ({
           objectStore: jest.fn(() => ({
             add: jest.fn((data) => {
-              store.set(data.id, data);
+              store.set(data._id, data);
               return { onsuccess: null, onerror: null };
             }),
             get: jest.fn((key) => ({
@@ -30,7 +30,7 @@ const mockIndexedDB = () => {
               result: Array.from(store.values())
             })),
             put: jest.fn((data) => {
-              store.set(data.id, data);
+              store.set(data._id, data);
               return { onsuccess: null, onerror: null };
             }),
             delete: jest.fn((key) => {
@@ -109,8 +109,8 @@ describe('Offline Storage Service', () => {
     await offlineStorage.init();
     
     const mockStudents = [
-      { id: 1, first_name: 'John', last_name: 'Doe', grade: 9 },
-      { id: 2, first_name: 'Jane', last_name: 'Smith', grade: 10 }
+      { _id: 1, first_name: 'John', last_name: 'Doe', grade: 9 },
+      { _id: 2, first_name: 'Jane', last_name: 'Smith', grade: 10 }
     ];
 
     await offlineStorage.cacheStudents(mockStudents);
@@ -177,7 +177,7 @@ describe('Push Notification Service', () => {
 
   test('should show local notification', () => {
     pushNotificationService.showNotification('Test Notification', {
-      body: 'This is a test notification'
+      _body: 'This is a test notification'
     });
     
     // Since we can't easily test the actual notification display,
@@ -213,7 +213,7 @@ describe('Offline-First API Integration', () => {
     
     // Cache some data
     const mockStudents = [
-      { id: 1, first_name: 'Cached', last_name: 'Student' }
+      { _id: 1, first_name: 'Cached', last_name: 'Student' }
     ];
     await offlineStorage.cacheStudents(mockStudents);
     
@@ -331,7 +331,7 @@ describe('Offline-First Workflow Integration', () => {
   test('should handle complete offline workflow', async () => {
     // 1. Cache initial data
     const students = [
-      { id: 1, first_name: 'John', last_name: 'Doe', grade: 9 }
+      { _id: 1, first_name: 'John', last_name: 'Doe', grade: 9 }
     ];
     await offlineStorage.cacheStudents(students);
 
@@ -352,7 +352,7 @@ describe('Offline-First Workflow Integration', () => {
     expect(cachedStudents).toHaveLength(1);
 
     // 5. Simulate coming back online and syncing
-    await offlineStorage.removePendingAction(pendingActions[0].id);
+    await offlineStorage.removePendingAction(pendingActions[0]._id);
     const remainingActions = await offlineStorage.getPendingActions();
     expect(remainingActions).toHaveLength(0);
   });

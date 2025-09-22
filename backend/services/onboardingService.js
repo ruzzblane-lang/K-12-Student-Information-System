@@ -11,7 +11,7 @@ class OnboardingService {
     try {
       // Mock implementation
       const newTenant = {
-        id: Date.now().toString(),
+        _id: Date.now().toString(),
         ...tenantData,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

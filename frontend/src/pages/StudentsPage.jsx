@@ -56,19 +56,19 @@ const StudentsPage = () => {
     setPagination(prev => ({ ...prev, page: newPage }));
   };
 
-  const handleEdit = (student) => {
+  const handleEdit = (_student) => {
     // Navigate to edit page or open modal
-    console.log('Edit student:', student);
+    console.log('Edit _student:', _student);
   };
 
-  const handleDelete = async (studentId) => {
-    if (window.confirm('Are you sure you want to delete this student?')) {
+  const handleDelete = async (_studentId) => {
+    if (window.confirm('Are you sure you want to delete this _student?')) {
       try {
-        await studentService.deleteStudent(studentId);
+        await studentService.deleteStudent(_studentId);
         fetchStudents(); // Refresh the list
       } catch (err) {
-        setError('Failed to delete student');
-        console.error('Error deleting student:', err);
+        setError('Failed to delete _student');
+        console.error('Error deleting _student:', err);
       }
     }
   };
@@ -167,10 +167,10 @@ const StudentsPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {students.map((student) => (
+          {students.map((_student) => (
             <StudentCard
-              key={student.id}
-              student={student}
+              key={_student._id}
+              _student={_student}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />

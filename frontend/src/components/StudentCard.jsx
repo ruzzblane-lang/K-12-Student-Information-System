@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const StudentCard = ({ student, onEdit, onDelete }) => {
-  const { id, student_id, User, status, enrollment_date } = student;
+const StudentCard = ({ _student, onEdit, onDelete }) => {
+  const { _id, student_id, User, status, enrollment_date } = _student;
   const { first_name, last_name, email, phone } = User || {};
 
   return (
@@ -39,19 +39,19 @@ const StudentCard = ({ student, onEdit, onDelete }) => {
 
       <div className="flex space-x-2">
         <Link
-          to={`/students/${id}`}
+          to={`/students/${_id}`}
           className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors text-center"
         >
           View Details
         </Link>
         <button
-          onClick={() => onEdit(student)}
+          onClick={() => onEdit(_student)}
           className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
         >
           Edit
         </button>
         <button
-          onClick={() => onDelete(id)}
+          onClick={() => onDelete(_id)}
           className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
         >
           Delete

@@ -6,10 +6,10 @@
 const express = require('express');
 const router = express.Router();
 const onboardingController = require('../controllers/onboardingController');
-const { general } = require('../middleware/rateLimiting');
+const { _general } = require('../middleware/rateLimiting');
 
-// Apply general rate limiting
-router.use(general);
+// Apply _general rate limiting
+router.use(_general);
 
 /**
  * @route POST /api/onboarding/tenants

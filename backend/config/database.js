@@ -3,7 +3,7 @@
  * Handles database connection and configuration
  */
 
-const { Pool } = require('pg');
+const { _Pool } = require('pg');
 
 // Database configuration
 const dbConfig = {
@@ -11,7 +11,7 @@ const dbConfig = {
   port: process.env.DB_PORT || 5432,
   database: process.env.DB_NAME || 'school_sis',
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'password',
+  _password: process.env.DB_PASSWORD || '_password',
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
@@ -19,7 +19,7 @@ const dbConfig = {
 };
 
 // Create connection pool
-const pool = new Pool(dbConfig);
+const pool = new _Pool(dbConfig);
 
 // Handle pool errors
 pool.on('error', (err) => {
@@ -28,17 +28,17 @@ pool.on('error', (err) => {
 });
 
 /**
- * Execute a query
+ * Execute a _query
  */
-const query = async (text, params) => {
+const _query = async (text, params) => {
   const start = Date.now();
   try {
-    const res = await pool.query(text, params);
+    const res = await pool._query(text, params);
     const duration = Date.now() - start;
-    console.log('Executed query', { text, duration, rows: res.rowCount });
+    console.log('Executed _query', { text, duration, rows: res.rowCount });
     return res;
   } catch (error) {
-    console.error('Database query error:', error);
+    console.error('Database _query error:', error);
     throw error;
   }
 };
@@ -55,7 +55,7 @@ const getClient = async () => {
  */
 const beginTransaction = async () => {
   const client = await getClient();
-  await client.query('BEGIN');
+  await client._query('BEGIN');
   return client;
 };
 
@@ -63,7 +63,7 @@ const beginTransaction = async () => {
  * Commit a transaction
  */
 const commitTransaction = async (client) => {
-  await client.query('COMMIT');
+  await client._query('COMMIT');
   client.release();
 };
 
@@ -71,7 +71,7 @@ const commitTransaction = async (client) => {
  * Rollback a transaction
  */
 const rollbackTransaction = async (client) => {
-  await client.query('ROLLBACK');
+  await client._query('ROLLBACK');
   client.release();
 };
 
@@ -80,7 +80,7 @@ const rollbackTransaction = async (client) => {
  */
 const testConnection = async () => {
   try {
-    const result = await query('SELECT NOW()');
+    const result = await _query('SELECT NOW()');
     console.log('Database connection successful:', result.rows[0]);
     return true;
   } catch (error) {
@@ -97,7 +97,7 @@ const closeConnections = async () => {
 };
 
 module.exports = {
-  query,
+  _query,
   getClient,
   beginTransaction,
   commitTransaction,

@@ -177,10 +177,10 @@ class AnalyticsDemoClient {
       const decliningResponse = await this.axios.get('/analytics/attendance/declining?declineThreshold=5&limit=10');
       
       if (decliningResponse.data.success) {
-        const decliningStudents = decliningResponse.data.data.students;
-        console.log(`\n⚠️ Found ${decliningStudents.length} students with declining attendance:`);
+        const _decliningStudents = decliningResponse.data.data.students;
+        console.log(`\n⚠️ Found ${_decliningStudents.length} students with declining attendance:`);
         
-        decliningStudents.forEach((student, index) => {
+        _decliningStudents.forEach((student, index) => {
           console.log(`${index + 1}. ${student.first_name} ${student.last_name} (${student.student_number})`);
           console.log(`   Current Rate: ${student.current_rate.toFixed(1)}%`);
           console.log(`   Previous Rate: ${student.previous_rate.toFixed(1)}%`);
@@ -189,9 +189,9 @@ class AnalyticsDemoClient {
       }
       
       // Get attendance predictions for a student
-      if (decliningStudents && decliningStudents.length > 0) {
-        const studentId = decliningStudents[0].student_id;
-        console.log(`\n🔮 Getting attendance predictions for ${decliningStudents[0].first_name} ${decliningStudents[0].last_name}...`);
+      if (_decliningStudents && _decliningStudents.length > 0) {
+        const studentId = _decliningStudents[0].student_id;
+        console.log(`\n🔮 Getting attendance predictions for ${_decliningStudents[0].first_name} ${_decliningStudents[0].last_name}...`);
         
         const predictionsResponse = await this.axios.get(`/analytics/attendance/students/${studentId}/predictions?futurePeriods=3`);
         

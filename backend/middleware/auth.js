@@ -1,6 +1,6 @@
 /**
  * Simplified Authentication Middleware
- * For use with student routes and other endpoints
+ * For use with _student routes and other endpoints
  */
 
 const jwt = require('jsonwebtoken');
@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 /**
  * Authenticate JWT token
  */
-const authMiddleware = async (req, res, next) => {
+const _authMiddleware = async (req, res, _next) => {
   try {
     const authHeader = req.headers.authorization;
     
@@ -30,18 +30,18 @@ const authMiddleware = async (req, res, next) => {
     // For now, we'll create a simple user object from the token
     // In a real implementation, you would fetch the user from the database
     const user = {
-      id: decoded.userId || decoded.id,
+      _id: decoded._userId || decoded._id,
       email: decoded.email,
-      role: decoded.role || 'student',
+      role: decoded.role || '_student',
       tenantId: decoded.tenantId
     };
 
     // Add user to request
     req.user = user;
-    req.userId = user.id;
+    req._userId = user._id;
     req.tenantId = user.tenantId;
 
-    next();
+    _next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
@@ -77,32 +77,32 @@ const authMiddleware = async (req, res, next) => {
 /**
  * Optional authentication (doesn't fail if no token)
  */
-const optionalAuth = async (req, res, next) => {
+const optionalAuth = async (req, res, _next) => {
   try {
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return next(); // Continue without authentication
+      return _next(); // Continue without authentication
     }
 
     const token = authHeader.substring(7);
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key');
     
     const user = {
-      id: decoded.userId || decoded.id,
+      _id: decoded._userId || decoded._id,
       email: decoded.email,
-      role: decoded.role || 'student',
+      role: decoded.role || '_student',
       tenantId: decoded.tenantId
     };
 
     req.user = user;
-    req.userId = user.id;
+    req._userId = user._id;
     req.tenantId = user.tenantId;
 
-    next();
+    _next();
   } catch (error) {
     // Continue without authentication on error
-    next();
+    _next();
   }
 };
 
@@ -111,7 +111,7 @@ const optionalAuth = async (req, res, next) => {
  */
 const generateToken = (user) => {
   const payload = {
-    userId: user.id,
+    _userId: user._id,
     email: user.email,
     role: user.role,
     tenantId: user.tenantId
@@ -127,7 +127,7 @@ const generateToken = (user) => {
  */
 const generateRefreshToken = (user) => {
   const payload = {
-    userId: user.id,
+    _userId: user._id,
     type: 'refresh'
   };
 
@@ -137,7 +137,7 @@ const generateRefreshToken = (user) => {
 };
 
 module.exports = {
-  authMiddleware,
+  _authMiddleware,
   optionalAuth,
   generateToken,
   generateRefreshToken

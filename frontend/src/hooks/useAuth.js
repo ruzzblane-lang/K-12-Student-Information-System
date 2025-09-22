@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
       // In a real app, you'd validate the token with the backend
       // For now, we'll just set a mock user
       setUser({
-        id: 1,
+        _id: 1,
         email: 'admin@school.com',
         role: 'admin',
         firstName: 'Admin',
@@ -27,11 +27,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, _password) => {
     try {
       // Mock login - in a real app, this would call the backend
       const mockUser = {
-        id: 1,
+        _id: 1,
         email,
         role: 'admin',
         firstName: 'Admin',

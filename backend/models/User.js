@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 module.exports = (sequelize) => {
   const User = sequelize.define('User', {
-    id: {
+    _id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
       field: 'tenant_id',
       references: {
         model: 'tenants',
-        key: 'id'
+        key: '_id'
       }
     },
     email: {
@@ -84,9 +84,9 @@ module.exports = (sequelize) => {
       field: 'avatar_url'
     },
     role: {
-      type: DataTypes.ENUM('super_admin', 'admin', 'principal', 'teacher', 'parent', 'student'),
+      type: DataTypes.ENUM('super_admin', 'admin', 'principal', 'teacher', 'parent', '_student'),
       allowNull: false,
-      defaultValue: 'student'
+      defaultValue: '_student'
     },
     permissions: {
       type: DataTypes.JSONB,
@@ -136,7 +136,7 @@ module.exports = (sequelize) => {
       field: 'created_by',
       references: {
         model: 'users',
-        key: 'id'
+        key: '_id'
       }
     }
   }, {
@@ -189,7 +189,7 @@ module.exports = (sequelize) => {
       super_admin: [
         'tenant.create', 'tenant.read', 'tenant.update', 'tenant.delete',
         'user.create', 'user.read', 'user.update', 'user.delete',
-        'student.create', 'student.read', 'student.update', 'student.delete',
+        '_student.create', '_student.read', '_student.update', '_student.delete',
         'teacher.create', 'teacher.read', 'teacher.update', 'teacher.delete',
         'class.create', 'class.read', 'class.update', 'class.delete',
         'grade.create', 'grade.read', 'grade.update', 'grade.delete',
@@ -199,7 +199,7 @@ module.exports = (sequelize) => {
       ],
       admin: [
         'user.create', 'user.read', 'user.update', 'user.delete',
-        'student.create', 'student.read', 'student.update', 'student.delete',
+        '_student.create', '_student.read', '_student.update', '_student.delete',
         'teacher.create', 'teacher.read', 'teacher.update', 'teacher.delete',
         'class.create', 'class.read', 'class.update', 'class.delete',
         'grade.create', 'grade.read', 'grade.update', 'grade.delete',
@@ -207,7 +207,7 @@ module.exports = (sequelize) => {
         'report.create', 'report.read', 'report.update', 'report.delete'
       ],
       principal: [
-        'student.read', 'student.update',
+        '_student.read', '_student.update',
         'teacher.read', 'teacher.update',
         'class.read', 'class.update',
         'grade.read', 'grade.update',
@@ -215,16 +215,16 @@ module.exports = (sequelize) => {
         'report.create', 'report.read'
       ],
       teacher: [
-        'student.read',
+        '_student.read',
         'class.read',
         'grade.create', 'grade.read', 'grade.update',
         'attendance.create', 'attendance.read', 'attendance.update'
       ],
       parent: [
-        'student.read' // Only their own children
+        '_student.read' // Only their own children
       ],
-      student: [
-        'student.read' // Only their own data
+      _student: [
+        '_student.read' // Only their own data
       ]
     };
 

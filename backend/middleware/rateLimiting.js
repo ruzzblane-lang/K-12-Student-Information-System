@@ -3,12 +3,12 @@
  * Provides different rate limiting configurations for various endpoint types
  */
 
-const rateLimit = require('express-rate-limit');
+const _rateLimit = require('express-rate-limit');
 
 // Rate limiting configurations
 const rateLimitConfigs = {
   // General rate limit for most endpoints
-  general: rateLimit({
+  _general: _rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
     message: {
@@ -27,7 +27,7 @@ const rateLimitConfigs = {
   }),
 
   // Strict rate limit for sensitive operations (create, update, delete)
-  strict: rateLimit({
+  strict: _rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 10, // limit each IP to 10 requests per windowMs
     message: {
@@ -46,7 +46,7 @@ const rateLimitConfigs = {
   }),
 
   // Moderate rate limit for read operations
-  moderate: rateLimit({
+  moderate: _rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 200, // limit each IP to 200 requests per windowMs
     message: {
@@ -65,7 +65,7 @@ const rateLimitConfigs = {
   }),
 
   // Very strict rate limit for authentication endpoints
-  auth: rateLimit({
+  auth: _rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // limit each IP to 5 login attempts per windowMs
     message: {
@@ -82,7 +82,7 @@ const rateLimitConfigs = {
   }),
 
   // File upload rate limiting
-  upload: rateLimit({
+  upload: _rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 20, // limit each IP to 20 uploads per hour
     message: {
@@ -101,7 +101,7 @@ const rateLimitConfigs = {
   }),
 
   // API key generation rate limiting
-  apiKey: rateLimit({
+  apiKey: _rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 3, // limit each IP to 3 API key generations per hour
     message: {
@@ -122,7 +122,7 @@ const rateLimitConfigs = {
 
 // Custom rate limiter for specific endpoints
 const createCustomRateLimit = (windowMs, max, message) => {
-  return rateLimit({
+  return _rateLimit({
     windowMs,
     max,
     message: {
@@ -143,7 +143,7 @@ const createCustomRateLimit = (windowMs, max, message) => {
 
 // Rate limiter that considers user role
 const createRoleBasedRateLimit = (configs) => {
-  return rateLimit({
+  return _rateLimit({
     windowMs: configs.windowMs,
     max: (req) => {
       // Different limits based on user role
@@ -177,12 +177,12 @@ const createRoleBasedRateLimit = (configs) => {
 
 // Rate limiter for tenant-specific operations
 const createTenantRateLimit = (windowMs, max, message) => {
-  return rateLimit({
+  return _rateLimit({
     windowMs,
     max,
     keyGenerator: (req) => {
       // Rate limit by tenant + IP combination
-      return `${req.tenant?.id || 'no-tenant'}-${req.ip}`;
+      return `${req.tenant?._id || 'no-tenant'}-${req.ip}`;
     },
     message: {
       success: false,

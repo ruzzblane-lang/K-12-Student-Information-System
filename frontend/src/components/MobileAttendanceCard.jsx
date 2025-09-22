@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MobileTouchHandler from './MobileTouchHandler';
 
-const MobileAttendanceCard = ({ student, onAttendanceChange, date, initialStatus = 'present' }) => {
+const MobileAttendanceCard = ({ _student, onAttendanceChange, date, initialStatus = 'present' }) => {
   const [attendanceStatus, setAttendanceStatus] = useState(initialStatus);
   const [isPressed, setIsPressed] = useState(false);
 
@@ -15,7 +15,7 @@ const MobileAttendanceCard = ({ student, onAttendanceChange, date, initialStatus
   const handleStatusChange = (newStatus) => {
     setAttendanceStatus(newStatus);
     if (onAttendanceChange) {
-      onAttendanceChange(student.id, newStatus, date);
+      onAttendanceChange(_student._id, newStatus, date);
     }
   };
 
@@ -61,16 +61,16 @@ const MobileAttendanceCard = ({ student, onAttendanceChange, date, initialStatus
             <div className="flex items-center space-x-3 flex-1 min-w-0">
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-gray-600 font-medium text-sm">
-                  {student.first_name?.[0]}{student.last_name?.[0]}
+                  {_student.first_name?.[0]}{_student.last_name?.[0]}
                 </span>
               </div>
               
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-medium text-gray-900 truncate">
-                  {student.first_name} {student.last_name}
+                  {_student.first_name} {_student.last_name}
                 </h4>
                 <p className="text-xs text-gray-500 truncate">
-                  ID: {student.student_id}
+                  ID: {_student.student_id}
                 </p>
               </div>
             </div>

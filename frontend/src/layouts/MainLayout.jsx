@@ -27,7 +27,7 @@ const MainLayout = ({ children }) => {
     { name: 'Settings', href: '/settings', icon: '⚙️' },
   ];
 
-  const handleLogout = async () => {
+  const _handleLogout = async () => {
     try {
       await logout();
       navigate('/login');

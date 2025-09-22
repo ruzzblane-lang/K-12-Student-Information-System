@@ -20,9 +20,9 @@ describe('Student API', () => {
       last_name: 'User'
     });
 
-    // Create test student
+    // Create test _student
     testStudent = await Student.create({
-      user_id: testUser.id,
+      user_id: testUser._id,
       student_id: 'STU001',
       enrollment_date: new Date(),
       status: 'active',
@@ -49,9 +49,9 @@ describe('Student API', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toBeInstanceOf(Array);
-      expect(response.body.pagination).toBeDefined();
+      expect(response._body.success).toBe(true);
+      expect(response._body.data).toBeInstanceOf(Array);
+      expect(response._body.pagination).toBeDefined();
     });
 
     it('should filter students by status', async () => {
@@ -60,8 +60,8 @@ describe('Student API', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.every(student => student.status === 'active')).toBe(true);
+      expect(response._body.success).toBe(true);
+      expect(response._body.data.every(_student => _student.status === 'active')).toBe(true);
     });
 
     it('should search students by name', async () => {
@@ -70,37 +70,37 @@ describe('Student API', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
+      expect(response._body.success).toBe(true);
     });
   });
 
-  describe('GET /api/students/:id', () => {
-    it('should return student by ID', async () => {
+  describe('GET /api/students/:_id', () => {
+    it('should return _student by ID', async () => {
       const response = await request(app)
-        .get(`/api/students/${testStudent.id}`)
+        .get(`/api/students/${testStudent._id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.id).toBe(testStudent.id);
-      expect(response.body.data.User).toBeDefined();
+      expect(response._body.success).toBe(true);
+      expect(response._body.data._id).toBe(testStudent._id);
+      expect(response._body.data.User).toBeDefined();
     });
 
-    it('should return 404 for non-existent student', async () => {
+    it('should return 404 for non-existent _student', async () => {
       const response = await request(app)
-        .get('/api/students/non-existent-id')
+        .get('/api/students/non-existent-_id')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.code).toBe('STUDENT_NOT_FOUND');
+      expect(response._body.success).toBe(false);
+      expect(response._body.error.code).toBe('STUDENT_NOT_FOUND');
     });
   });
 
   describe('POST /api/students', () => {
-    it('should create new student', async () => {
+    it('should create new _student', async () => {
       const newStudentData = {
-        user_id: testUser.id,
+        user_id: testUser._id,
         student_id: 'STU002',
         enrollment_date: new Date().toISOString(),
         status: 'active',
@@ -114,8 +114,8 @@ describe('Student API', () => {
         .send(newStudentData)
         .expect(201);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.student_id).toBe('STU002');
+      expect(response._body.success).toBe(true);
+      expect(response._body.data.student_id).toBe('STU002');
     });
 
     it('should return validation error for invalid data', async () => {
@@ -130,108 +130,108 @@ describe('Student API', () => {
         .send(invalidData)
         .expect(400);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+      expect(response._body.success).toBe(false);
+      expect(response._body.error.code).toBe('VALIDATION_ERROR');
     });
   });
 
-  describe('PUT /api/students/:id', () => {
-    it('should update student', async () => {
+  describe('PUT /api/students/:_id', () => {
+    it('should update _student', async () => {
       const updateData = {
         status: 'graduated',
         emergency_contact_phone: '+1234567892'
       };
 
       const response = await request(app)
-        .put(`/api/students/${testStudent.id}`)
+        .put(`/api/students/${testStudent._id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send(updateData)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.status).toBe('graduated');
+      expect(response._body.success).toBe(true);
+      expect(response._body.data.status).toBe('graduated');
     });
 
-    it('should return 404 for non-existent student', async () => {
+    it('should return 404 for non-existent _student', async () => {
       const response = await request(app)
-        .put('/api/students/non-existent-id')
+        .put('/api/students/non-existent-_id')
         .set('Authorization', `Bearer ${authToken}`)
         .send({ status: 'active' })
         .expect(404);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.code).toBe('STUDENT_NOT_FOUND');
+      expect(response._body.success).toBe(false);
+      expect(response._body.error.code).toBe('STUDENT_NOT_FOUND');
     });
   });
 
-  describe('DELETE /api/students/:id', () => {
-    it('should delete student', async () => {
+  describe('DELETE /api/students/:_id', () => {
+    it('should delete _student', async () => {
       const response = await request(app)
-        .delete(`/api/students/${testStudent.id}`)
+        .delete(`/api/students/${testStudent._id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
+      expect(response._body.success).toBe(true);
     });
 
-    it('should return 404 for non-existent student', async () => {
+    it('should return 404 for non-existent _student', async () => {
       const response = await request(app)
-        .delete('/api/students/non-existent-id')
+        .delete('/api/students/non-existent-_id')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.code).toBe('STUDENT_NOT_FOUND');
+      expect(response._body.success).toBe(false);
+      expect(response._body.error.code).toBe('STUDENT_NOT_FOUND');
     });
   });
 
-  describe('GET /api/students/:id/grades', () => {
-    it('should return student grades', async () => {
+  describe('GET /api/students/:_id/grades', () => {
+    it('should return _student grades', async () => {
       const response = await request(app)
-        .get(`/api/students/${testStudent.id}/grades`)
+        .get(`/api/students/${testStudent._id}/grades`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toBeInstanceOf(Array);
+      expect(response._body.success).toBe(true);
+      expect(response._body.data).toBeInstanceOf(Array);
     });
   });
 
-  describe('GET /api/students/:id/attendance', () => {
-    it('should return student attendance', async () => {
+  describe('GET /api/students/:_id/attendance', () => {
+    it('should return _student attendance', async () => {
       const response = await request(app)
-        .get(`/api/students/${testStudent.id}/attendance`)
+        .get(`/api/students/${testStudent._id}/attendance`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toBeInstanceOf(Array);
+      expect(response._body.success).toBe(true);
+      expect(response._body.data).toBeInstanceOf(Array);
     });
   });
 
-  describe('GET /api/students/:id/enrollments', () => {
-    it('should return student enrollments', async () => {
+  describe('GET /api/students/:_id/enrollments', () => {
+    it('should return _student enrollments', async () => {
       const response = await request(app)
-        .get(`/api/students/${testStudent.id}/enrollments`)
+        .get(`/api/students/${testStudent._id}/enrollments`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toBeInstanceOf(Array);
+      expect(response._body.success).toBe(true);
+      expect(response._body.data).toBeInstanceOf(Array);
     });
   });
 
-  describe('POST /api/students/:id/enroll', () => {
-    it('should enroll student in course section', async () => {
+  describe('POST /api/students/:_id/enroll', () => {
+    it('should enroll _student in course section', async () => {
       // This would require creating a course section first
       // For now, we'll test the endpoint structure
       const response = await request(app)
-        .post(`/api/students/${testStudent.id}/enroll`)
+        .post(`/api/students/${testStudent._id}/enroll`)
         .set('Authorization', `Bearer ${authToken}`)
-        .send({ course_section_id: 'test-section-id' })
+        .send({ _course_section_id: 'test-section-_id' })
         .expect(400); // Expected to fail due to non-existent course section
 
-      expect(response.body.success).toBe(false);
+      expect(response._body.success).toBe(false);
     });
   });
 
@@ -241,25 +241,25 @@ describe('Student API', () => {
         .get('/api/students')
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.code).toBe('AUTHENTICATION_REQUIRED');
+      expect(response._body.success).toBe(false);
+      expect(response._body.error.code).toBe('AUTHENTICATION_REQUIRED');
     });
 
     it('should require admin role for creation', async () => {
       // Mock non-admin user
       jest.doMock('../middleware/auth', () => ({
-        verifyToken: (req, res, next) => {
-          req.user = { id: 1, role: 'student' }; // Use a fixed ID since testUser might not be available yet
-          next();
+        verifyToken: (req, res, _next) => {
+          req.user = { _id: 1, role: '_student' }; // Use a fixed ID since testUser might not be available yet
+          _next();
         },
-        requireRole: (roles) => (req, res, next) => {
+        requireRole: (roles) => (req, res, _next) => {
           if (!roles.includes(req.user.role)) {
             return res.status(403).json({
               success: false,
               error: { code: 'AUTH_INSUFFICIENT_PERMISSIONS' }
             });
           }
-          next();
+          _next();
         }
       }));
 
@@ -267,15 +267,15 @@ describe('Student API', () => {
         .post('/api/students')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
-          user_id: testUser.id,
+          user_id: testUser._id,
           student_id: 'STU004',
           enrollment_date: new Date().toISOString(),
           status: 'active'
         })
         .expect(403);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.code).toBe('AUTH_INSUFFICIENT_PERMISSIONS');
+      expect(response._body.success).toBe(false);
+      expect(response._body.error.code).toBe('AUTH_INSUFFICIENT_PERMISSIONS');
     });
   });
 });

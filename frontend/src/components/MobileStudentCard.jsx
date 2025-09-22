@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MobileTouchHandler from './MobileTouchHandler';
 
-const MobileStudentCard = ({ student, onEdit, onDelete, onView }) => {
+const MobileStudentCard = ({ _student, onEdit, onDelete, onView }) => {
   const [showActions, setShowActions] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
@@ -20,9 +20,9 @@ const MobileStudentCard = ({ student, onEdit, onDelete, onView }) => {
 
   const handleQuickAction = (action) => {
     setShowActions(false);
-    if (action === 'edit' && onEdit) onEdit(student);
-    if (action === 'delete' && onDelete) onDelete(student.id);
-    if (action === 'view' && onView) onView(student);
+    if (action === 'edit' && onEdit) onEdit(_student);
+    if (action === 'delete' && onDelete) onDelete(_student._id);
+    if (action === 'view' && onView) onView(_student);
   };
 
   const getStatusColor = (status) => {
@@ -51,14 +51,14 @@ const MobileStudentCard = ({ student, onEdit, onDelete, onView }) => {
           className="p-4 cursor-pointer"
           onTouchStart={() => setIsPressed(true)}
           onTouchEnd={() => setIsPressed(false)}
-          onClick={() => onView && onView(student)}
+          onClick={() => onView && onView(_student)}
         >
           <div className="flex items-center space-x-3">
             {/* Avatar */}
             <div className="flex-shrink-0">
               <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-lg">
-                  {student.first_name?.[0]}{student.last_name?.[0]}
+                  {_student.first_name?.[0]}{_student.last_name?.[0]}
                 </span>
               </div>
             </div>
@@ -66,20 +66,20 @@ const MobileStudentCard = ({ student, onEdit, onDelete, onView }) => {
             {/* Student Info */}
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-medium text-gray-900 truncate">
-                {student.first_name} {student.last_name}
+                {_student.first_name} {_student.last_name}
               </h3>
               <p className="text-sm text-gray-500 truncate">
-                ID: {student.student_id}
+                ID: {_student.student_id}
               </p>
               <p className="text-sm text-gray-500 truncate">
-                Grade {student.grade}
+                Grade {_student.grade}
               </p>
             </div>
 
             {/* Status Badge */}
             <div className="flex-shrink-0">
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
-                {student.status}
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(_student.status)}`}>
+                {_student.status}
               </span>
             </div>
           </div>
@@ -88,11 +88,11 @@ const MobileStudentCard = ({ student, onEdit, onDelete, onView }) => {
           <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
             <div>
               <span className="font-medium">Email:</span>
-              <p className="truncate">{student.email || 'N/A'}</p>
+              <p className="truncate">{_student.email || 'N/A'}</p>
             </div>
             <div>
               <span className="font-medium">Phone:</span>
-              <p className="truncate">{student.phone || 'N/A'}</p>
+              <p className="truncate">{_student.phone || 'N/A'}</p>
             </div>
           </div>
         </div>

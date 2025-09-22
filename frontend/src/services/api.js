@@ -45,89 +45,89 @@ export const authService = {
   register: (userData) => api.post('/auth/register', userData),
   logout: () => api.post('/auth/logout'),
   refresh: () => api.post('/auth/refresh'),
-  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-  resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
+  forgotPassword: (email) => api.post('/auth/forgot-_password', { email }),
+  resetPassword: (token, _password) => api.post('/auth/reset-_password', { token, _password }),
 };
 
 // Students API
 export const studentService = {
   getAllStudents: (params) => api.get('/students', { params }),
-  getStudentById: (id) => api.get(`/students/${id}`),
+  getStudentById: (_id) => api.get(`/students/${_id}`),
   createStudent: (data) => api.post('/students', data),
-  updateStudent: (id, data) => api.put(`/students/${id}`, data),
-  deleteStudent: (id) => api.delete(`/students/${id}`),
-  getStudentGrades: (id, termId) => api.get(`/students/${id}/grades`, { params: { term_id: termId } }),
-  getStudentAttendance: (id, params) => api.get(`/students/${id}/attendance`, { params }),
-  getStudentEnrollments: (id, termId) => api.get(`/students/${id}/enrollments`, { params: { term_id: termId } }),
-  enrollStudent: (id, courseSectionId) => api.post(`/students/${id}/enroll`, { course_section_id: courseSectionId }),
-  unenrollStudent: (id, enrollmentId) => api.delete(`/students/${id}/unenroll/${enrollmentId}`),
+  updateStudent: (_id, data) => api.put(`/students/${_id}`, data),
+  deleteStudent: (_id) => api.delete(`/students/${_id}`),
+  getStudentGrades: (_id, termId) => api.get(`/students/${_id}/grades`, { params: { _term_id: termId } }),
+  getStudentAttendance: (_id, params) => api.get(`/students/${_id}/attendance`, { params }),
+  getStudentEnrollments: (_id, termId) => api.get(`/students/${_id}/enrollments`, { params: { _term_id: termId } }),
+  enrollStudent: (_id, courseSectionId) => api.post(`/students/${_id}/enroll`, { _course_section_id: courseSectionId }),
+  unenrollStudent: (_id, _enrollmentId) => api.delete(`/students/${_id}/unenroll/${_enrollmentId}`),
 };
 
 // Teachers API
 export const teacherService = {
   getAllTeachers: (params) => api.get('/teachers', { params }),
-  getTeacherById: (id) => api.get(`/teachers/${id}`),
+  getTeacherById: (_id) => api.get(`/teachers/${_id}`),
   createTeacher: (data) => api.post('/teachers', data),
-  updateTeacher: (id, data) => api.put(`/teachers/${id}`, data),
-  deleteTeacher: (id) => api.delete(`/teachers/${id}`),
-  getTeacherCourses: (id) => api.get(`/teachers/${id}/courses`),
+  updateTeacher: (_id, data) => api.put(`/teachers/${_id}`, data),
+  deleteTeacher: (_id) => api.delete(`/teachers/${_id}`),
+  getTeacherCourses: (_id) => api.get(`/teachers/${_id}/courses`),
 };
 
 // Courses API
 export const courseService = {
   getAllCourses: (params) => api.get('/courses', { params }),
-  getCourseById: (id) => api.get(`/courses/${id}`),
+  getCourseById: (_id) => api.get(`/courses/${_id}`),
   createCourse: (data) => api.post('/courses', data),
-  updateCourse: (id, data) => api.put(`/courses/${id}`, data),
-  deleteCourse: (id) => api.delete(`/courses/${id}`),
-  getCourseSections: (id) => api.get(`/courses/${id}/sections`),
+  updateCourse: (_id, data) => api.put(`/courses/${_id}`, data),
+  deleteCourse: (_id) => api.delete(`/courses/${_id}`),
+  getCourseSections: (_id) => api.get(`/courses/${_id}/sections`),
 };
 
 // Course Sections API
 export const courseSectionService = {
   getAllCourseSections: (params) => api.get('/course-sections', { params }),
-  getCourseSectionById: (id) => api.get(`/course-sections/${id}`),
+  getCourseSectionById: (_id) => api.get(`/course-sections/${_id}`),
   createCourseSection: (data) => api.post('/course-sections', data),
-  updateCourseSection: (id, data) => api.put(`/course-sections/${id}`, data),
-  deleteCourseSection: (id) => api.delete(`/course-sections/${id}`),
-  getSectionStudents: (id) => api.get(`/course-sections/${id}/students`),
-  getSectionAssignments: (id) => api.get(`/course-sections/${id}/assignments`),
+  updateCourseSection: (_id, data) => api.put(`/course-sections/${_id}`, data),
+  deleteCourseSection: (_id) => api.delete(`/course-sections/${_id}`),
+  getSectionStudents: (_id) => api.get(`/course-sections/${_id}/students`),
+  getSectionAssignments: (_id) => api.get(`/course-sections/${_id}/assignments`),
 };
 
 // Assignments API
 export const assignmentService = {
   getAllAssignments: (params) => api.get('/assignments', { params }),
-  getAssignmentById: (id) => api.get(`/assignments/${id}`),
+  getAssignmentById: (_id) => api.get(`/assignments/${_id}`),
   createAssignment: (data) => api.post('/assignments', data),
-  updateAssignment: (id, data) => api.put(`/assignments/${id}`, data),
-  deleteAssignment: (id) => api.delete(`/assignments/${id}`),
+  updateAssignment: (_id, data) => api.put(`/assignments/${_id}`, data),
+  deleteAssignment: (_id) => api.delete(`/assignments/${_id}`),
 };
 
 // Grades API
 export const gradeService = {
   getAllGrades: (params) => api.get('/grades', { params }),
-  getGradeById: (id) => api.get(`/grades/${id}`),
+  getGradeById: (_id) => api.get(`/grades/${_id}`),
   createGrade: (data) => api.post('/grades', data),
-  updateGrade: (id, data) => api.put(`/grades/${id}`, data),
-  deleteGrade: (id) => api.delete(`/grades/${id}`),
+  updateGrade: (_id, data) => api.put(`/grades/${_id}`, data),
+  deleteGrade: (_id) => api.delete(`/grades/${_id}`),
 };
 
 // Attendance API
 export const attendanceService = {
   getAllAttendance: (params) => api.get('/attendance', { params }),
-  getAttendanceById: (id) => api.get(`/attendance/${id}`),
+  getAttendanceById: (_id) => api.get(`/attendance/${_id}`),
   createAttendance: (data) => api.post('/attendance', data),
-  updateAttendance: (id, data) => api.put(`/attendance/${id}`, data),
-  deleteAttendance: (id) => api.delete(`/attendance/${id}`),
+  updateAttendance: (_id, data) => api.put(`/attendance/${_id}`, data),
+  deleteAttendance: (_id) => api.delete(`/attendance/${_id}`),
 };
 
 // Enrollments API
 export const enrollmentService = {
   getAllEnrollments: (params) => api.get('/enrollments', { params }),
-  getEnrollmentById: (id) => api.get(`/enrollments/${id}`),
+  getEnrollmentById: (_id) => api.get(`/enrollments/${_id}`),
   createEnrollment: (data) => api.post('/enrollments', data),
-  updateEnrollment: (id, data) => api.put(`/enrollments/${id}`, data),
-  deleteEnrollment: (id) => api.delete(`/enrollments/${id}`),
+  updateEnrollment: (_id, data) => api.put(`/enrollments/${_id}`, data),
+  deleteEnrollment: (_id) => api.delete(`/enrollments/${_id}`),
 };
 
 // Academic Years & Terms API
@@ -141,19 +141,19 @@ export const academicService = {
 // Announcements API
 export const announcementService = {
   getAllAnnouncements: (params) => api.get('/announcements', { params }),
-  getAnnouncementById: (id) => api.get(`/announcements/${id}`),
+  getAnnouncementById: (_id) => api.get(`/announcements/${_id}`),
   createAnnouncement: (data) => api.post('/announcements', data),
-  updateAnnouncement: (id, data) => api.put(`/announcements/${id}`, data),
-  deleteAnnouncement: (id) => api.delete(`/announcements/${id}`),
+  updateAnnouncement: (_id, data) => api.put(`/announcements/${_id}`, data),
+  deleteAnnouncement: (_id) => api.delete(`/announcements/${_id}`),
 };
 
 // Messages API
 export const messageService = {
   getAllMessages: (params) => api.get('/messages', { params }),
-  getMessageById: (id) => api.get(`/messages/${id}`),
+  getMessageById: (_id) => api.get(`/messages/${_id}`),
   createMessage: (data) => api.post('/messages', data),
-  markAsRead: (id) => api.put(`/messages/${id}/read`),
-  deleteMessage: (id) => api.delete(`/messages/${id}`),
+  markAsRead: (_id) => api.put(`/messages/${_id}/read`),
+  deleteMessage: (_id) => api.delete(`/messages/${_id}`),
 };
 
 // File Upload API
@@ -167,10 +167,10 @@ export const uploadService = {
       },
     });
   },
-  uploadDocument: (file, studentId) => {
+  uploadDocument: (file, _studentId) => {
     const formData = new FormData();
     formData.append('document', file);
-    formData.append('student_id', studentId);
+    formData.append('student_id', _studentId);
     return api.post('/upload/documents', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -182,11 +182,11 @@ export const uploadService = {
 // Users API
 export const userService = {
   getAllUsers: (params) => api.get('/users', { params }),
-  getUserById: (id) => api.get(`/users/${id}`),
-  updateUser: (id, data) => api.put(`/users/${id}`, data),
-  deleteUser: (id) => api.delete(`/users/${id}`),
+  getUserById: (_id) => api.get(`/users/${_id}`),
+  updateUser: (_id, data) => api.put(`/users/${_id}`, data),
+  deleteUser: (_id) => api.delete(`/users/${_id}`),
   updateProfile: (data) => api.put('/users/profile', data),
-  changePassword: (data) => api.put('/users/change-password', data),
+  changePassword: (data) => api.put('/users/change-_password', data),
 };
 
 export default api;

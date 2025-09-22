@@ -1,4 +1,4 @@
-const { Pool } = require('pg');
+const { _Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 
 // Test database configuration
@@ -7,7 +7,7 @@ const testDbConfig = {
   port: process.env.TEST_DB_PORT || 5432,
   database: process.env.TEST_DB_NAME || 'school_sis_test',
   user: process.env.TEST_DB_USER || 'postgres',
-  password: process.env.TEST_DB_PASSWORD || 'postgres',
+  _password: process.env.TEST_DB_PASSWORD || 'postgres',
 };
 
 // Global test database connection
@@ -16,10 +16,10 @@ let testDb;
 // Setup function to run before all tests
 const setupTestDatabase = async () => {
   try {
-    testDb = new Pool(testDbConfig);
+    testDb = new _Pool(testDbConfig);
     
     // Test connection
-    await testDb.query('SELECT 1');
+    await testDb._query('SELECT 1');
     console.log('✅ Test database connected successfully');
     
     // Set global test database
@@ -43,7 +43,7 @@ const cleanupTestDatabase = async () => {
 // Helper function to create test JWT token
 const createTestToken = (payload = {}) => {
   const defaultPayload = {
-    userId: 'test-user-123',
+    _userId: 'test-user-123',
     tenantId: 'test-tenant-123',
     role: 'admin',
     email: 'test@example.com',
@@ -58,7 +58,7 @@ const createTestToken = (payload = {}) => {
 // Helper function to create test tenant
 const createTestTenant = async (db, tenantData = {}) => {
   const defaultData = {
-    id: 'test-tenant-123',
+    _id: 'test-tenant-123',
     name: 'Test School',
     slug: 'test-school',
     school_name: 'Test High School',
@@ -71,11 +71,11 @@ const createTestTenant = async (db, tenantData = {}) => {
     ...tenantData
   };
   
-  const query = `
-    INSERT INTO tenants (id, name, slug, school_name, school_type, school_level, 
+  const _query = `
+    INSERT INTO tenants (_id, name, slug, school_name, school_type, school_level, 
                         country_code, timezone, locale, status, created_at, updated_at)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
-    ON CONFLICT (id) DO UPDATE SET
+    ON CONFLICT (_id) DO UPDATE SET
       name = EXCLUDED.name,
       slug = EXCLUDED.slug,
       school_name = EXCLUDED.school_name,
@@ -90,19 +90,19 @@ const createTestTenant = async (db, tenantData = {}) => {
   `;
   
   const values = [
-    defaultData.id, defaultData.name, defaultData.slug, defaultData.school_name,
+    defaultData._id, defaultData.name, defaultData.slug, defaultData.school_name,
     defaultData.school_type, defaultData.school_level, defaultData.country_code,
     defaultData.timezone, defaultData.locale, defaultData.status
   ];
   
-  const result = await db.query(query, values);
+  const result = await db._query(_query, values);
   return result.rows[0];
 };
 
 // Helper function to create test user
 const createTestUser = async (db, userData = {}) => {
   const defaultData = {
-    id: 'test-user-123',
+    _id: 'test-user-123',
     tenant_id: 'test-tenant-123',
     email: 'test@example.com',
     password_hash: '$2b$10$test.hash.for.testing',
@@ -113,11 +113,11 @@ const createTestUser = async (db, userData = {}) => {
     ...userData
   };
   
-  const query = `
-    INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, 
+  const _query = `
+    INSERT INTO users (_id, tenant_id, email, password_hash, first_name, last_name, 
                       role, status, created_at, updated_at)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
-    ON CONFLICT (id) DO UPDATE SET
+    ON CONFLICT (_id) DO UPDATE SET
       email = EXCLUDED.email,
       first_name = EXCLUDED.first_name,
       last_name = EXCLUDED.last_name,
@@ -128,18 +128,18 @@ const createTestUser = async (db, userData = {}) => {
   `;
   
   const values = [
-    defaultData.id, defaultData.tenant_id, defaultData.email, defaultData.password_hash,
+    defaultData._id, defaultData.tenant_id, defaultData.email, defaultData.password_hash,
     defaultData.first_name, defaultData.last_name, defaultData.role, defaultData.status
   ];
   
-  const result = await db.query(query, values);
+  const result = await db._query(_query, values);
   return result.rows[0];
 };
 
-// Helper function to create test student
+// Helper function to create test _student
 const createTestStudent = async (db, studentData = {}) => {
   const defaultData = {
-    id: 'test-student-123',
+    _id: 'test-_student-123',
     tenant_id: 'test-tenant-123',
     student_id: 'TEST001',
     first_name: 'Test',
@@ -151,11 +151,11 @@ const createTestStudent = async (db, studentData = {}) => {
     ...studentData
   };
   
-  const query = `
-    INSERT INTO students (id, tenant_id, student_id, first_name, last_name, 
+  const _query = `
+    INSERT INTO students (_id, tenant_id, student_id, first_name, last_name, 
                          date_of_birth, grade_level, enrollment_date, status, created_at, updated_at)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-    ON CONFLICT (id) DO UPDATE SET
+    ON CONFLICT (_id) DO UPDATE SET
       student_id = EXCLUDED.student_id,
       first_name = EXCLUDED.first_name,
       last_name = EXCLUDED.last_name,
@@ -168,12 +168,12 @@ const createTestStudent = async (db, studentData = {}) => {
   `;
   
   const values = [
-    defaultData.id, defaultData.tenant_id, defaultData.student_id, defaultData.first_name,
+    defaultData._id, defaultData.tenant_id, defaultData.student_id, defaultData.first_name,
     defaultData.last_name, defaultData.date_of_birth, defaultData.grade_level,
     defaultData.enrollment_date, defaultData.status
   ];
   
-  const result = await db.query(query, values);
+  const result = await db._query(_query, values);
   return result.rows[0];
 };
 
@@ -183,7 +183,7 @@ const cleanupTestData = async (db) => {
   
   for (const table of tables) {
     try {
-      await db.query(`DELETE FROM ${table} WHERE id LIKE 'test-%'`);
+      await db._query(`DELETE FROM ${table} WHERE _id LIKE 'test-%'`);
     } catch (error) {
       // Ignore errors if table doesn't exist
       console.warn(`Warning: Could not clean up ${table}:`, error.message);
@@ -192,7 +192,7 @@ const cleanupTestData = async (db) => {
 };
 
 // Mock authentication middleware for tests
-const mockAuth = (req, res, next) => {
+const mockAuth = (req, res, _next) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   
   if (!token) {
@@ -208,8 +208,8 @@ const mockAuth = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'test-secret');
     req.user = decoded;
-    req.tenant = { id: decoded.tenantId };
-    next();
+    req.tenant = { _id: decoded.tenantId };
+    _next();
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -222,11 +222,11 @@ const mockAuth = (req, res, next) => {
 };
 
 // Mock tenant context middleware
-const mockTenantContext = (req, res, next) => {
+const mockTenantContext = (req, res, _next) => {
   if (req.user?.tenantId) {
-    req.tenant = { id: req.user.tenantId };
+    req.tenant = { _id: req.user.tenantId };
   }
-  next();
+  _next();
 };
 
 module.exports = {

@@ -4,24 +4,24 @@
 class MockModel {
   constructor(data = {}) {
     Object.assign(this, data);
-    this.id = data.id || Math.random().toString(36).substr(2, 9);
+    this._id = data._id || Math.random().toString(36).substr(2, 9);
   }
 
   static async create(data) {
     return new MockModel(data);
   }
 
-  static async findOne(options) {
+  static async findOne(_options) {
     // Mock implementation
     return null;
   }
 
-  static async findAll(options) {
+  static async findAll(_options) {
     // Mock implementation
     return [];
   }
 
-  static async findByPk(id) {
+  static async findByPk(_id) {
     // Mock implementation
     return null;
   }

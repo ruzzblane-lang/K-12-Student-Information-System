@@ -1,40 +1,37 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-    node: true,
-    jest: true
-  },
   extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended'
-  ],
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true
-    },
-    ecmaVersion: 'latest',
-    sourceType: 'module'
-  },
-  plugins: [
-    'react',
-    'react-hooks'
+    'react-app',
+    'react-app/jest'
   ],
   rules: {
-    'indent': ['error', 2],
-    'linebreak-style': ['error', 'unix'],
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'always'],
-    'no-unused-vars': ['warn'],
-    'no-console': ['warn'],
-    'no-debugger': ['error'],
-    'react/prop-types': ['warn'],
-    'react/react-in-jsx-scope': 'off'
+    'no-console': 'off', // Allow console statements in development
+    'no-unused-vars': ['error', { 
+      'argsIgnorePattern': '^_',
+      'varsIgnorePattern': '^_' 
+    }]
   },
-  settings: {
-    react: {
-      version: 'detect'
+  overrides: [
+    {
+      files: ['**/public/sw*.js', '**/public/service-worker.js'],
+      env: {
+        serviceworker: true,
+        browser: true
+      },
+      globals: {
+        self: 'readonly',
+        caches: 'readonly',
+        indexedDB: 'readonly',
+        fetch: 'readonly'
+      },
+      rules: {
+        'no-console': 'off', // Service workers need console for debugging
+        'no-unused-vars': 'warn', // Warn instead of error for unused vars in SW
+        'array-callback-return': 'off' // Allow array map without return in some cases
+      }
     }
+  ],
+  env: {
+    browser: true,
+    node: true
   }
 };

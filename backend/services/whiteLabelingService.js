@@ -10,16 +10,16 @@
  * - Real-time preview system
  */
 
-const { Pool } = require('pg');
+const { _Pool } = require('pg');
 const fs = require('fs').promises;
-const path = require('path');
+const _path = require('_path');
 const sharp = require('sharp');
 const crypto = require('crypto');
 
 class WhiteLabelingService {
   constructor(db) {
     this.db = db;
-    this.uploadPath = process.env.UPLOAD_PATH || path.join(__dirname, '../uploads');
+    this.uploadPath = process.env.UPLOAD_PATH || _path.join(__dirname, '../uploads');
     this.cdnBaseUrl = process.env.CDN_BASE_URL || 'http://localhost:3000/uploads';
     this.maxFileSize = 5 * 1024 * 1024; // 5MB
     this.allowedImageTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'];
@@ -29,11 +29,11 @@ class WhiteLabelingService {
   /**
    * Get complete tenant branding configuration
    */
-  async getTenantBranding(tenantId, userId = null) {
+  async getTenantBranding(tenantId, _userId = null) {
     try {
-      const query = `
+      const _query = `
         SELECT 
-          t.id, t.name, t.slug, t.school_name, t.domain,
+          t._id, t.name, t.slug, t.school_name, t.domain,
           t.logo_url, t.favicon_url, t.background_image_url,
           t.primary_color, t.secondary_color, t.header_background_color,
           t.footer_background_color, t.text_color, t.link_color,
@@ -53,10 +53,10 @@ class WhiteLabelingService {
           t.ssl_certificate_expires_at, t.custom_css,
           t.created_at, t.updated_at
         FROM tenants t
-        WHERE t.id = $1
+        WHERE t._id = $1
       `;
 
-      const result = await this.db.query(query, [tenantId]);
+      const result = await this.db._query(_query, [tenantId]);
       
       if (result.rows.length === 0) {
         throw new Error('Tenant not found');
@@ -81,7 +81,7 @@ class WhiteLabelingService {
 
       // Build comprehensive branding object
       const branding = {
-        tenant_id: tenant.id,
+        tenant_id: tenant._id,
         name: tenant.name,
         slug: tenant.slug,
         school_name: tenant.school_name,
@@ -121,7 +121,7 @@ class WhiteLabelingService {
           footer_text: tenant.custom_footer_text || `© ${new Date().getFullYear()} ${tenant.school_name}. All rights reserved.`,
           header_text: tenant.custom_header_text,
           welcome_message: tenant.custom_welcome_message || `Welcome to ${tenant.school_name} Student Portal!`,
-          login_message: tenant.custom_login_message || 'Please sign in to access your student account.'
+          login_message: tenant.custom_login_message || 'Please sign in to access your _student account.'
         },
         
         // Advanced Features
@@ -174,7 +174,7 @@ class WhiteLabelingService {
   /**
    * Update tenant branding configuration
    */
-  async updateTenantBranding(tenantId, brandingData, userId) {
+  async updateTenantBranding(tenantId, brandingData, _userId) {
     try {
       const {
         colors,
@@ -187,7 +187,7 @@ class WhiteLabelingService {
         assets
       } = brandingData;
 
-      // Build update query dynamically
+      // Build update _query dynamically
       const updateFields = [];
       const updateValues = [];
       let paramIndex = 1;
@@ -401,18 +401,18 @@ class WhiteLabelingService {
         throw new Error('No valid fields to update');
       }
 
-      const query = `
+      const _query = `
         UPDATE tenants 
         SET ${updateFields.join(', ')}
-        WHERE id = $${paramIndex}
+        WHERE _id = $${paramIndex}
       `;
 
       updateValues.push(tenantId);
 
-      await this.db.query(query, updateValues);
+      await this.db._query(_query, updateValues);
 
       // Log the update
-      await this.logBrandingUpdate(tenantId, userId, 'update', brandingData);
+      await this.logBrandingUpdate(tenantId, _userId, 'update', brandingData);
 
       return true;
 
@@ -457,7 +457,7 @@ class WhiteLabelingService {
       // Generate base styles
       const baseStyles = `
 /* Base Styles */
-body {
+_body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: var(--text-color);
@@ -629,13 +629,13 @@ a:hover, .link:hover {
       }
 
       // Create upload directory for tenant
-      const tenantUploadDir = path.join(this.uploadPath, 'branding', tenantId);
+      const tenantUploadDir = _path.join(this.uploadPath, 'branding', tenantId);
       await fs.mkdir(tenantUploadDir, { recursive: true });
 
       // Generate unique filename
-      const fileExtension = path.extname(fileName);
+      const fileExtension = _path.extname(fileName);
       const uniqueFileName = `${assetType}_${Date.now()}_${crypto.randomBytes(8).toString('hex')}${fileExtension}`;
-      const filePath = path.join(tenantUploadDir, uniqueFileName);
+      const filePath = _path.join(tenantUploadDir, uniqueFileName);
 
       // Process and save file based on type
       let processedBuffer = fileData;
@@ -736,13 +736,13 @@ a:hover, .link:hover {
       throw new Error(`Unknown asset type: ${assetType}`);
     }
 
-    const query = `
+    const _query = `
       UPDATE tenants 
       SET ${fieldName} = $1, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $2
+      WHERE _id = $2
     `;
 
-    await this.db.query(query, [assetUrl, tenantId]);
+    await this.db._query(_query, [assetUrl, tenantId]);
   }
 
   /**
@@ -751,7 +751,7 @@ a:hover, .link:hover {
   async getThemeTemplates() {
     return [
       {
-        id: 'modern_blue',
+        _id: 'modern_blue',
         name: 'Modern Blue',
         description: 'Clean, professional blue theme',
         preview_url: '/themes/modern_blue/preview.png',
@@ -762,7 +762,7 @@ a:hover, .link:hover {
         }
       },
       {
-        id: 'warm_orange',
+        _id: 'warm_orange',
         name: 'Warm Orange',
         description: 'Friendly, energetic orange theme',
         preview_url: '/themes/warm_orange/preview.png',
@@ -773,7 +773,7 @@ a:hover, .link:hover {
         }
       },
       {
-        id: 'elegant_purple',
+        _id: 'elegant_purple',
         name: 'Elegant Purple',
         description: 'Sophisticated purple theme',
         preview_url: '/themes/elegant_purple/preview.png',
@@ -784,7 +784,7 @@ a:hover, .link:hover {
         }
       },
       {
-        id: 'forest_green',
+        _id: 'forest_green',
         name: 'Forest Green',
         description: 'Natural, calming green theme',
         preview_url: '/themes/forest_green/preview.png',
@@ -795,7 +795,7 @@ a:hover, .link:hover {
         }
       },
       {
-        id: 'corporate_gray',
+        _id: 'corporate_gray',
         name: 'Corporate Gray',
         description: 'Professional, neutral gray theme',
         preview_url: '/themes/corporate_gray/preview.png',
@@ -811,10 +811,10 @@ a:hover, .link:hover {
   /**
    * Apply theme template to tenant
    */
-  async applyThemeTemplate(tenantId, templateId, userId) {
+  async applyThemeTemplate(tenantId, templateId, _userId) {
     try {
       const templates = await this.getThemeTemplates();
-      const template = templates.find(t => t.id === templateId);
+      const template = templates.find(t => t._id === templateId);
 
       if (!template) {
         throw new Error(`Theme template not found: ${templateId}`);
@@ -827,7 +827,7 @@ a:hover, .link:hover {
         }
       };
 
-      await this.updateTenantBranding(tenantId, brandingData, userId);
+      await this.updateTenantBranding(tenantId, brandingData, _userId);
 
       return {
         success: true,
@@ -865,7 +865,7 @@ a:hover, .link:hover {
   /**
    * Reset branding to defaults
    */
-  async resetToDefaults(tenantId, userId) {
+  async resetToDefaults(tenantId, _userId) {
     try {
       const defaultBranding = {
         colors: {
@@ -893,7 +893,7 @@ a:hover, .link:hover {
         custom_css: ''
       };
 
-      await this.updateTenantBranding(tenantId, defaultBranding, userId);
+      await this.updateTenantBranding(tenantId, defaultBranding, _userId);
 
       return true;
 
@@ -926,7 +926,7 @@ a:hover, .link:hover {
   /**
    * Import branding configuration
    */
-  async importBrandingConfig(tenantId, config, overwriteExisting = false, userId) {
+  async importBrandingConfig(tenantId, config, overwriteExisting = false, _userId) {
     try {
       if (!config.branding_config) {
         throw new Error('Invalid configuration format');
@@ -934,7 +934,7 @@ a:hover, .link:hover {
 
       const brandingData = config.branding_config;
 
-      await this.updateTenantBranding(tenantId, brandingData, userId);
+      await this.updateTenantBranding(tenantId, brandingData, _userId);
 
       return {
         success: true,
@@ -953,14 +953,14 @@ a:hover, .link:hover {
    */
   async cacheGeneratedCSS(tenantId, css) {
     try {
-      const cacheDir = path.join(this.uploadPath, 'css', 'cache');
+      const cacheDir = _path.join(this.uploadPath, 'css', 'cache');
       await fs.mkdir(cacheDir, { recursive: true });
 
-      const cacheFile = path.join(cacheDir, `${tenantId}.css`);
+      const cacheFile = _path.join(cacheDir, `${tenantId}.css`);
       await fs.writeFile(cacheFile, css);
 
       // Set cache expiry (1 hour)
-      const expiryFile = path.join(cacheDir, `${tenantId}.expiry`);
+      const expiryFile = _path.join(cacheDir, `${tenantId}.expiry`);
       await fs.writeFile(expiryFile, (Date.now() + 3600000).toString());
 
     } catch (error) {
@@ -972,17 +972,17 @@ a:hover, .link:hover {
   /**
    * Log branding updates for audit trail
    */
-  async logBrandingUpdate(tenantId, userId, action, data) {
+  async logBrandingUpdate(tenantId, _userId, action, data) {
     try {
-      const query = `
+      const _query = `
         INSERT INTO branding_audit_log (
           tenant_id, user_id, action, data, created_at
         ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
       `;
 
-      await this.db.query(query, [
+      await this.db._query(_query, [
         tenantId,
-        userId,
+        _userId,
         action,
         JSON.stringify(data)
       ]);

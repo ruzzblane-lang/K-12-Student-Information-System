@@ -51,7 +51,7 @@ class OfflineStorageService {
   createStores(db) {
     // Students store
     if (!db.objectStoreNames.contains(STORES.STUDENTS)) {
-      const studentsStore = db.createObjectStore(STORES.STUDENTS, { keyPath: 'id' });
+      const studentsStore = db.createObjectStore(STORES.STUDENTS, { keyPath: '_id' });
       studentsStore.createIndex('tenant_id', 'tenant_id', { unique: false });
       studentsStore.createIndex('grade', 'grade', { unique: false });
       studentsStore.createIndex('status', 'status', { unique: false });
@@ -59,21 +59,21 @@ class OfflineStorageService {
 
     // Teachers store
     if (!db.objectStoreNames.contains(STORES.TEACHERS)) {
-      const teachersStore = db.createObjectStore(STORES.TEACHERS, { keyPath: 'id' });
+      const teachersStore = db.createObjectStore(STORES.TEACHERS, { keyPath: '_id' });
       teachersStore.createIndex('tenant_id', 'tenant_id', { unique: false });
       teachersStore.createIndex('department', 'department', { unique: false });
     }
 
     // Classes store
     if (!db.objectStoreNames.contains(STORES.CLASSES)) {
-      const classesStore = db.createObjectStore(STORES.CLASSES, { keyPath: 'id' });
+      const classesStore = db.createObjectStore(STORES.CLASSES, { keyPath: '_id' });
       classesStore.createIndex('tenant_id', 'tenant_id', { unique: false });
       classesStore.createIndex('teacher_id', 'teacher_id', { unique: false });
     }
 
     // Grades store
     if (!db.objectStoreNames.contains(STORES.GRADES)) {
-      const gradesStore = db.createObjectStore(STORES.GRADES, { keyPath: 'id' });
+      const gradesStore = db.createObjectStore(STORES.GRADES, { keyPath: '_id' });
       gradesStore.createIndex('student_id', 'student_id', { unique: false });
       gradesStore.createIndex('class_id', 'class_id', { unique: false });
       gradesStore.createIndex('tenant_id', 'tenant_id', { unique: false });
@@ -81,7 +81,7 @@ class OfflineStorageService {
 
     // Attendance store
     if (!db.objectStoreNames.contains(STORES.ATTENDANCE)) {
-      const attendanceStore = db.createObjectStore(STORES.ATTENDANCE, { keyPath: 'id' });
+      const attendanceStore = db.createObjectStore(STORES.ATTENDANCE, { keyPath: '_id' });
       attendanceStore.createIndex('student_id', 'student_id', { unique: false });
       attendanceStore.createIndex('class_id', 'class_id', { unique: false });
       attendanceStore.createIndex('date', 'date', { unique: false });
@@ -91,7 +91,7 @@ class OfflineStorageService {
     // Pending actions store (for offline actions that need to sync)
     if (!db.objectStoreNames.contains(STORES.PENDING_ACTIONS)) {
       const pendingStore = db.createObjectStore(STORES.PENDING_ACTIONS, { 
-        keyPath: 'id', 
+        keyPath: '_id', 
         autoIncrement: true 
       });
       pendingStore.createIndex('type', 'type', { unique: false });
@@ -101,7 +101,7 @@ class OfflineStorageService {
 
     // Cache metadata store
     if (!db.objectStoreNames.contains(STORES.CACHE_METADATA)) {
-      const metadataStore = db.createObjectStore(STORES.CACHE_METADATA, { keyPath: 'key' });
+      const _metadataStore = db.createObjectStore(STORES.CACHE_METADATA, { keyPath: 'key' });
     }
   }
 
@@ -132,14 +132,14 @@ class OfflineStorageService {
     });
   }
 
-  async getAll(storeName, indexName = null, query = null) {
+  async getAll(storeName, indexName = null, _query = null) {
     await this.ensureInitialized();
     
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const source = indexName ? store.index(indexName) : store;
-      const request = query ? source.getAll(query) : source.getAll();
+      const request = _query ? source.getAll(_query) : source.getAll();
 
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -183,9 +183,9 @@ class OfflineStorageService {
     await store.clear();
     
     // Add new data
-    for (const student of students) {
+    for (const _student of students) {
       await store.add({
-        ...student,
+        ..._student,
         cached_at: new Date().toISOString(),
         offline: true
       });
@@ -219,9 +219,9 @@ class OfflineStorageService {
     await this.setCacheMetadata('grades_last_updated', new Date().toISOString());
   }
 
-  async getCachedGrades(studentId = null, classId = null) {
-    if (studentId) {
-      return await this.getAll(STORES.GRADES, 'student_id', studentId);
+  async getCachedGrades(_studentId = null, classId = null) {
+    if (_studentId) {
+      return await this.getAll(STORES.GRADES, 'student_id', _studentId);
     }
     if (classId) {
       return await this.getAll(STORES.GRADES, 'class_id', classId);
@@ -247,9 +247,9 @@ class OfflineStorageService {
     await this.setCacheMetadata('attendance_last_updated', new Date().toISOString());
   }
 
-  async getCachedAttendance(studentId = null, classId = null, date = null) {
-    if (studentId) {
-      return await this.getAll(STORES.ATTENDANCE, 'student_id', studentId);
+  async getCachedAttendance(_studentId = null, classId = null, date = null) {
+    if (_studentId) {
+      return await this.getAll(STORES.ATTENDANCE, 'student_id', _studentId);
     }
     if (classId) {
       return await this.getAll(STORES.ATTENDANCE, 'class_id', classId);

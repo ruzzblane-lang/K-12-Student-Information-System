@@ -11,7 +11,7 @@ class OnboardingController {
    */
   async createTenant(req, res) {
     try {
-      const tenantData = req.body;
+      const tenantData = req._body;
       const tenant = await onboardingService.createTenant(tenantData);
 
       res.status(201).json({

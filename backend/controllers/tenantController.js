@@ -14,7 +14,7 @@ class TenantController {
       // Mock implementation
       const tenants = [
         {
-          id: '1',
+          _id: '1',
           name: 'Sample School',
           slug: 'sample-school',
           status: 'active',
@@ -43,8 +43,8 @@ class TenantController {
    */
   async getTenantById(req, res) {
     try {
-      const { id } = req.params;
-      const tenant = await tenantService.getTenantById(id);
+      const { _id } = req.params;
+      const tenant = await tenantService.getTenantById(_id);
 
       res.json({
         success: true,

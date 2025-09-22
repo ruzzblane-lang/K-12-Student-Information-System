@@ -1,21 +1,21 @@
 /**
  * Simplified Tenant Context Middleware
- * For use with student routes and other endpoints
+ * For use with _student routes and other endpoints
  */
 
 /**
  * Middleware to extract and validate tenant context from request
  */
-const tenantContextMiddleware = async (req, res, next) => {
+const _tenantContextMiddleware = async (req, res, _next) => {
   try {
     let tenant = null;
     let tenantSource = null;
 
     // Method 1: Check for tenant ID in headers (for API calls)
-    if (req.headers['x-tenant-id']) {
+    if (req.headers['x-tenant-_id']) {
       // In a real implementation, you would fetch the tenant from the database
       tenant = {
-        id: req.headers['x-tenant-id'],
+        _id: req.headers['x-tenant-_id'],
         name: 'Sample Tenant',
         slug: 'sample-tenant',
         isActive: () => true,
@@ -26,7 +26,7 @@ const tenantContextMiddleware = async (req, res, next) => {
     // Method 2: Check for tenant slug in headers
     else if (req.headers['x-tenant-slug']) {
       tenant = {
-        id: 'sample-tenant-id',
+        _id: 'sample-tenant-_id',
         name: 'Sample Tenant',
         slug: req.headers['x-tenant-slug'],
         isActive: () => true,
@@ -39,7 +39,7 @@ const tenantContextMiddleware = async (req, res, next) => {
       const subdomain = req.subdomains[0];
       if (subdomain !== 'www' && subdomain !== 'api') {
         tenant = {
-          id: 'sample-tenant-id',
+          _id: 'sample-tenant-_id',
           name: 'Sample Tenant',
           slug: subdomain,
           isActive: () => true,
@@ -51,7 +51,7 @@ const tenantContextMiddleware = async (req, res, next) => {
     // Method 4: Check JWT token for tenant context
     else if (req.user && req.user.tenantId) {
       tenant = {
-        id: req.user.tenantId,
+        _id: req.user.tenantId,
         name: 'Sample Tenant',
         slug: 'sample-tenant',
         isActive: () => true,
@@ -62,7 +62,7 @@ const tenantContextMiddleware = async (req, res, next) => {
     // Method 5: Default tenant for development
     else if (process.env.NODE_ENV === 'development') {
       tenant = {
-        id: 'default-tenant-id',
+        _id: 'default-tenant-_id',
         name: 'Development Tenant',
         slug: 'dev-tenant',
         isActive: () => true,
@@ -96,9 +96,9 @@ const tenantContextMiddleware = async (req, res, next) => {
     // Add tenant context to request
     req.tenant = tenant;
     req.tenantSource = tenantSource;
-    req.tenantId = tenant.id;
+    req.tenantId = tenant._id;
 
-    next();
+    _next();
   } catch (error) {
     console.error('Tenant context error:', error);
     return res.status(500).json({
@@ -114,7 +114,7 @@ const tenantContextMiddleware = async (req, res, next) => {
 /**
  * Middleware to require tenant context (stricter version)
  */
-const requireTenantContext = async (req, res, next) => {
+const requireTenantContext = async (req, res, _next) => {
   if (!req.tenant) {
     return res.status(400).json({
       success: false,
@@ -124,13 +124,13 @@ const requireTenantContext = async (req, res, next) => {
       }
     });
   }
-  next();
+  _next();
 };
 
 /**
  * Middleware to validate user belongs to tenant
  */
-const validateUserTenant = async (req, res, next) => {
+const validateUserTenant = async (req, res, _next) => {
   try {
     if (!req.user || !req.tenant) {
       return res.status(400).json({
@@ -142,7 +142,7 @@ const validateUserTenant = async (req, res, next) => {
       });
     }
 
-    if (req.user.tenantId !== req.tenant.id) {
+    if (req.user.tenantId !== req.tenant._id) {
       return res.status(403).json({
         success: false,
         error: {
@@ -152,7 +152,7 @@ const validateUserTenant = async (req, res, next) => {
       });
     }
 
-    next();
+    _next();
   } catch (error) {
     console.error('User tenant validation error:', error);
     return res.status(500).json({
@@ -166,7 +166,7 @@ const validateUserTenant = async (req, res, next) => {
 };
 
 module.exports = {
-  tenantContextMiddleware,
+  _tenantContextMiddleware,
   requireTenantContext,
   validateUserTenant
 };

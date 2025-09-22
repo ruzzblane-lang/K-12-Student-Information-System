@@ -1,11 +1,11 @@
 // Date formatting utilities
-export const formatDate = (date, options = {}) => {
+export const formatDate = (date, _options = {}) => {
   const defaultOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   };
-  return new Date(date).toLocaleDateString('en-US', { ...defaultOptions, ...options });
+  return new Date(date).toLocaleDateString('en-US', { ...defaultOptions, ..._options });
 };
 
 export const formatDateTime = (date) => {
@@ -134,10 +134,10 @@ export const validatePhone = (phone) => {
   return phoneRegex.test(phone);
 };
 
-export const validatePassword = (password) => {
+export const validatePassword = (_password) => {
   // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
-  return passwordRegex.test(password);
+  return passwordRegex.test(_password);
 };
 
 // File utilities

@@ -1,13 +1,13 @@
 /**
  * Simplified Role-Based Access Control Middleware
- * For use with student routes and other endpoints
+ * For use with _student routes and other endpoints
  */
 
 /**
  * Middleware to check if user has required role(s)
  */
 const rbacMiddleware = (allowedRoles) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -33,7 +33,7 @@ const rbacMiddleware = (allowedRoles) => {
       });
     }
 
-    next();
+    _next();
   };
 };
 
@@ -45,32 +45,32 @@ const hasPermission = (user, permission) => {
   const rolePermissions = {
     super_admin: ['*'], // All permissions
     tenant_admin: [
-      'student.create', 'student.read', 'student.update', 'student.delete',
+      '_student.create', '_student.read', '_student.update', '_student.delete',
       'teacher.create', 'teacher.read', 'teacher.update', 'teacher.delete',
       'class.create', 'class.read', 'class.update', 'class.delete',
       'grade.create', 'grade.read', 'grade.update', 'grade.delete',
       'attendance.create', 'attendance.read', 'attendance.update', 'attendance.delete'
     ],
     principal: [
-      'student.read', 'student.update',
+      '_student.read', '_student.update',
       'teacher.read', 'teacher.update',
       'class.read', 'class.update',
       'grade.read', 'grade.update',
       'attendance.read', 'attendance.update'
     ],
     teacher: [
-      'student.read',
+      '_student.read',
       'class.read',
       'grade.create', 'grade.read', 'grade.update',
       'attendance.create', 'attendance.read', 'attendance.update'
     ],
     parent: [
-      'student.read',
+      '_student.read',
       'grade.read',
       'attendance.read'
     ],
-    student: [
-      'student.read',
+    _student: [
+      '_student.read',
       'grade.read',
       'attendance.read'
     ]
@@ -95,7 +95,7 @@ const hasPermission = (user, permission) => {
  * Middleware to check specific permission
  */
 const requirePermission = (permission) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -118,7 +118,7 @@ const requirePermission = (permission) => {
       });
     }
 
-    next();
+    _next();
   };
 };
 
@@ -132,7 +132,7 @@ const hasRoleLevel = (user, requiredRole) => {
     principal: 60,
     teacher: 40,
     parent: 20,
-    student: 10
+    _student: 10
   };
 
   const userLevel = roleHierarchy[user.role] || 0;
@@ -144,7 +144,7 @@ const hasRoleLevel = (user, requiredRole) => {
  * Middleware to check role level
  */
 const requireRoleLevel = (requiredRole) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -167,7 +167,7 @@ const requireRoleLevel = (requiredRole) => {
       });
     }
 
-    next();
+    _next();
   };
 };
 

@@ -11,7 +11,7 @@ class TenantService {
     try {
       // Mock implementation
       return {
-        id: tenantId,
+        _id: tenantId,
         name: 'Sample School',
         slug: 'sample-school',
         isActive: () => true,
@@ -30,7 +30,7 @@ class TenantService {
     try {
       // Mock implementation
       return {
-        id: 'sample-tenant-id',
+        _id: 'sample-tenant-_id',
         name: 'Sample School',
         slug: slug,
         isActive: () => true,
@@ -49,7 +49,7 @@ class TenantService {
     try {
       // Mock implementation
       return {
-        id: 'sample-tenant-id',
+        _id: 'sample-tenant-_id',
         name: 'Sample School',
         slug: subdomain,
         isActive: () => true,
@@ -68,7 +68,7 @@ class TenantService {
     try {
       // Mock implementation
       return {
-        id: 'sample-tenant-id',
+        _id: 'sample-tenant-_id',
         name: 'Sample School',
         slug: 'sample-school',
         domain: domain,

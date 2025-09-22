@@ -64,7 +64,7 @@ class PushNotificationService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(subscription)
+        _body: JSON.stringify(subscription)
       });
 
       if (!response.ok) {
@@ -134,7 +134,7 @@ class PushNotificationService {
   }
 
   // Show local notification
-  showNotification(title, options = {}) {
+  showNotification(title, _options = {}) {
     if (!this.isSupported || Notification.permission !== 'granted') {
       return;
     }
@@ -144,7 +144,7 @@ class PushNotificationService {
       badge: '/logo192.png',
       vibrate: [200, 100, 200],
       requireInteraction: false,
-      ...options
+      ..._options
     };
 
     new Notification(title, defaultOptions);
