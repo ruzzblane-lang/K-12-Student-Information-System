@@ -1,65 +1,89 @@
 {
   "name": "school-sis-backend",
   "version": "1.0.0",
-  "description": "Backend API for K-12 Student Information System",
+  "description": "K-12 Student Information System Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo 'Backend build completed - no transpilation needed'",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:api": "jest tests/api",
+    "test:performance": "jest tests/performance",
+    "test:auth": "jest tests/api/auth.test.js",
+    "test:students": "jest tests/api/students.test.js",
+    "test:tenant": "jest tests/integration/tenant.test.js",
     "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:api",
+    "test:curl": "bash tests/scripts/api-test-examples.sh",
+    "test:full": "bash tests/scripts/run-tests.sh",
+    "test:full-no-db": "bash tests/scripts/run-tests.sh --no-db-setup",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
+    "type-check": "echo 'Type checking not configured for JavaScript'",
     "db:migrate": "node scripts/migrate.js",
     "db:seed": "node scripts/seed.js",
-    "db:reset": "npm run db:migrate && npm run db:seed"
+    "db:reset": "npm run db:migrate && npm run db:seed",
+    "db:test": "NODE_ENV=test npm run db:migrate"
   },
+  "keywords": [
+    "school",
+    "education",
+    "sis",
+    "student-information-system",
+    "api",
+    "backend",
+    "k12"
+  ],
+  "author": "School SIS Team",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "express-rate-limit": "^7.1.5",
-    "express-validator": "^7.0.1",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "compression": "^1.7.4",
+    "dotenv": "^16.3.1",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
     "pg": "^8.11.3",
-    "dotenv": "^16.3.1",
-    "winston": "^3.11.0",
-    "compression": "^1.7.4",
-    "morgan": "^1.10.0",
-    "isomorphic-dompurify": "^2.6.0",
-    "validator": "^13.11.0",
     "uuid": "^9.0.1",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.7",
     "joi": "^17.11.0",
-    "express-slow-down": "^2.0.1"
+    "multer": "^1.4.5-lts.1",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "nodemailer": "^6.9.7",
+    "winston": "^3.11.0",
+    "express-winston": "^4.2.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
     "jest": "^29.7.0",
     "supertest": "^6.3.3",
-    "eslint": "^8.55.0",
-    "eslint-config-standard": "^17.1.0",
+    "nodemon": "^3.0.2",
+    "eslint": "^8.54.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "@types/validator": "^13.11.7"
+    "eslint-plugin-jest": "^27.6.0",
+    "@types/jest": "^29.5.8",
+    "babel-jest": "^29.7.0",
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "jest-watch-typeahead": "^2.2.2"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
   },
-  "keywords": [
-    "education",
-    "student-information-system",
-    "api",
-    "backend",
-    "nodejs",
-    "express"
-  ],
-  "author": "School SIS Team",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/school-sis/backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/school-sis/backend/issues"
+  },
+  "homepage": "https://github.com/school-sis/backend#readme"
 }
