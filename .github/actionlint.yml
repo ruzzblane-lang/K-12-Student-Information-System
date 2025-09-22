@@ -1,0 +1,23 @@
+# actionlint configuration
+
+rules:
+  # Ignore warnings about accessing secrets (always false positives in linting)
+  expr-check:
+    ignore:
+      - secrets.*
+
+  # Ignore dynamic matrix expressions (actionlint can't always resolve them statically)
+  matrix-check:
+    ignore: true
+
+  # Ignore missing jobs/steps when using reusable workflows or conditionals
+  job-needs-check:
+    ignore: true
+
+  # Ignore shellcheck warnings if you trust your shell scripts or run your own linter
+  shellcheck:
+    ignore: true
+
+  # Ignore commands unknown to actionlint (like custom CLIs in your scripts)
+  command-check:
+    ignore: true

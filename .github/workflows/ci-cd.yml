@@ -87,6 +87,64 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
+    - name: Validate secrets
+      run: |
+        echo "Validating required secrets..."
+        
+        # Validate database secrets
+        if [ -z "${{ secrets.DB_HOST }}" ]; then
+          echo "❌ Error: DB_HOST secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.DB_PORT }}" ]; then
+          echo "❌ Error: DB_PORT secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.DB_NAME }}" ]; then
+          echo "❌ Error: DB_NAME secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.DB_USER }}" ]; then
+          echo "❌ Error: DB_USER secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.DB_PASSWORD }}" ]; then
+          echo "❌ Error: DB_PASSWORD secret is not set"
+          exit 1
+        fi
+        
+        # Validate JWT secrets
+        if [ -z "${{ secrets.JWT_SECRET }}" ]; then
+          echo "❌ Error: JWT_SECRET secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.JWT_REFRESH_SECRET }}" ]; then
+          echo "❌ Error: JWT_REFRESH_SECRET secret is not set"
+          exit 1
+        fi
+        
+        # Validate encryption key
+        if [ -z "${{ secrets.ENCRYPTION_KEY }}" ]; then
+          echo "❌ Error: ENCRYPTION_KEY secret is not set"
+          exit 1
+        fi
+        
+        # Validate SMTP secrets
+        if [ -z "${{ secrets.SMTP_HOST }}" ]; then
+          echo "❌ Error: SMTP_HOST secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.SMTP_USER }}" ]; then
+          echo "❌ Error: SMTP_USER secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.SMTP_PASSWORD }}" ]; then
+          echo "❌ Error: SMTP_PASSWORD secret is not set"
+          exit 1
+        fi
+        
+        echo "✅ All required secrets are configured"
+
     - name: Setup deployment environment
       run: |
         echo "Setting up deployment environment..."
@@ -109,18 +167,18 @@ jobs:
         echo "🚀 Application is now live in production"
       env:
         NODE_ENV: production
-        # Database configuration
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_NAME: ${{ secrets.DB_NAME }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        # JWT configuration
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
-        # Encryption
-        ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-        # SMTP configuration
-        SMTP_HOST: ${{ secrets.SMTP_HOST }}
-        SMTP_USER: ${{ secrets.SMTP_USER }}
-        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        # Database configuration - secrets validated in previous step
+        DB_HOST: ${{ secrets.DB_HOST }}  # Validated above
+        DB_PORT: ${{ secrets.DB_PORT }}  # Validated above
+        DB_NAME: ${{ secrets.DB_NAME }}  # Validated above
+        DB_USER: ${{ secrets.DB_USER }}  # Validated above
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # Validated above
+        # JWT configuration - secrets validated in previous step
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}  # Validated above
+        JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}  # Validated above
+        # Encryption - secret validated in previous step
+        ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}  # Validated above
+        # SMTP configuration - secrets validated in previous step
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}  # Validated above
+        SMTP_USER: ${{ secrets.SMTP_USER }}  # Validated above
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}  # Validated above

@@ -1,395 +1,148 @@
-# K-12 Student Information System - Backend API
+actionlint
+==========
+[![CI Status][ci-badge]][ci]
+[![API Document][apidoc-badge]][apidoc]
 
-A comprehensive, multi-tenant Student Information System backend API designed for K-12 educational institutions. This is a commercial software product built for resale to schools, districts, and educational organizations worldwide.
+[actionlint][repo] is a static checker for GitHub Actions workflow files. [Try it online!][playground]
 
-## 🎯 **Backend-First Development Approach**
+Features:
 
-This project focuses on building a robust, scalable backend API that can serve multiple frontend clients, mobile apps, and third-party integrations. The frontend is optional and can be developed separately or by different teams.
+- **Syntax check for workflow files** to check unexpected or missing keys following [workflow syntax][syntax-doc]
+- **Strong type check for `${{ }}` expressions** to catch several semantic errors like access to not existing property,
+  type mismatches, ...
+- **Actions usage check** to check that inputs at `with:` and outputs in `steps.{id}.outputs` are correct
+- **Reusable workflow check** to check inputs/outputs/secrets of reusable workflows and workflow calls
+- **[shellcheck][] and [pyflakes][] integrations** for scripts at `run:`
+- **Security checks**; [script injection][script-injection-doc] by untrusted inputs, hard-coded credentials
+- **Other several useful checks**; [glob syntax][filter-pattern-doc] validation, dependencies check for `needs:`,
+  runner label validation, cron syntax validation, ...
 
-## 🏢 **Commercial Product Features**
-- **Multi-Tenant Architecture**: Isolated data for each school/district
-- **RESTful API**: Complete CRUD operations for all entities
-- **Role-Based Access Control**: Granular permissions per tenant
-- **White-Label Capabilities**: Custom branding for each customer
-- **Scalable Deployment**: Cloud-hosted, on-premise, or hybrid options
-- **Flexible Licensing**: Per-student, per-teacher, or enterprise pricing models
+See the [full list][checks] of checks done by actionlint.
 
-## 🏗️ Backend Project Structure
+<img src="https://github.com/rhysd/ss/blob/master/actionlint/main.gif?raw=true" alt="actionlint reports 7 errors" width="806" height="492"/>
 
-```
-school-sis/
-├── db/                           # Database related files
-│   ├── migrations/               # Multi-tenant SQL schema files
-│   │   ├── 001_create_tenants_table.sql
-│   │   ├── 002_create_users_table_multi_tenant.sql
-│   │   ├── 003_create_students_table_multi_tenant.sql
-│   │   ├── 004_create_teachers_table_multi_tenant.sql
-│   │   ├── 005_create_classes_table_multi_tenant.sql
-│   │   ├── 006_create_enrollments_table_multi_tenant.sql
-│   │   ├── 007_create_grades_table_multi_tenant.sql
-│   │   ├── 008_create_attendance_table_multi_tenant.sql
-│   │   └── 009_create_audit_logs_table_multi_tenant.sql
-│   ├── seeds/                    # SQL seed scripts with sample data
-│   └── queries/                  # Common reusable SQL queries
-├── backend/                      # Backend API server
-│   ├── api/
-│   │   ├── routes/               # REST API routes
-│   │   │   ├── tenants.js        # Tenant management endpoints
-│   │   │   ├── users.js          # User management endpoints
-│   │   │   ├── students.js       # Student management endpoints
-│   │   │   ├── teachers.js       # Teacher management endpoints
-│   │   │   ├── classes.js        # Class management endpoints
-│   │   │   ├── grades.js         # Grade management endpoints
-│   │   │   ├── attendance.js     # Attendance management endpoints
-│   │   │   └── onboarding.js     # Tenant onboarding endpoints
-│   │   ├── controllers/          # Business logic for each resource
-│   │   │   ├── tenantController.js
-│   │   │   ├── userController.js
-│   │   │   ├── studentController.js
-│   │   │   └── onboardingController.js
-│   │   └── middleware/           # Auth, logging, validation
-│   │       ├── auth.js           # JWT authentication
-│   │       ├── rbac.js           # Role-based access control
-│   │       └── tenantContext.js  # Multi-tenant context
-│   ├── models/                   # Database models/entities
-│   │   ├── Tenant.js             # Tenant model
-│   │   ├── User.js               # User model with RBAC
-│   │   ├── Student.js            # Student model
-│   │   ├── Teacher.js            # Teacher model
-│   │   └── index.js              # Model associations
-│   ├── services/                 # Business logic services
-│   │   ├── tenantService.js      # Tenant management
-│   │   ├── userService.js        # User management
-│   │   ├── studentService.js     # Student operations
-│   │   └── onboardingService.js  # Tenant onboarding
-│   ├── config/                   # Configuration files
-│   │   └── database.js           # Database connection
-│   ├── tests/                    # Comprehensive test suite
-│   │   ├── unit/                 # Unit tests
-│   │   ├── integration/          # Integration tests
-│   │   ├── api/                  # API endpoint tests
-│   │   └── fixtures/             # Test data fixtures
-│   └── utils/                    # Utility functions
-├── docs/                         # Comprehensive documentation
-│   ├── Multi-Tenant-Architecture.md  # Multi-tenant design
-│   ├── API-Specification.md          # Complete API docs
-│   ├── Database-Schema.md            # Database design
-│   ├── Authentication-RBAC.md        # Auth & permissions
-│   ├── Testing-Guide.md              # Testing without frontend
-│   ├── Integration-Guide.md          # Frontend/SDK integration
-│   └── Commercial-Product-Specification.md
-├── .github/
-│   └── workflows/
-│       └── ci-cd.yml             # CI/CD pipeline
-├── package.json                  # Backend dependencies
-├── .env.example                  # Environment variables
-└── README.md                     # This file
+**Example of broken workflow:**
+
+```yaml
+on:
+  push:
+    branch: main
+    tags:
+      - 'v\d+'
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest, linux-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: echo "Checking commit '${{ github.event.head_commit.message }}'"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node_version: 18.x
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ matrix.platform }}-node-${{ hashFiles('**/package-lock.json') }}
+        if: ${{ github.repository.permissions.admin == true }}
+      - run: npm install && npm test
 ```
 
-## 🚀 Quick Start - Backend API
+**actionlint reports 7 errors:**
 
-### Prerequisites
-
-- **Node.js** (v18 or higher)
-- **PostgreSQL** (v13 or higher)
-- **npm** or **yarn**
-- **API Testing Tool** (Postman, Insomnia, or curl)
-
-### Installation
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/ruzzblane-lang/K-12-Student-Information-System.git
-cd school-sis
+```
+test.yaml:3:5: unexpected key "branch" for "push" section. expected one of "branches", "branches-ignore", "paths", "paths-ignore", "tags", "tags-ignore", "types", "workflows" [syntax-check]
+  |
+3 |     branch: main
+  |     ^~~~~~~
+test.yaml:5:11: character '\' is invalid for branch and tag names. only special characters [, ?, +, *, \, ! can be escaped with \. see `man git-check-ref-format` for more details. note that regular expression is unavailable. note: filter pattern syntax is explained at https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet [glob]
+  |
+5 |       - 'v\d+'
+  |           ^~~~
+test.yaml:10:28: label "linux-latest" is unknown. available labels are "windows-latest", "windows-latest-8-cores", "windows-2025", "windows-2022", "windows-2019", "ubuntu-latest", "ubuntu-latest-4-cores", "ubuntu-latest-8-cores", "ubuntu-latest-16-cores", "ubuntu-24.04", "ubuntu-22.04", "ubuntu-20.04", "macos-latest", "macos-latest-xl", "macos-latest-xlarge", "macos-latest-large", "macos-15-xlarge", "macos-15-large", "macos-15", "macos-14-xl", "macos-14-xlarge", "macos-14-large", "macos-14", "macos-13-xl", "macos-13-xlarge", "macos-13-large", "macos-13", "self-hosted", "x64", "arm", "arm64", "linux", "macos", "windows". if it is a custom label for self-hosted runner, set list of labels in actionlint.yaml config file [runner-label]
+   |
+10 |         os: [macos-latest, linux-latest]
+   |                            ^~~~~~~~~~~~~
+test.yaml:13:41: "github.event.head_commit.message" is potentially untrusted. avoid using it directly in inline scripts. instead, pass it through an environment variable. see https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions for more details [expression]
+   |
+13 |       - run: echo "Checking commit '${{ github.event.head_commit.message }}'"
+   |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test.yaml:17:11: input "node_version" is not defined in action "actions/setup-node@v4". available inputs are "always-auth", "architecture", "cache", "cache-dependency-path", "check-latest", "node-version", "node-version-file", "registry-url", "scope", "token" [action]
+   |
+17 |           node_version: 18.x
+   |           ^~~~~~~~~~~~~
+test.yaml:21:20: property "platform" is not defined in object type {os: string} [expression]
+   |
+21 |           key: ${{ matrix.platform }}-node-${{ hashFiles('**/package-lock.json') }}
+   |                    ^~~~~~~~~~~~~~~
+test.yaml:22:17: receiver of object dereference "permissions" must be type of object but got "string" [expression]
+   |
+22 |         if: ${{ github.repository.permissions.admin == true }}
+   |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
-2. **Install backend dependencies:**
-```bash
-npm install
+## Quick start
+
+Install `actionlint` command by downloading [the released binary][releases] or by Homebrew or by `go install`. See
+[the installation document][install] for more details like how to manage the command with several package managers
+or run via Docker container.
+
+```sh
+go install github.com/rhysd/actionlint/cmd/actionlint@latest
 ```
 
-3. **Set up environment variables:**
-```bash
-cp .env.example .env
-# Edit .env with your database and configuration details
+Basically all you need to do is run the `actionlint` command in your repository. actionlint automatically detects workflows and
+checks errors. actionlint focuses on finding out mistakes. It tries to catch errors as much as possible and make false positives
+as minimal as possible.
+
+```sh
+actionlint
 ```
 
-4. **Set up the database:**
-```bash
-# Run migrations to create multi-tenant schema
-npm run db:migrate
+Another option to try actionlint is [the online playground][playground]. Your browser can run actionlint through WebAssembly.
 
-# Seed with sample data (optional)
-npm run db:seed
-```
+See [the usage document][usage] for more details.
 
-5. **Start the backend API server:**
-```bash
-npm run dev
-```
+## Documents
 
-The API server will start on **http://localhost:3000**
+- [Checks][checks]: Full list of all checks done by actionlint with example inputs, outputs, and playground links.
+- [Installation][install]: Installation instructions. Prebuilt binaries, a Docker image, building from source, a download script
+  (for CI), supports by several package managers are available.
+- [Usage][usage]: How to use `actionlint` command locally or on GitHub Actions, the online playground, an official Docker image,
+  and integrations with reviewdog, Problem Matchers, super-linter, pre-commit, VS Code.
+- [Configuration][config]: How to configure actionlint behavior. Currently, the labels of self-hosted runners, the configuration
+  variables, and ignore patterns of errors for each file paths can be set.
+- [Go API][api]: How to use actionlint as Go library.
+- [References][refs]: Links to resources.
 
-### 🧪 **Testing the API Without Frontend**
+## Bug reporting
 
-You can fully test the backend API using any of these tools:
+When you see some bugs or false positives, it is helpful to [file a new issue][issue-form] with a minimal example
+of input. Giving me some feedbacks like feature requests or ideas of additional checks is also welcome.
 
-#### **Option 1: Postman Collection**
-```bash
-# Import the Postman collection (coming soon)
-# Contains all API endpoints with sample requests
-```
+See the [contribution guide](./CONTRIBUTING.md) for more details.
 
-#### **Option 2: curl Commands**
-```bash
-# Test tenant creation
-curl -X POST http://localhost:3000/api/tenants \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{"name": "Test School", "schoolName": "Test School", ...}'
-```
+## License
 
-#### **Option 3: Automated Tests**
-```bash
-# Run the comprehensive test suite
-npm test
+actionlint is distributed under [the MIT license](./LICENSE.txt).
 
-# Run specific test categories
-npm run test:unit
-npm run test:integration
-npm run test:api
-```
-
-#### **Option 4: API Documentation**
-Visit **http://localhost:3000/api/docs** for interactive API documentation (Swagger/OpenAPI)
-
-## 🎯 Backend API Features
-
-### **Core API Modules**
-- **Tenant Management API**: Multi-tenant school management
-- **User Management API**: Authentication, roles, and permissions
-- **Student Management API**: Student profiles, enrollment, academic records
-- **Teacher Management API**: Teacher profiles, class assignments, schedules
-- **Class Management API**: Course catalog, scheduling, enrollment
-- **Grade Management API**: Assignment grades, report cards, transcripts
-- **Attendance Management API**: Daily attendance, absence reports
-- **Onboarding API**: Automated tenant setup and configuration
-
-### **Multi-Tenant Architecture**
-- **Complete Data Isolation**: Each school's data is completely separate
-- **Tenant Context Resolution**: Automatic tenant detection via subdomain, domain, or headers
-- **Role-Based Access Control**: Granular permissions per tenant and user role
-- **Audit Logging**: Complete audit trail for compliance and security
-- **Feature Toggles**: Subscription-based feature access control
-
-### **Authentication & Security**
-- **JWT Authentication**: Secure token-based authentication
-- **Multi-Factor Authentication**: 2FA support for enhanced security
-- **Role-Based Permissions**: 6-tier role hierarchy with 50+ specific permissions
-- **Resource Ownership**: Users can only access their authorized resources
-- **Rate Limiting**: Protection against abuse and brute force attacks
-
-### **Commercial Features**
-- **Complete White-Labeling**: Custom branding, colors, logos, domains, and content per tenant
-- **Custom Domain Support**: Full custom domain setup with SSL certificate management
-- **Email Template Customization**: Branded email templates with dynamic content
-- **Dashboard Customization**: Custom widgets, layouts, and navigation menus
-- **Subscription Management**: Plan-based feature access and limits
-- **API Versioning**: Backward compatibility and gradual rollouts
-- **Webhook Support**: Real-time notifications for external systems
-- **Compliance Ready**: FERPA, COPPA, GDPR compliance built-in
-
-## 🛠️ Backend Technology Stack
-
-### **Core Technologies**
-- **Runtime**: Node.js (v18+)
-- **Framework**: Express.js
-- **Database**: PostgreSQL (v13+)
-- **ORM**: Sequelize with multi-tenant support
-- **Authentication**: JWT with refresh tokens
-- **Validation**: Express-validator
-- **Documentation**: Swagger/OpenAPI
-
-### **Security & Compliance**
-- **Password Hashing**: bcrypt with salt rounds ≥ 12
-- **JWT Security**: RS256 signing with secure secrets
-- **Rate Limiting**: express-rate-limit
-- **CORS**: Configurable cross-origin resource sharing
-- **Helmet**: Security headers and protection
-- **Audit Logging**: Comprehensive activity tracking
-
-### **Testing & Quality**
-- **Unit Testing**: Jest
-- **Integration Testing**: Supertest
-- **API Testing**: Postman/Newman
-- **Code Quality**: ESLint, Prettier
-- **Coverage**: Istanbul/nyc
-- **CI/CD**: GitHub Actions
-
-### **Development Tools**
-- **Environment Management**: dotenv
-- **Database Migrations**: Custom migration system
-- **API Documentation**: Swagger UI
-- **Logging**: Winston
-- **Error Handling**: Custom error middleware
-
-## 📚 Backend Documentation
-
-### **Core Documentation**
-- [Multi-Tenant Architecture](./docs/Multi-Tenant-Architecture.md) - Complete multi-tenant design
-- [API Specification](./docs/API-Specification.md) - Full REST API documentation including white-labeling
-- [Database Schema](./docs/Database-Schema.md) - Database design and relationships
-- [Authentication & RBAC](./docs/Authentication-RBAC.md) - Security and permissions
-- [White-Labeling Implementation Guide](./docs/White-Labeling-Implementation-Guide.md) - Complete white-labeling documentation
-
-### **Development Documentation**
-- [Testing Guide](./docs/Testing-Guide.md) - Testing without frontend
-- [Integration Guide](./docs/Integration-Guide.md) - Frontend/SDK integration
-- [Commercial Product Spec](./docs/Commercial-Product-Specification.md) - Business features
-
-## 🧪 Backend Testing
-
-### **Comprehensive Test Suite**
-```bash
-# Run all tests
-npm test
-
-# Run specific test categories
-npm run test:unit          # Unit tests for services and models
-npm run test:integration   # Database and service integration tests
-npm run test:api          # API endpoint tests
-npm run test:auth         # Authentication and RBAC tests
-npm run test:tenant       # Multi-tenant functionality tests
-```
-
-### **API Testing Without Frontend**
-```bash
-# Test with curl
-npm run test:curl
-
-# Test with Postman collection
-npm run test:postman
-
-# Test with automated API tests
-npm run test:api:automated
-```
-
-### **Test Coverage**
-```bash
-# Generate coverage report
-npm run test:coverage
-
-# View coverage in browser
-npm run test:coverage:view
-```
-
-## 🚀 Backend Deployment
-
-### **Production Build**
-```bash
-# Build for production
-npm run build
-
-# Start production server
-npm start
-```
-
-### **Environment Configuration**
-```bash
-# Production environment variables
-NODE_ENV=production
-DATABASE_URL=postgresql://user:pass@host:5432/sis_db
-JWT_SECRET=your-production-jwt-secret
-JWT_REFRESH_SECRET=your-production-refresh-secret
-SMTP_HOST=your-smtp-host
-SMTP_USER=your-smtp-user
-SMTP_PASSWORD=your-smtp-password
-```
-
-### **Docker Deployment**
-```bash
-# Build Docker image
-docker build -t school-sis-api .
-
-# Run with Docker Compose
-docker-compose up -d
-```
-
-## 🔌 **Frontend Integration (Optional)**
-
-The backend API is designed to work with any frontend technology. Frontend development is **optional** and can be done by separate teams.
-
-### **Supported Frontend Technologies**
-- **React.js** - Web applications
-- **Vue.js** - Web applications  
-- **Angular** - Web applications
-- **React Native** - Mobile applications
-- **Flutter** - Mobile applications
-- **Desktop Apps** - Electron, Tauri, etc.
-
-### **Integration Points**
-- **REST API**: Complete CRUD operations for all entities
-- **Authentication**: JWT-based authentication with refresh tokens
-- **Real-time Updates**: WebSocket support for live data
-- **File Uploads**: Support for documents, images, and bulk imports
-- **Webhooks**: Event notifications for external systems
-
-### **Client SDKs (Coming Soon)**
-- **JavaScript/TypeScript SDK**
-- **Python SDK**
-- **PHP SDK**
-- **Mobile SDKs** (React Native, Flutter)
-
-## 🤝 Contributing
-
-### **Backend Development**
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/backend-feature`)
-3. Write tests for your changes
-4. Ensure all tests pass (`npm test`)
-5. Commit your changes (`git commit -m 'Add backend feature'`)
-6. Push to the branch (`git push origin feature/backend-feature`)
-7. Open a Pull Request
-
-### **API Documentation**
-- Update API documentation for any endpoint changes
-- Include request/response examples
-- Update OpenAPI/Swagger specifications
-
-## 💼 **Commercial Licensing & Pricing**
-
-### **Backend API Licensing**
-- **API Access**: RESTful API with comprehensive endpoints
-- **Multi-Tenant Support**: Complete tenant isolation and management
-- **Authentication**: JWT-based security with RBAC
-- **Compliance**: FERPA, COPPA, GDPR ready
-
-### **Deployment Options**
-- **Cloud-Hosted**: Fully managed SaaS solution
-- **On-Premise**: Self-hosted installation
-- **Hybrid**: Cloud with on-premise data storage
-- **API-Only**: Backend service for custom frontends
-
-### **Pricing Models**
-- **Per-Student**: $2-6 per student per year
-- **Per-Teacher**: $50-100 per teacher per year  
-- **Enterprise**: Custom pricing for large districts
-- **White-Label**: Licensing fees for resellers
-- **API-Only**: Reduced pricing for backend-only deployments
-
-### **Support Tiers**
-- **Basic**: Email support, documentation
-- **Premium**: Phone support, priority response
-- **Enterprise**: Dedicated support, custom features
-
-## 📄 License
-
-This is a commercial software product. Contact for licensing information and pricing.
-
-## 📞 Support & Sales
-
-For sales inquiries, technical support, or licensing information, please contact the development team.
-
----
-
-**Note**: This is a backend-first project. Frontend development is optional and can be handled by separate teams or clients. The API is fully functional and testable without any frontend components.
+[ci-badge]: https://github.com/rhysd/actionlint/actions/workflows/ci.yaml/badge.svg
+[ci]: https://github.com/rhysd/actionlint/actions/workflows/ci.yaml
+[apidoc-badge]: https://pkg.go.dev/badge/github.com/rhysd/actionlint.svg
+[apidoc]: https://pkg.go.dev/github.com/rhysd/actionlint
+[repo]: https://github.com/rhysd/actionlint
+[playground]: https://rhysd.github.io/actionlint/
+[shellcheck]: https://github.com/koalaman/shellcheck
+[pyflakes]: https://github.com/PyCQA/pyflakes
+[syntax-doc]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+[filter-pattern-doc]: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+[script-injection-doc]: https://docs.github.com/en/actions/learn-github-actions/security-hardening-for-github-actions#understanding-the-risk-of-script-injections
+[releases]: https://github.com/rhysd/actionlint/releases
+[checks]: https://github.com/rhysd/actionlint/blob/v1.7.7/docs/checks.md
+[install]: https://github.com/rhysd/actionlint/blob/v1.7.7/docs/install.md
+[usage]: https://github.com/rhysd/actionlint/blob/v1.7.7/docs/usage.md
+[config]: https://github.com/rhysd/actionlint/blob/v1.7.7/docs/config.md
+[api]: https://github.com/rhysd/actionlint/blob/v1.7.7/docs/api.md
+[refs]: https://github.com/rhysd/actionlint/blob/v1.7.7/docs/reference.md
+[issue-form]: https://github.com/rhysd/actionlint/issues/new

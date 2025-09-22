@@ -15,7 +15,9 @@
     "test:frontend": "cd frontend && npm test",
     "db:migrate": "cd backend && npm run db:migrate",
     "db:seed": "cd backend && npm run db:seed",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "lint:actions": "./actionlint --config-file .github/actionlint.yml",
+    "lint:actions:verbose": "./actionlint --config-file .github/actionlint.yml -verbose"
   },
   "keywords": [
     "school",

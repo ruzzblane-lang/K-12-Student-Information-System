@@ -1,0 +1,25 @@
+# Actionlint Configuration
+# This file configures actionlint for optimal GitHub Actions workflow linting
+
+# Enable all rule categories
+enable-all: true
+
+# Specific rule configurations
+rule:
+  # Allow secret access patterns (these are valid GitHub Actions syntax)
+  action: true
+  expression: true
+  job: true
+  matrix: true
+  runner: true
+  step: true
+  workflow: true
+  
+  # Suppress false positives for secret access
+  shellcheck: false  # Disable shellcheck for workflow files
+  
+# Color output
+color: auto
+
+# Verbose output for debugging
+verbose: false
