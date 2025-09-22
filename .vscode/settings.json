@@ -1,4 +1,9 @@
 {
     "cursor.composer.queueMessageDefaultBehavior": "queue",
-    "cursor.composer.shouldChimeAfterChatFinishes": true
+    "cursor.composer.shouldChimeAfterChatFinishes": true,
+    "python.testing.pytestArgs": [
+        "frontend"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
