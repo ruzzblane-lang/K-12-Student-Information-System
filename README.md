@@ -1,6 +1,12 @@
-# School SIS (Student Information System)
+# K-12 Student Information System - Commercial Resale Product
 
-A comprehensive school management platform designed to streamline academic operations, student data management, and administrative tasks.
+A comprehensive, multi-tenant Student Information System designed for K-12 educational institutions. This is a commercial software product built for resale to schools, districts, and educational organizations worldwide.
+
+## 🏢 **Commercial Product Features**
+- **Multi-Tenant Architecture**: Isolated data for each school/district
+- **White-Label Capabilities**: Custom branding for each customer
+- **Scalable Deployment**: Cloud-hosted, on-premise, or hybrid options
+- **Flexible Licensing**: Per-student, per-teacher, or enterprise pricing models
 
 ## 🏗️ Project Structure
 
@@ -96,6 +102,13 @@ This will start both the backend API server (port 3000) and frontend development
 - **Messaging**: Internal messaging system between users
 - **Announcements**: School-wide and class-specific announcements
 
+### Commercial Features
+- **Multi-Tenant Support**: Complete data isolation between schools
+- **Custom Branding**: School logos, colors, and themes
+- **API Integration**: Connect with existing school systems
+- **Compliance Ready**: FERPA, COPPA, GDPR compliance built-in
+- **Scalable Architecture**: Support for small schools to large districts
+
 ## 🛠️ Technology Stack
 
 ### Backend
@@ -155,10 +168,28 @@ Ensure all production environment variables are properly configured in your depl
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## 💼 **Commercial Licensing & Pricing**
+
+### **Deployment Options**
+- **Cloud-Hosted**: Fully managed SaaS solution
+- **On-Premise**: Self-hosted installation
+- **Hybrid**: Cloud with on-premise data storage
+
+### **Pricing Models**
+- **Per-Student**: $X per student per year
+- **Per-Teacher**: $X per teacher per year  
+- **Enterprise**: Custom pricing for large districts
+- **White-Label**: Licensing fees for resellers
+
+### **Support Tiers**
+- **Basic**: Email support, documentation
+- **Premium**: Phone support, priority response
+- **Enterprise**: Dedicated support, custom features
+
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This is a commercial software product. Contact for licensing information and pricing.
 
-## 📞 Support
+## 📞 Support & Sales
 
-For support and questions, please contact the development team or create an issue in the repository.
+For sales inquiries, technical support, or licensing information, please contact the development team.
