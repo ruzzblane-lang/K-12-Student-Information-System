@@ -16,6 +16,7 @@ const studentRoutes = require('./api/routes/students');
 const whiteLabelingRoutes = require('./api/routes/whiteLabeling');
 const tenantRoutes = require('./routes/tenants');
 const onboardingRoutes = require('./routes/onboarding');
+const analyticsRoutes = require('./analytics/routes/analytics');
 
 // Import middleware
 const authMiddleware = require('./middleware/auth');
@@ -73,6 +74,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/white-labeling', whiteLabelingRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/onboarding', onboardingRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

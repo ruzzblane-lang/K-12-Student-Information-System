@@ -98,7 +98,7 @@ class AttendanceAnalytics {
    * Get students with attendance alerts
    */
   async getStudentsWithAlerts(tenantId, alertTypes = ['attendance_alert', 'chronic_absenteeism', 'tardiness_concern']) {
-    const conditions = alertTypes.map((type, index) => `${type} = true`).join(' OR ');
+    const conditions = alertTypes.map((type) => `${type} = true`).join(' OR ');
     const query = `
       SELECT DISTINCT ON (aa.student_id) 
         aa.*, s.first_name, s.last_name, s.student_id as student_number,
