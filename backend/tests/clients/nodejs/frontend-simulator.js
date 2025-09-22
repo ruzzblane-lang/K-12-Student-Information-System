@@ -384,7 +384,7 @@ class FrontendSimulator {
       });
       
       if (response.data.success) {
-        console.log(`✅ Document uploaded successfully`);
+        console.log('✅ Document uploaded successfully');
         console.log(`📁 File: ${response.data.data.filename}`);
         console.log(`🔗 URL: ${response.data.data.url}`);
         
@@ -461,7 +461,7 @@ class FrontendSimulator {
     
     const sessionTime = Date.now() - startTime;
     console.log(`✅ Session simulation completed (${sessionTime}ms)`);
-    console.log(`📊 Session stats:`);
+    console.log('📊 Session stats:');
     console.log(`  - Requests made: ${this.session.requestsCount}`);
     console.log(`  - Errors encountered: ${this.session.errorsCount}`);
     console.log(`  - Success rate: ${((this.session.requestsCount - this.session.errorsCount) / this.session.requestsCount * 100).toFixed(1)}%`);

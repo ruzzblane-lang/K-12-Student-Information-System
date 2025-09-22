@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1e40af" />
+    <meta
+      name="description"
+      content="K-12 Student Information System - Comprehensive school management platform"
+    />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="School SIS" />
+    <meta name="msapplication-TileColor" content="#1e40af" />
+    <meta name="msapplication-config" content="%PUBLIC_URL%/browserconfig.xml" />
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="%PUBLIC_URL%/static/css/main.css" as="style" />
+    <link rel="preload" href="%PUBLIC_URL%/static/js/bundle.js" as="script" />
+    
+    <title>School SIS - Student Information System</title>
+    
+    <!-- Critical CSS for loading state -->
+    <style>
+      /* Loading spinner */
+      .loading-spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f4f6;
+        border-top: 4px solid #1e40af;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+      
+      /* Offline indicator */
+      .offline-indicator {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #ef4444;
+        color: white;
+        text-align: center;
+        padding: 8px;
+        font-size: 14px;
+        z-index: 1000;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .offline-indicator.show {
+        transform: translateY(0);
+      }
+      
+      /* Toast container */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        pointer-events: none;
+      }
+      
+      /* Modal container */
+      .modal-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10001;
+        display: none;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: system-ui;">
+        <h1>JavaScript Required</h1>
+        <p>You need to enable JavaScript to run this app.</p>
+        <p>Please enable JavaScript in your browser settings and refresh the page.</p>
+      </div>
+    </noscript>
+    
+    <!-- Loading indicator -->
+    <div id="loading-spinner" class="loading-spinner"></div>
+    
+    <!-- Offline indicator -->
+    <div id="offline-indicator" class="offline-indicator">
+      <span>📱 You're offline. Some features may be limited.</span>
+    </div>
+    
+    <!-- Main app container -->
+    <div id="root"></div>
+    
+    <!-- Service Worker and PWA initialization -->
+    <script>
+      // PWA initialization script
+      (function() {
+        'use strict';
+        
+        // Hide loading spinner when app loads
+        function hideLoadingSpinner() {
+          const spinner = document.getElementById('loading-spinner');
+          if (spinner) {
+            spinner.style.display = 'none';
+          }
+        }
+        
+        // Show offline indicator
+        function showOfflineIndicator() {
+          const indicator = document.getElementById('offline-indicator');
+          if (indicator) {
+            indicator.classList.add('show');
+          }
+        }
+        
+        // Hide offline indicator
+        function hideOfflineIndicator() {
+          const indicator = document.getElementById('offline-indicator');
+          if (indicator) {
+            indicator.classList.remove('show');
+          }
+        }
+        
+        // Update online/offline status
+        function updateOnlineStatus() {
+          const isOnline = navigator.onLine;
+          
+          if (isOnline) {
+            hideOfflineIndicator();
+          } else {
+            showOfflineIndicator();
+          }
+          
+          // Dispatch custom event for components to listen to
+          window.dispatchEvent(new CustomEvent('connectionChange', {
+            detail: { 
+              isOnline,
+              timestamp: Date.now()
+            }
+          }));
+        }
+        
+        // Service Worker registration with enhanced error handling
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', async () => {
+            try {
+              const registration = await navigator.serviceWorker.register('/sw.js', {
+                scope: '/'
+              });
+              
+              console.log('Service Worker registered successfully:', registration);
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      // New content is available
+                      showUpdateNotification();
+                    }
+                  });
+                }
+              });
+              
+              // Handle controller changes
+              navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('Service Worker controller changed');
+                // Optionally show a "App updated" notification
+                showAppUpdatedNotification();
+              });
+              
+            } catch (error) {
+              console.error('Service Worker registration failed:', error);
+              // Don't show error to user as app can still function without SW
+            }
+          });
+        }
+        
+        // Enhanced update notification with better UX
+        function showUpdateNotification() {
+          // Create a non-blocking toast notification
+          const toast = document.createElement('div');
+          toast.className = 'update-toast';
+          toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #8b5cf6;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            max-width: 400px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+          `;
+          
+          toast.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <strong>Update Available</strong>
+              <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer;">&times;</button>
+            </div>
+            <div style="margin-bottom: 12px; font-size: 14px;">
+              A new version of the app is available.
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button onclick="this.closest('.update-toast').remove()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Later</button>
+              <button onclick="window.location.reload()" style="background: white; color: #8b5cf6; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600;">Update Now</button>
+            </div>
+          `;
+          
+          document.body.appendChild(toast);
+          
+          // Animate in
+          setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+          }, 10);
+          
+          // Auto-remove after 10 seconds
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.style.transform = 'translateX(100%)';
+              setTimeout(() => {
+                if (toast.parentNode) {
+                  toast.parentNode.removeChild(toast);
+                }
+              }, 300);
+            }
+          }, 10000);
+        }
+        
+        // App updated notification
+        function showAppUpdatedNotification() {
+          const toast = document.createElement('div');
+          toast.className = 'updated-toast';
+          toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+          `;
+          
+          toast.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>✅</span>
+              <span>App updated successfully!</span>
+            </div>
+          `;
+          
+          document.body.appendChild(toast);
+          
+          // Animate in
+          setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+          }, 10);
+          
+          // Auto-remove after 3 seconds
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.style.transform = 'translateX(100%)';
+              setTimeout(() => {
+                if (toast.parentNode) {
+                  toast.parentNode.removeChild(toast);
+                }
+              }, 300);
+            }
+          }, 3000);
+        }
+        
+        // Connection status monitoring
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        
+        // Initial status check
+        updateOnlineStatus();
+        
+        // Hide loading spinner when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', hideLoadingSpinner);
+        } else {
+          hideLoadingSpinner();
+        }
+        
+        // Hide loading spinner when app loads (React app)
+        window.addEventListener('load', () => {
+          setTimeout(hideLoadingSpinner, 1000); // Give React time to render
+        });
+        
+        // PWA install prompt handling
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+          // Prevent the mini-infobar from appearing on mobile
+          e.preventDefault();
+          // Stash the event so it can be triggered later
+          deferredPrompt = e;
+          
+          // Show install button or notification
+          showInstallPrompt();
+        });
+        
+        function showInstallPrompt() {
+          const installToast = document.createElement('div');
+          installToast.className = 'install-toast';
+          installToast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #1e40af;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+          `;
+          
+          installToast.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 600; margin-bottom: 4px;">Install School SIS</div>
+                <div style="font-size: 14px; opacity: 0.9;">Add to your home screen for quick access</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="this.closest('.install-toast').remove()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Not now</button>
+                <button onclick="installApp()" style="background: white; color: #1e40af; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600;">Install</button>
+              </div>
+            </div>
+          `;
+          
+          document.body.appendChild(installToast);
+          
+          // Animate in
+          setTimeout(() => {
+            installToast.style.transform = 'translateY(0)';
+          }, 10);
+          
+          // Auto-remove after 15 seconds
+          setTimeout(() => {
+            if (installToast.parentNode) {
+              installToast.style.transform = 'translateY(100%)';
+              setTimeout(() => {
+                if (installToast.parentNode) {
+                  installToast.parentNode.removeChild(installToast);
+                }
+              }, 300);
+            }
+          }, 15000);
+        }
+        
+        // Install app function
+        window.installApp = async () => {
+          if (deferredPrompt) {
+            // Show the install prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            } else {
+              console.log('User dismissed the install prompt');
+            }
+            
+            // Clear the deferredPrompt
+            deferredPrompt = null;
+          }
+        };
+        
+        // Handle app installed event
+        window.addEventListener('appinstalled', () => {
+          console.log('PWA was installed');
+          // Remove any install prompts
+          const installToasts = document.querySelectorAll('.install-toast');
+          installToasts.forEach(toast => toast.remove());
+        });
+        
+      })();
+    </script>
+  </body>
+</html>

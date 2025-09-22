@@ -395,7 +395,7 @@ class WhiteLabelingService {
       }
 
       // Add updated_at timestamp
-      updateFields.push(`updated_at = CURRENT_TIMESTAMP`);
+      updateFields.push('updated_at = CURRENT_TIMESTAMP');
 
       if (updateFields.length === 0) {
         throw new Error('No valid fields to update');
@@ -675,34 +675,34 @@ a:hover, .link:hover {
     const sharpInstance = sharp(imageBuffer);
 
     switch (assetType) {
-      case 'logo':
-        return await sharpInstance
-          .resize(200, 200, { fit: 'inside', withoutEnlargement: true })
-          .png()
-          .toBuffer();
+    case 'logo':
+      return await sharpInstance
+        .resize(200, 200, { fit: 'inside', withoutEnlargement: true })
+        .png()
+        .toBuffer();
 
-      case 'favicon':
-        return await sharpInstance
-          .resize(32, 32, { fit: 'cover' })
-          .png()
-          .toBuffer();
+    case 'favicon':
+      return await sharpInstance
+        .resize(32, 32, { fit: 'cover' })
+        .png()
+        .toBuffer();
 
-      case 'apple_touch_icon':
-        return await sharpInstance
-          .resize(180, 180, { fit: 'cover' })
-          .png()
-          .toBuffer();
+    case 'apple_touch_icon':
+      return await sharpInstance
+        .resize(180, 180, { fit: 'cover' })
+        .png()
+        .toBuffer();
 
-      case 'background_image':
-        return await sharpInstance
-          .resize(1920, 1080, { fit: 'cover' })
-          .jpeg({ quality: 80 })
-          .toBuffer();
+    case 'background_image':
+      return await sharpInstance
+        .resize(1920, 1080, { fit: 'cover' })
+        .jpeg({ quality: 80 })
+        .toBuffer();
 
-      default:
-        return await sharpInstance
-          .png()
-          .toBuffer();
+    default:
+      return await sharpInstance
+        .png()
+        .toBuffer();
     }
   }
 

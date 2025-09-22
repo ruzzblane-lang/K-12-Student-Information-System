@@ -328,7 +328,7 @@ class AnalyticsDemoClient {
             // Get detailed analysis if available
             if (assessment.detailedAnalysis) {
               const analysis = assessment.detailedAnalysis;
-              console.log(`   🔍 Detailed Analysis:`);
+              console.log('   🔍 Detailed Analysis:');
               console.log(`      - Attendance Issues: ${analysis.attendance.issues.join(', ') || 'None'}`);
               console.log(`      - Academic Issues: ${analysis.academic.issues.join(', ') || 'None'}`);
               console.log(`      - Behavioral Issues: ${analysis.behavioral.issues.join(', ') || 'None'}`);
@@ -364,7 +364,7 @@ class AnalyticsDemoClient {
       
       if (batchResponse.data.success) {
         const jobInfo = batchResponse.data.data;
-        console.log(`   ✅ Batch assessment started`);
+        console.log('   ✅ Batch assessment started');
         console.log(`   📋 Job ID: ${jobInfo.job_id}`);
         console.log(`   📊 Status: ${jobInfo.status}`);
         console.log(`   📅 Assessment Period: ${jobInfo.assessment_period}`);
@@ -426,12 +426,12 @@ class AnalyticsDemoClient {
       const reportPath = `/tmp/analytics-demo-report-${Date.now()}.json`;
       await fs.writeFile(reportPath, JSON.stringify(reportData, null, 2));
       
-      console.log(`   ✅ Analytics report generated`);
+      console.log('   ✅ Analytics report generated');
       console.log(`   📄 Report saved to: ${reportPath}`);
-      console.log(`   📊 Report contains:`);
+      console.log('   📊 Report contains:');
       console.log(`      - High-risk students: ${reportData.analytics.highRiskStudents?.length || 0}`);
       console.log(`      - Declining attendance: ${reportData.analytics.decliningAttendance?.length || 0}`);
-      console.log(`      - 30-day summary data`);
+      console.log('      - 30-day summary data');
       
       return reportData;
       

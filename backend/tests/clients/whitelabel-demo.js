@@ -601,12 +601,12 @@ class WhiteLabelDemoClient {
       const reportPath = `/tmp/whitelabel-demo-report-${Date.now()}.json`;
       await fs.writeFile(reportPath, JSON.stringify(reportData, null, 2));
       
-      console.log(`   ✅ White-labeling report generated`);
+      console.log('   ✅ White-labeling report generated');
       console.log(`   📄 Report saved to: ${reportPath}`);
-      console.log(`   📊 Report contains:`);
-      console.log(`      - Current branding configuration`);
+      console.log('   📊 Report contains:');
+      console.log('      - Current branding configuration');
       console.log(`      - Available theme templates: ${reportData.white_labeling.available_themes?.length || 0}`);
-      console.log(`      - Domain status information`);
+      console.log('      - Domain status information');
       console.log(`      - Recent changes: ${reportData.white_labeling.recent_changes?.length || 0}`);
       
       return reportData;

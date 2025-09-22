@@ -12,6 +12,7 @@
 const express = require('express');
 const router = express.Router();
 const WhiteLabelingController = require('../controllers/whiteLabelingController');
+const whiteLabelingService = require('../../services/whiteLabelingService');
 const auth = require('../../middleware/auth');
 const rbac = require('../../middleware/rbac');
 const rateLimiting = require('../../middleware/rateLimiting');

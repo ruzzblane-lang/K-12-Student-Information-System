@@ -1,120 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#1e40af" />
-    <meta name="description" content="School SIS - Offline" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Offline - School SIS</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-                sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-        
-        .offline-container {
-            text-align: center;
-            max-width: 400px;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-        
-        .offline-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-        
-        p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-        
-        .retry-button {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .retry-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-        
-        .features {
-            margin-top: 2rem;
-            text-align: left;
-        }
-        
-        .feature {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .feature-icon {
-            margin-right: 0.5rem;
-            font-size: 1.2rem;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        @media (max-width: 480px) {
-            .offline-container {
-                margin: 1rem;
-                padding: 1.5rem;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            p {
-                font-size: 1rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles/offline.css">
 </head>
 <body>
     <div class="offline-container">
@@ -122,54 +12,200 @@
         <h1>You're Offline</h1>
         <p>
             It looks like you're not connected to the internet. 
-            Don't worry - you can still access some features of School SIS.
+            Don't worry - School SIS works offline too!
         </p>
         
-        <button class="retry-button" onclick="window.location.reload()">
-            Try Again
-        </button>
-        
         <div class="features">
-            <div class="feature">
-                <span class="feature-icon">📚</span>
-                View cached student data
-            </div>
-            <div class="feature">
-                <span class="feature-icon">📝</span>
-                Enter grades (will sync when online)
-            </div>
-            <div class="feature">
-                <span class="feature-icon">✅</span>
-                Take attendance (will sync when online)
-            </div>
-            <div class="feature">
-                <span class="feature-icon">💬</span>
-                Draft messages (will send when online)
+            <h3>Available Offline Features:</h3>
+            <ul>
+                <li>View cached student information</li>
+                <li>Access previously loaded grades</li>
+                <li>Review attendance records</li>
+                <li>Use basic navigation</li>
+            </ul>
+        </div>
+        
+        <div class="connection-status" id="connection-status">
+            <span class="status-indicator status-checking" id="status-indicator"></span>
+            <span id="connection-text">Checking connection...</span>
+        </div>
+        
+        <div class="progress-indicator" id="progress-indicator" style="display: none;">
+            <div>Testing connectivity...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
             </div>
         </div>
+        
+        <button class="retry-button" id="retry-button" onclick="checkConnection()">
+            Check Connection
+        </button>
     </div>
-    
+
     <script>
-        // Check online status and update UI
-        function updateOnlineStatus() {
-            if (navigator.onLine) {
-                // If we're back online, try to reload
-                window.location.reload();
+        // Enhanced connection checking with better UX
+        class ConnectionChecker {
+            constructor() {
+                this.statusText = document.getElementById('connection-text');
+                this.statusIndicator = document.getElementById('status-indicator');
+                this.connectionStatus = document.getElementById('connection-status');
+                this.progressIndicator = document.getElementById('progress-indicator');
+                this.progressFill = document.getElementById('progress-fill');
+                this.retryButton = document.getElementById('retry-button');
+                this.isChecking = false;
+                this.retryCount = 0;
+                this.maxRetries = 3;
+                
+                this.init();
+            }
+            
+            init() {
+                // Listen for online/offline events
+                window.addEventListener('online', () => this.handleOnline());
+                window.addEventListener('offline', () => this.handleOffline());
+                
+                // Initial check
+                this.checkConnection();
+                
+                // Auto-retry every 30 seconds
+                setInterval(() => {
+                    if (!this.isChecking && !navigator.onLine) {
+                        this.checkConnection();
+                    }
+                }, 30000);
+            }
+            
+            async checkConnection() {
+                if (this.isChecking) return;
+                
+                this.isChecking = true;
+                this.retryButton.disabled = true;
+                this.retryButton.classList.add('loading');
+                this.progressIndicator.style.display = 'block';
+                
+                // Update status
+                this.updateStatus('checking', 'Testing connection...');
+                
+                try {
+                    // Test multiple endpoints for better reliability
+                    const endpoints = [
+                        '/api/health',
+                        'https://www.google.com/favicon.ico',
+                        'https://httpbin.org/status/200'
+                    ];
+                    
+                    let connected = false;
+                    let progress = 0;
+                    
+                    for (const endpoint of endpoints) {
+                        if (connected) break;
+                        
+                        try {
+                            const response = await this.testEndpoint(endpoint);
+                            if (response.ok) {
+                                connected = true;
+                            }
+                        } catch (error) {
+                            console.log(`Endpoint ${endpoint} failed:`, error);
+                        }
+                        
+                        progress += 33;
+                        this.updateProgress(progress);
+                        
+                        // Small delay between tests
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                    
+                    if (connected) {
+                        this.handleConnectionRestored();
+                    } else {
+                        this.handleConnectionFailed();
+                    }
+                    
+                } catch (error) {
+                    console.error('Connection check failed:', error);
+                    this.handleConnectionFailed();
+                } finally {
+                    this.isChecking = false;
+                    this.retryButton.disabled = false;
+                    this.retryButton.classList.remove('loading');
+                    this.progressIndicator.style.display = 'none';
+                }
+            }
+            
+            async testEndpoint(url) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'HEAD',
+                        cache: 'no-cache',
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    return response;
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    throw error;
+                }
+            }
+            
+            updateStatus(status, text) {
+                this.statusText.textContent = text;
+                this.statusIndicator.className = `status-indicator status-${status}`;
+                this.connectionStatus.className = `connection-status ${status}`;
+            }
+            
+            updateProgress(percentage) {
+                this.progressFill.style.width = `${percentage}%`;
+            }
+            
+            handleConnectionRestored() {
+                this.retryCount = 0;
+                this.updateStatus('online', 'Connection restored! Redirecting...');
+                
+                // Show success message briefly before redirecting
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            }
+            
+            handleConnectionFailed() {
+                this.retryCount++;
+                const message = this.retryCount >= this.maxRetries 
+                    ? 'Still offline. Please check your internet connection.'
+                    : `Connection failed. Retry ${this.retryCount}/${this.maxRetries}`;
+                
+                this.updateStatus('offline', message);
+                
+                // Reset retry count after max retries
+                if (this.retryCount >= this.maxRetries) {
+                    setTimeout(() => {
+                        this.retryCount = 0;
+                    }, 60000); // Reset after 1 minute
+                }
+            }
+            
+            handleOnline() {
+                this.updateStatus('online', 'Connection detected! Verifying...');
+                setTimeout(() => this.checkConnection(), 1000);
+            }
+            
+            handleOffline() {
+                this.updateStatus('offline', 'Connection lost. Retrying...');
+                this.retryCount = 0;
             }
         }
         
-        // Listen for online/offline events
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', () => {
-            console.log('Still offline');
-        });
+        // Initialize connection checker
+        const connectionChecker = new ConnectionChecker();
         
-        // Periodically check connection
-        setInterval(() => {
-            if (navigator.onLine) {
-                updateOnlineStatus();
-            }
-        }, 5000);
+        // Global function for button click
+        function checkConnection() {
+            connectionChecker.checkConnection();
+        }
     </script>
 </body>
 </html>
