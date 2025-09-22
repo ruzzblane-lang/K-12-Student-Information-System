@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import OfflineIndicator from '../components/OfflineIndicator';
+import SyncStatus from '../components/SyncStatus';
 
 const MainLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,6 +40,7 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <OfflineIndicator />
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
@@ -181,6 +184,10 @@ const MainLayout = ({ children }) => {
         {/* Page content */}
         <main className="py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {/* Sync Status - only show on mobile or when there are pending actions */}
+            <div className="mb-6 lg:hidden">
+              <SyncStatus />
+            </div>
             {children}
           </div>
         </main>
