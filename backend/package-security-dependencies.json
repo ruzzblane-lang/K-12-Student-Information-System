@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "express-rate-limit": "^7.1.5",
+    "isomorphic-dompurify": "^2.6.0",
+    "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "@types/validator": "^13.11.7"
+  }
+}
