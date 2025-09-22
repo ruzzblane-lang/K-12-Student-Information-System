@@ -70,9 +70,9 @@ class ConnectionManager {
    * Update connection status in DOM and dispatch events
    */
   updateStatus() {
-    // Update _body class for styling
-    document._body.classList.toggle('offline', !this.isOnline);
-    document._body.classList.toggle('online', this.isOnline);
+    // Update body class for styling
+    document.body.classList.toggle('offline', !this.isOnline);
+    document.body.classList.toggle('online', this.isOnline);
     
     // Dispatch custom event for components
     window.dispatchEvent(new CustomEvent('connectionChange', {

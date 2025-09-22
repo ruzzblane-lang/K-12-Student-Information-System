@@ -14,11 +14,11 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       // In a real app, you'd validate the token with the backend
-      // For now, we'll just set a mock user
-      setUser({
-        _id: 1,
-        email: 'admin@school.com',
-        role: 'admin',
+        // For now, we'll just set a mock user
+        setUser({
+          id: 1,
+          email: 'admin@school.com',
+          role: 'admin',
         firstName: 'Admin',
         lastName: 'User'
       });
@@ -29,11 +29,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, _password) => {
     try {
-      // Mock login - in a real app, this would call the backend
-      const mockUser = {
-        _id: 1,
-        email,
-        role: 'admin',
+        // Mock login - in a real app, this would call the backend
+        const mockUser = {
+          id: 1,
+          email,
+          role: 'admin',
         firstName: 'Admin',
         lastName: 'User'
       };

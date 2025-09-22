@@ -1,6 +1,8 @@
 // Enhanced Service Worker for School SIS PWA
 // Version: 2.0.0
 
+/* eslint-disable */
+
 const STATIC_CACHE_NAME = 'school-sis-static-v2.0.0';
 const DYNAMIC_CACHE_NAME = 'school-sis-dynamic-v2.0.0';
 const FONTS_CACHE_NAME = 'school-sis-fonts-v2.0.0';

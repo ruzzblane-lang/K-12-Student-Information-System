@@ -180,7 +180,7 @@ class AnalyticsDemoClient {
         const _decliningStudents = decliningResponse.data.data.students;
         console.log(`\n⚠️ Found ${_decliningStudents.length} students with declining attendance:`);
         
-        _decliningStudents.forEach((student, index) => {
+        decliningStudents.forEach((student, index) => {
           console.log(`${index + 1}. ${student.first_name} ${student.last_name} (${student.student_number})`);
           console.log(`   Current Rate: ${student.current_rate.toFixed(1)}%`);
           console.log(`   Previous Rate: ${student.previous_rate.toFixed(1)}%`);

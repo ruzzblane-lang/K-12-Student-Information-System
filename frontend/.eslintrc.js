@@ -12,16 +12,18 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/public/sw*.js', '**/public/service-worker.js'],
+      files: ['**/public/sw*.js', '**/public/service-worker.js', '**/sw_enhanced.js'],
       env: {
         serviceworker: true,
-        browser: true
+        browser: true,
+        worker: true
       },
       globals: {
         self: 'readonly',
         caches: 'readonly',
         indexedDB: 'readonly',
-        fetch: 'readonly'
+        fetch: 'readonly',
+        importScripts: 'readonly'
       },
       rules: {
         'no-console': 'off', // Service workers need console for debugging
