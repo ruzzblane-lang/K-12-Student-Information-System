@@ -1,109 +1,108 @@
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
+/**
+ * Database Configuration
+ * Handles database connection and configuration
+ */
+
+const { Pool } = require('pg');
 
 // Database configuration
-const config = {
-  development: {
-    username: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'school_sis_dev',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: console.log,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    }
-  },
-  test: {
-    username: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME_TEST || 'school_sis_test',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    }
-  },
-  production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: 'postgres',
-    logging: false,
-    pool: {
-      max: 20,
-      min: 5,
-      acquire: 30000,
-      idle: 10000
-    },
-    dialectOptions: {
-      ssl: process.env.DB_SSL === 'true' ? {
-        require: true,
-        rejectUnauthorized: false
-      } : false
-    }
+const dbConfig = {
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_NAME || 'school_sis',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'password',
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  max: 20, // Maximum number of clients in the pool
+  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
+};
+
+// Create connection pool
+const pool = new Pool(dbConfig);
+
+// Handle pool errors
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
+});
+
+/**
+ * Execute a query
+ */
+const query = async (text, params) => {
+  const start = Date.now();
+  try {
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    console.log('Executed query', { text, duration, rows: res.rowCount });
+    return res;
+  } catch (error) {
+    console.error('Database query error:', error);
+    throw error;
   }
 };
 
-const env = process.env.NODE_ENV || 'development';
-const dbConfig = config[env];
+/**
+ * Get a client from the pool
+ */
+const getClient = async () => {
+  return await pool.connect();
+};
 
-// Create Sequelize instance
-const sequelize = new Sequelize(
-  dbConfig.database,
-  dbConfig.username,
-  dbConfig.password,
-  {
-    host: dbConfig.host,
-    port: dbConfig.port,
-    dialect: dbConfig.dialect,
-    logging: dbConfig.logging,
-    pool: dbConfig.pool,
-    dialectOptions: dbConfig.dialectOptions,
-    define: {
-      timestamps: true,
-      underscored: true,
-      freezeTableName: true
-    }
-  }
-);
+/**
+ * Begin a transaction
+ */
+const beginTransaction = async () => {
+  const client = await getClient();
+  await client.query('BEGIN');
+  return client;
+};
 
-// Test database connection
+/**
+ * Commit a transaction
+ */
+const commitTransaction = async (client) => {
+  await client.query('COMMIT');
+  client.release();
+};
+
+/**
+ * Rollback a transaction
+ */
+const rollbackTransaction = async (client) => {
+  await client.query('ROLLBACK');
+  client.release();
+};
+
+/**
+ * Test database connection
+ */
 const testConnection = async () => {
   try {
-    await sequelize.authenticate();
-    console.log('✅ Database connection has been established successfully.');
+    const result = await query('SELECT NOW()');
+    console.log('Database connection successful:', result.rows[0]);
+    return true;
   } catch (error) {
-    console.error('❌ Unable to connect to the database:', error);
-    process.exit(1);
+    console.error('Database connection failed:', error);
+    return false;
   }
 };
 
-// Initialize database
-const initializeDatabase = async () => {
-  try {
-    if (env === 'development') {
-      await sequelize.sync({ alter: true });
-      console.log('✅ Database synchronized successfully.');
-    }
-  } catch (error) {
-    console.error('❌ Error synchronizing database:', error);
-  }
+/**
+ * Close all connections
+ */
+const closeConnections = async () => {
+  await pool.end();
 };
 
 module.exports = {
-  sequelize,
+  query,
+  getClient,
+  beginTransaction,
+  commitTransaction,
+  rollbackTransaction,
   testConnection,
-  initializeDatabase
+  closeConnections,
+  pool
 };
