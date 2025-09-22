@@ -1,0 +1,1334 @@
+{
+  "info": {
+    "name": "K-12 Student Information System API",
+    "description": "Complete API testing collection for K-12 Student Information System backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string",
+      "description": "Base URL for the API"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string",
+      "description": "JWT access token for authentication"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string",
+      "description": "JWT refresh token"
+    },
+    {
+      "key": "tenantId",
+      "value": "",
+      "type": "string",
+      "description": "Current tenant ID"
+    },
+    {
+      "key": "tenantSlug",
+      "value": "springfield",
+      "type": "string",
+      "description": "Tenant slug for authentication"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@springfield.edu",
+      "type": "string",
+      "description": "Admin email for authentication"
+    },
+    {
+      "key": "adminPassword",
+      "value": "secure-password",
+      "type": "string",
+      "description": "Admin password for authentication"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "Authentication and authorization endpoints",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\",\n  \"tenantSlug\": \"{{tenantSlug}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate user and receive JWT tokens"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+                  "    pm.collectionVariables.set('tenantId', response.data.tenant.id);",
+                  "    pm.test('Login successful', () => {",
+                  "        pm.expect(response.data.accessToken).to.exist;",
+                  "        pm.expect(response.data.refreshToken).to.exist;",
+                  "        pm.expect(response.data.user.email).to.eql(pm.collectionVariables.get('adminEmail'));",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Login failed', () => {",
+                  "        pm.expect.fail('Login failed with status: ' + pm.response.code);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Refresh access token using refresh token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    pm.test('Token refresh successful', () => {",
+                  "        pm.expect(response.data.accessToken).to.exist;",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Token refresh failed', () => {",
+                  "        pm.expect.fail('Token refresh failed with status: ' + pm.response.code);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout user and invalidate tokens"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Logout successful', () => {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tenant Management",
+      "description": "Tenant management and configuration endpoints",
+      "item": [
+        {
+          "name": "Get Tenant Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants",
+              "host": ["{{baseUrl}}"],
+              "path": ["tenants"]
+            },
+            "description": "Get current tenant information"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has tenant data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.expect(response.data).to.have.property('name');",
+                  "    pm.expect(response.data).to.have.property('slug');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Tenant Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["tenants", "stats"]
+            },
+            "description": "Get tenant statistics"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has statistics', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('users');",
+                  "    pm.expect(response.data).to.have.property('students');",
+                  "    pm.expect(response.data).to.have.property('teachers');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Tenant Limits",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/limits",
+              "host": ["{{baseUrl}}"],
+              "path": ["tenants", "limits"]
+            },
+            "description": "Get tenant limits and usage"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has limits data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('students');",
+                  "    pm.expect(response.data).to.have.property('teachers');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Student Management",
+      "description": "Student management endpoints",
+      "item": [
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["students"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all students with pagination"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has students array', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "    pm.expect(response.meta).to.have.property('pagination');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"STU001\",\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Johnson\",\n  \"gradeLevel\": \"10\",\n  \"dateOfBirth\": \"2008-05-15\",\n  \"email\": \"alice.johnson@springfield.edu\",\n  \"phone\": \"(217) 555-0123\",\n  \"address\": \"123 Student St, Springfield, IL 62701\",\n  \"parentGuardian1Name\": \"Bob Johnson\",\n  \"parentGuardian1Email\": \"bob.johnson@email.com\",\n  \"parentGuardian1Phone\": \"(217) 555-0124\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["students"]
+            },
+            "description": "Create a new student"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Student created successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.id).to.exist;",
+                  "    pm.expect(response.data.firstName).to.eql('Alice');",
+                  "    pm.expect(response.data.lastName).to.eql('Johnson');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Student by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/{{studentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["students", "{{studentId}}"]
+            },
+            "description": "Get a specific student by ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has student data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.expect(response.data).to.have.property('firstName');",
+                  "    pm.expect(response.data).to.have.property('lastName');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alice Updated\",\n  \"gradeLevel\": \"11\",\n  \"phone\": \"(217) 555-9999\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students/{{studentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["students", "{{studentId}}"]
+            },
+            "description": "Update student information"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Student updated successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.firstName).to.eql('Alice Updated');",
+                  "    pm.expect(response.data.gradeLevel).to.eql('11');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/{{studentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["students", "{{studentId}}"]
+            },
+            "description": "Delete a student"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 204', () => {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students?search=Alice",
+              "host": ["{{baseUrl}}"],
+              "path": ["students"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Alice"
+                }
+              ]
+            },
+            "description": "Search students by name or student ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has search results', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter Students by Grade",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students?gradeLevel=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["students"],
+              "query": [
+                {
+                  "key": "gradeLevel",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter students by grade level"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('All students are in grade 10', () => {",
+                  "    const response = pm.response.json();",
+                  "    response.data.forEach(student => {",
+                  "        pm.expect(student.gradeLevel).to.eql('10');",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Teacher Management",
+      "description": "Teacher management endpoints",
+      "item": [
+        {
+          "name": "Get All Teachers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["teachers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all teachers with pagination"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has teachers array', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"TCH001\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Smith\",\n  \"email\": \"jane.smith@springfield.edu\",\n  \"phone\": \"(217) 555-0125\",\n  \"department\": \"Mathematics\",\n  \"employmentType\": \"full_time\",\n  \"hireDate\": \"2023-08-15\",\n  \"subjectsTaught\": [\"Algebra\", \"Geometry\", \"Calculus\"],\n  \"gradeLevelsTaught\": [\"9\", \"10\", \"11\", \"12\"],\n  \"yearsExperience\": 5,\n  \"qualifications\": \"Master's in Mathematics Education\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teachers",
+              "host": ["{{baseUrl}}"],
+              "path": ["teachers"]
+            },
+            "description": "Create a new teacher"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Teacher created successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.id).to.exist;",
+                  "    pm.expect(response.data.firstName).to.eql('Jane');",
+                  "    pm.expect(response.data.lastName).to.eql('Smith');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Teacher by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers/{{teacherId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["teachers", "{{teacherId}}"]
+            },
+            "description": "Get a specific teacher by ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has teacher data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.expect(response.data).to.have.property('firstName');",
+                  "    pm.expect(response.data).to.have.property('lastName');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Teacher Schedule",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers/{{teacherId}}/schedule",
+              "host": ["{{baseUrl}}"],
+              "path": ["teachers", "{{teacherId}}", "schedule"]
+            },
+            "description": "Get teacher's class schedule"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has schedule data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Teacher Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers/{{teacherId}}/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["teachers", "{{teacherId}}", "students"]
+            },
+            "description": "Get students taught by a teacher"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has students data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Class Management",
+      "description": "Class management endpoints",
+      "item": [
+        {
+          "name": "Get All Classes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/classes?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all classes with pagination"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has classes array', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Class",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classCode\": \"MATH101\",\n  \"name\": \"Algebra I\",\n  \"description\": \"Introduction to algebraic concepts\",\n  \"subject\": \"Mathematics\",\n  \"gradeLevel\": \"9\",\n  \"academicYear\": \"2024-2025\",\n  \"semester\": \"full_year\",\n  \"credits\": 1.0,\n  \"teacherId\": \"{{teacherId}}\",\n  \"roomNumber\": \"A101\",\n  \"building\": \"Main Building\",\n  \"schedule\": {\n    \"monday\": [\"08:00-08:50\"],\n    \"wednesday\": [\"08:00-08:50\"],\n    \"friday\": [\"08:00-08:50\"]\n  },\n  \"maxStudents\": 30,\n  \"startDate\": \"2024-08-15\",\n  \"endDate\": \"2025-05-30\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classes",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes"]
+            },
+            "description": "Create a new class"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Class created successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.id).to.exist;",
+                  "    pm.expect(response.data.name).to.eql('Algebra I');",
+                  "    pm.expect(response.data.classCode).to.eql('MATH101');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Enroll Student in Class",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classes/{{classId}}/enroll",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "{{classId}}", "enroll"]
+            },
+            "description": "Enroll a student in a class"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Student enrolled successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.id).to.exist;",
+                  "    pm.expect(response.data.studentId).to.exist;",
+                  "    pm.expect(response.data.classId).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Class Enrollment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/classes/{{classId}}/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "{{classId}}", "students"]
+            },
+            "description": "Get students enrolled in a class"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has enrollment data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Grade Management",
+      "description": "Grade management endpoints",
+      "item": [
+        {
+          "name": "Get All Grades",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/grades?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["grades"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all grades with pagination"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has grades array', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Grade",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"classId\": \"{{classId}}\",\n  \"assignmentName\": \"Chapter 5 Test\",\n  \"assignmentType\": \"test\",\n  \"category\": \"tests\",\n  \"pointsPossible\": 100,\n  \"pointsEarned\": 85,\n  \"assignedDate\": \"2024-01-10\",\n  \"dueDate\": \"2024-01-15\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grades",
+              "host": ["{{baseUrl}}"],
+              "path": ["grades"]
+            },
+            "description": "Create a new grade"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Grade created successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.id).to.exist;",
+                  "    pm.expect(response.data.assignmentName).to.eql('Chapter 5 Test');",
+                  "    pm.expect(response.data.pointsEarned).to.eql(85);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Grade Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classId\": \"{{classId}}\",\n  \"assignmentName\": \"Quiz 3\",\n  \"assignmentType\": \"quiz\",\n  \"category\": \"quizzes\",\n  \"pointsPossible\": 50,\n  \"assignedDate\": \"2024-01-15\",\n  \"dueDate\": \"2024-01-17\",\n  \"grades\": [\n    {\"studentId\": \"{{studentId}}\", \"pointsEarned\": 45},\n    {\"studentId\": \"student-2\", \"pointsEarned\": 50},\n    {\"studentId\": \"student-3\", \"pointsEarned\": 42}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grades/bulk-entry",
+              "host": ["{{baseUrl}}"],
+              "path": ["grades", "bulk-entry"]
+            },
+            "description": "Bulk grade entry for a class"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Bulk grades created successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.totalCreated).to.be.greaterThan(0);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Grade Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/grades/statistics?classId={{classId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["grades", "statistics"],
+              "query": [
+                {
+                  "key": "classId",
+                  "value": "{{classId}}"
+                }
+              ]
+            },
+            "description": "Get grade statistics for a class"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has statistics data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('totalAssignments');",
+                  "    pm.expect(response.data).to.have.property('averageGrade');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Attendance Management",
+      "description": "Attendance management endpoints",
+      "item": [
+        {
+          "name": "Get All Attendance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/attendance?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all attendance records with pagination"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has attendance array', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Attendance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"classId\": \"{{classId}}\",\n  \"attendanceDate\": \"2024-01-15\",\n  \"status\": \"present\",\n  \"period\": \"1st\",\n  \"reason\": null,\n  \"notes\": null,\n  \"isExcused\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance"]
+            },
+            "description": "Create a new attendance record"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Attendance created successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.id).to.exist;",
+                  "    pm.expect(response.data.status).to.eql('present');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Attendance Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classId\": \"{{classId}}\",\n  \"attendanceDate\": \"2024-01-15\",\n  \"period\": \"1st\",\n  \"records\": [\n    {\"studentId\": \"{{studentId}}\", \"status\": \"present\"},\n    {\"studentId\": \"student-2\", \"status\": \"absent\", \"reason\": \"Sick\"},\n    {\"studentId\": \"student-3\", \"status\": \"tardy\"}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendance/bulk",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "bulk"]
+            },
+            "description": "Bulk attendance entry for a class"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Bulk attendance created successfully', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.totalCreated).to.be.greaterThan(0);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Attendance Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/statistics?classId={{classId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "statistics"],
+              "query": [
+                {
+                  "key": "classId",
+                  "value": "{{classId}}"
+                }
+              ]
+            },
+            "description": "Get attendance statistics for a class"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has statistics data', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('totalDays');",
+                  "    pm.expect(response.data).to.have.property('averageAttendanceRate');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

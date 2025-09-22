@@ -1,0 +1,34 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+// Database Migration Best Practices
+
+// Idempotency:
+// - Write migrations so that re-running them does not cause errors. 
+//   For example, use "CREATE TABLE IF NOT EXISTS" and check for the existence of objects before creating or altering them.
+
+// Transaction Use:
+// - Run all migrations inside transactions to ensure atomicity. 
+//   This prevents partial application of changes if an error occurs.
+
+// Comments:
+// - Add clear comments for complex constraints, triggers, and any non-obvious design choices within migration scripts.
+//   This aids future maintainers in understanding the rationale behind schema changes.
+
+// Versioning:
+// - Name migration files with a strictly increasing, chronological prefix (e.g., 001_init.sql, 002_add_users.sql).
+//   This ensures migrations are applied in the correct order and avoids conflicts.
+
+// Testing:
+// - Always test migrations on a staging environment that mirrors production before applying them to production.
+//   This helps catch issues early and ensures reliability.
+
+// Rollback:
+// - For every migration, provide a corresponding down/rollback script or clear rollback steps.
+//   This allows safe reversal of changes if needed.
+
+// Documentation:
+// - Maintain up-to-date documentation on database schema decisions, including rationale for major changes.
+//   This documentation should be accessible to the team for onboarding and future maintenance.
