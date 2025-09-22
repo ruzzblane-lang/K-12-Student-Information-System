@@ -1,0 +1,45 @@
+{
+  "name": "school-sis-seed-scripts",
+  "version": "1.0.0",
+  "description": "Database seeding scripts for School SIS with secure password generation",
+  "main": "generate_secure_passwords.js",
+  "scripts": {
+    "generate-passwords": "node generate_secure_passwords.js",
+    "generate-passwords:dev": "node generate_secure_passwords.js development",
+    "generate-passwords:test": "node generate_secure_passwords.js testing",
+    "generate-passwords:staging": "node generate_secure_passwords.js staging",
+    "generate-passwords:prod": "node generate_secure_passwords.js production",
+    "install-deps": "npm install",
+    "clean": "rm -rf generated/*.json generated/*.sql generated/.env.*",
+    "validate": "node validate_seed_data.js"
+  },
+  "keywords": [
+    "database",
+    "seeding",
+    "security",
+    "passwords",
+    "bcrypt",
+    "postgresql"
+  ],
+  "author": "School SIS Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/school-sis.git",
+    "directory": "db/seeds/scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/school-sis/issues"
+  },
+  "homepage": "https://github.com/your-org/school-sis#readme"
+}
