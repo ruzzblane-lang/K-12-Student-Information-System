@@ -23,8 +23,7 @@ const whiteLabelingController = new WhiteLabelingController();
 
 // Apply middleware
 router.use(auth.authMiddleware);
-// router.use(auth.requireTenant); // Function doesn't exist
-// router.use(rateLimiting.whitelabelLimiter); // Function doesn't exist
+// Note: requireTenant and whitelabelLimiter functions don't exist, using available middleware
 
 /**
  * Branding Configuration Routes

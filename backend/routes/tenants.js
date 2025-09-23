@@ -6,15 +6,15 @@
 const express = require('express');
 const router = express.Router();
 const tenantController = require('../controllers/tenantController');
-const { _authMiddleware } = require('../middleware/auth');
+const { authMiddleware } = require('../middleware/auth');
 const { rbacMiddleware } = require('../middleware/rbac');
-const { _general } = require('../middleware/rateLimiting');
+const { general } = require('../middleware/rateLimiting');
 
 // Apply authentication to all routes
-router.use(_authMiddleware);
+router.use(authMiddleware);
 
-// Apply _general rate limiting
-router.use(_general);
+// Apply general rate limiting
+router.use(general);
 
 /**
  * @route GET /api/tenants

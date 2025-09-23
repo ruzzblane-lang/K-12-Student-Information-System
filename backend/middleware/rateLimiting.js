@@ -8,7 +8,7 @@ const _rateLimit = require('express-rate-limit');
 // Rate limiting configurations
 const rateLimitConfigs = {
   // General rate limit for most endpoints
-  _general: _rateLimit({
+  general: _rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
     message: {

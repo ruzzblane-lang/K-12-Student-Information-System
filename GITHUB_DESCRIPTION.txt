@@ -1,0 +1,1 @@
+🏫 Enterprise-grade K-12 Student Information System with AI integration, advanced security, and comprehensive compliance (FERPA/GDPR/COPPA). Features multi-tenant architecture, white-labeling, payment gateway, 17+ integrations, and PWA capabilities. Production-ready with both frontend and backend servers operational.
