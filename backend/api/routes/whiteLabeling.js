@@ -22,9 +22,9 @@ const { body, param } = require('express-validator');
 const whiteLabelingController = new WhiteLabelingController();
 
 // Apply middleware
-router.use(auth.verifyToken);
-router.use(auth.requireTenant);
-router.use(rateLimiting.whitelabelLimiter);
+router.use(auth.authMiddleware);
+// router.use(auth.requireTenant); // Function doesn't exist
+// router.use(rateLimiting.whitelabelLimiter); // Function doesn't exist
 
 /**
  * Branding Configuration Routes
@@ -32,13 +32,13 @@ router.use(rateLimiting.whitelabelLimiter);
 
 // Get branding configuration
 router.get('/branding', 
-  rbac.requireRole(['admin', 'teacher']),
+  rbac.rbacMiddleware(['admin', 'teacher']),
   whiteLabelingController.getBranding.bind(whiteLabelingController)
 );
 
 // Update branding configuration
 router.put('/branding',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('colors.primary').optional().isHexColor().withMessage('Primary color must be a valid hex color'),
     body('colors.secondary').optional().isHexColor().withMessage('Secondary color must be a valid hex color'),
@@ -78,7 +78,7 @@ router.get('/css/:tenantId',
 
 // Upload branding asset
 router.post('/upload-asset',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   whiteLabelingController.getUploadMiddleware(),
   [
     body('asset_type').isIn(['logo', 'favicon', 'apple_touch_icon', 'background_image']).withMessage('Invalid asset type')
@@ -92,13 +92,13 @@ router.post('/upload-asset',
 
 // Get available theme templates
 router.get('/themes',
-  rbac.requireRole(['admin', 'teacher']),
+  rbac.rbacMiddleware(['admin', 'teacher']),
   whiteLabelingController.getThemeTemplates.bind(whiteLabelingController)
 );
 
 // Apply theme template
 router.post('/themes/apply',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('template_id').isString().withMessage('Template ID is required')
   ],
@@ -111,7 +111,7 @@ router.post('/themes/apply',
 
 // Get branding preview
 router.get('/preview',
-  rbac.requireRole(['admin', 'teacher']),
+  rbac.rbacMiddleware(['admin', 'teacher']),
   whiteLabelingController.getPreview.bind(whiteLabelingController)
 );
 
@@ -121,7 +121,7 @@ router.get('/preview',
 
 // Validate custom domain
 router.post('/validate-domain',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('domain').isFQDN().withMessage('Domain must be a valid fully qualified domain name')
   ],
@@ -130,7 +130,7 @@ router.post('/validate-domain',
 
 // Setup custom domain
 router.post('/setup-custom-domain',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('domain').isFQDN().withMessage('Domain must be a valid fully qualified domain name'),
     body('verification_code').isLength({ min: 32, max: 32 }).withMessage('Verification code must be 32 characters')
@@ -140,7 +140,7 @@ router.post('/setup-custom-domain',
 
 // Get custom domain status
 router.get('/domain-status',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   whiteLabelingController.getDomainStatus.bind(whiteLabelingController)
 );
 
@@ -150,13 +150,13 @@ router.get('/domain-status',
 
 // Export branding configuration
 router.get('/export-config',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   whiteLabelingController.exportConfig.bind(whiteLabelingController)
 );
 
 // Import branding configuration
 router.post('/import-config',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('config').isObject().withMessage('Configuration must be a valid object'),
     body('overwriteExisting').optional().isBoolean().withMessage('Overwrite existing must be a boolean')
@@ -166,7 +166,7 @@ router.post('/import-config',
 
 // Reset branding to defaults
 router.post('/reset-defaults',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   whiteLabelingController.resetToDefaults.bind(whiteLabelingController)
 );
 
@@ -176,7 +176,7 @@ router.post('/reset-defaults',
 
 // Get branding audit log
 router.get('/audit-log',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     param('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
     param('offset').optional().isInt({ min: 0 }).withMessage('Offset must be a non-negative integer')
@@ -190,7 +190,7 @@ router.get('/audit-log',
 
 // Update email templates
 router.put('/email-templates',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('templates').isObject().withMessage('Templates must be a valid object')
   ],
@@ -221,7 +221,7 @@ router.put('/email-templates',
 
 // Update dashboard widgets
 router.put('/dashboard-widgets',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('widgetConfig').isObject().withMessage('Widget configuration must be a valid object')
   ],
@@ -252,7 +252,7 @@ router.put('/dashboard-widgets',
 
 // Update navigation menu
 router.put('/navigation-menu',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('menuConfig').isObject().withMessage('Menu configuration must be a valid object')
   ],
@@ -283,7 +283,7 @@ router.put('/navigation-menu',
 
 // Update support contact
 router.put('/support-contact',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('supportConfig').isObject().withMessage('Support configuration must be a valid object')
   ],
@@ -314,7 +314,7 @@ router.put('/support-contact',
 
 // Update social media
 router.put('/social-media',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('socialMediaConfig').isObject().withMessage('Social media configuration must be a valid object')
   ],
@@ -345,7 +345,7 @@ router.put('/social-media',
 
 // Update analytics configuration
 router.put('/analytics-config',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('analyticsConfig').isObject().withMessage('Analytics configuration must be a valid object')
   ],
@@ -376,7 +376,7 @@ router.put('/analytics-config',
 
 // Update legal documents
 router.put('/legal-documents',
-  rbac.requireRole(['admin']),
+  rbac.rbacMiddleware(['admin']),
   [
     body('legalDocs').isObject().withMessage('Legal documents must be a valid object'),
     body('legalDocs.terms_of_service').optional().isString().withMessage('Terms of service must be a string'),
