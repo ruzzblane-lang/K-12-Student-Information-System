@@ -77,8 +77,14 @@ class BasePaymentProvider {
   /**
    * Execute the actual payment
    * Must be implemented by each provider
+   * @param {Object} paymentData - Payment data
+   * @param {string} transactionId - Transaction ID
+   * @returns {Object} Payment result
    */
   async executePayment(paymentData, transactionId) {
+    // Suppress unused parameter warnings for abstract method
+    void paymentData;
+    void transactionId;
     throw new Error('executePayment() must be implemented by payment provider');
   }
 
@@ -115,8 +121,14 @@ class BasePaymentProvider {
   /**
    * Execute the actual refund
    * Must be implemented by each provider
+   * @param {Object} refundData - Refund data
+   * @param {string} refundId - Refund ID
+   * @returns {Object} Refund result
    */
   async executeRefund(refundData, refundId) {
+    // Suppress unused parameter warnings for abstract method
+    void refundData;
+    void refundId;
     throw new Error('executeRefund() must be implemented by payment provider');
   }
 
@@ -142,8 +154,12 @@ class BasePaymentProvider {
   /**
    * Fetch payment status from provider
    * Must be implemented by each provider
+   * @param {string} transactionId - Transaction ID
+   * @returns {Object} Payment status
    */
   async fetchPaymentStatus(transactionId) {
+    // Suppress unused parameter warnings for abstract method
+    void transactionId;
     throw new Error('fetchPaymentStatus() must be implemented by payment provider');
   }
 
@@ -178,8 +194,12 @@ class BasePaymentProvider {
   /**
    * Create payment method token
    * Must be implemented by each provider
+   * @param {Object} paymentMethodData - Payment method data
+   * @returns {Object} Tokenization result
    */
   async createPaymentMethodToken(paymentMethodData) {
+    // Suppress unused parameter warnings for abstract method
+    void paymentMethodData;
     throw new Error('createPaymentMethodToken() must be implemented by payment provider');
   }
 
@@ -193,7 +213,8 @@ class BasePaymentProvider {
     try {
       return await this.verifyWebhookSignature(payload, signature);
     } catch (error) {
-      console.error('Webhook signature validation failed:', error);
+      // Log error without exposing sensitive information
+      this.logError('Webhook signature validation failed', error);
       return false;
     }
   }
@@ -201,8 +222,14 @@ class BasePaymentProvider {
   /**
    * Verify webhook signature
    * Must be implemented by each provider
+   * @param {string} payload - Webhook payload
+   * @param {string} signature - Webhook signature
+   * @returns {boolean} Signature validity
    */
   async verifyWebhookSignature(payload, signature) {
+    // Suppress unused parameter warnings for abstract method
+    void payload;
+    void signature;
     throw new Error('verifyWebhookSignature() must be implemented by payment provider');
   }
 
@@ -233,8 +260,12 @@ class BasePaymentProvider {
   /**
    * Handle webhook event
    * Must be implemented by each provider
+   * @param {Object} event - Webhook event
+   * @returns {Object} Processing result
    */
   async handleWebhookEvent(event) {
+    // Suppress unused parameter warnings for abstract method
+    void event;
     throw new Error('handleWebhookEvent() must be implemented by payment provider');
   }
 
@@ -285,6 +316,10 @@ class BasePaymentProvider {
    * @param {Object} paymentData - Payment data to validate
    */
   validatePaymentData(paymentData) {
+    if (!paymentData || typeof paymentData !== 'object') {
+      throw new Error('Payment data must be an object');
+    }
+
     const required = ['amount', 'currency', 'paymentMethod', 'tenantId'];
     
     for (const field of required) {
@@ -293,16 +328,41 @@ class BasePaymentProvider {
       }
     }
 
-    if (paymentData.amount <= 0) {
-      throw new Error('Payment amount must be greater than 0');
+    // Validate amount
+    if (typeof paymentData.amount !== 'number' || paymentData.amount <= 0) {
+      throw new Error('Payment amount must be a positive number');
+    }
+
+    // Validate currency
+    if (typeof paymentData.currency !== 'string' || !/^[A-Z]{3}$/.test(paymentData.currency)) {
+      throw new Error('Currency must be a valid 3-letter ISO code');
     }
 
     if (!this.isCurrencySupported(paymentData.currency)) {
       throw new Error(`Unsupported currency: ${paymentData.currency}`);
     }
 
+    // Validate payment method
+    if (typeof paymentData.paymentMethod !== 'string' || paymentData.paymentMethod.trim().length === 0) {
+      throw new Error('Payment method must be a non-empty string');
+    }
+
     if (!this.isPaymentMethodSupported(paymentData.paymentMethod)) {
       throw new Error(`Unsupported payment method: ${paymentData.paymentMethod}`);
+    }
+
+    // Validate tenant ID
+    if (typeof paymentData.tenantId !== 'string' || !this.isValidUUID(paymentData.tenantId)) {
+      throw new Error('Tenant ID must be a valid UUID');
+    }
+
+    // Validate optional fields
+    if (paymentData.description && (typeof paymentData.description !== 'string' || paymentData.description.length > 500)) {
+      throw new Error('Description must be a string with maximum 500 characters');
+    }
+
+    if (paymentData.metadata && (typeof paymentData.metadata !== 'object' || Array.isArray(paymentData.metadata))) {
+      throw new Error('Metadata must be an object');
     }
   }
 
@@ -311,6 +371,10 @@ class BasePaymentProvider {
    * @param {Object} refundData - Refund data to validate
    */
   validateRefundData(refundData) {
+    if (!refundData || typeof refundData !== 'object') {
+      throw new Error('Refund data must be an object');
+    }
+
     const required = ['transactionId', 'amount', 'tenantId'];
     
     for (const field of required) {
@@ -319,8 +383,24 @@ class BasePaymentProvider {
       }
     }
 
-    if (refundData.amount <= 0) {
-      throw new Error('Refund amount must be greater than 0');
+    // Validate amount
+    if (typeof refundData.amount !== 'number' || refundData.amount <= 0) {
+      throw new Error('Refund amount must be a positive number');
+    }
+
+    // Validate transaction ID
+    if (typeof refundData.transactionId !== 'string' || refundData.transactionId.trim().length === 0) {
+      throw new Error('Transaction ID must be a non-empty string');
+    }
+
+    // Validate tenant ID
+    if (typeof refundData.tenantId !== 'string' || !this.isValidUUID(refundData.tenantId)) {
+      throw new Error('Tenant ID must be a valid UUID');
+    }
+
+    // Validate optional reason
+    if (refundData.reason && (typeof refundData.reason !== 'string' || refundData.reason.length > 500)) {
+      throw new Error('Refund reason must be a string with maximum 500 characters');
     }
   }
 
@@ -329,6 +409,10 @@ class BasePaymentProvider {
    * @param {Object} paymentMethodData - Payment method data to validate
    */
   validatePaymentMethodData(paymentMethodData) {
+    if (!paymentMethodData || typeof paymentMethodData !== 'object') {
+      throw new Error('Payment method data must be an object');
+    }
+
     const required = ['type', 'tenantId'];
     
     for (const field of required) {
@@ -336,6 +420,105 @@ class BasePaymentProvider {
         throw new Error(`Missing required field: ${field}`);
       }
     }
+
+    // Validate type
+    if (typeof paymentMethodData.type !== 'string' || paymentMethodData.type.trim().length === 0) {
+      throw new Error('Payment method type must be a non-empty string');
+    }
+
+    // Validate tenant ID
+    if (typeof paymentMethodData.tenantId !== 'string' || !this.isValidUUID(paymentMethodData.tenantId)) {
+      throw new Error('Tenant ID must be a valid UUID');
+    }
+
+    // Validate card data if present
+    if (paymentMethodData.card) {
+      this.validateCardData(paymentMethodData.card);
+    }
+  }
+
+  /**
+   * Validate card data
+   * @param {Object} cardData - Card data to validate
+   */
+  validateCardData(cardData) {
+    if (!cardData || typeof cardData !== 'object') {
+      throw new Error('Card data must be an object');
+    }
+
+    const required = ['number', 'expiryMonth', 'expiryYear', 'cvv'];
+    
+    for (const field of required) {
+      if (!cardData[field]) {
+        throw new Error(`Missing required card field: ${field}`);
+      }
+    }
+
+    // Validate card number (basic Luhn algorithm check)
+    if (typeof cardData.number !== 'string' || !this.isValidCardNumber(cardData.number)) {
+      throw new Error('Invalid card number');
+    }
+
+    // Validate expiry month
+    if (typeof cardData.expiryMonth !== 'number' || cardData.expiryMonth < 1 || cardData.expiryMonth > 12) {
+      throw new Error('Expiry month must be between 1 and 12');
+    }
+
+    // Validate expiry year
+    const currentYear = new Date().getFullYear();
+    if (typeof cardData.expiryYear !== 'number' || cardData.expiryYear < currentYear || cardData.expiryYear > currentYear + 20) {
+      throw new Error('Invalid expiry year');
+    }
+
+    // Validate CVV
+    if (typeof cardData.cvv !== 'string' || !/^\d{3,4}$/.test(cardData.cvv)) {
+      throw new Error('CVV must be 3 or 4 digits');
+    }
+  }
+
+  /**
+   * Check if a string is a valid UUID
+   * @param {string} uuid - String to validate
+   * @returns {boolean} True if valid UUID
+   */
+  isValidUUID(uuid) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  }
+
+  /**
+   * Validate card number using Luhn algorithm
+   * @param {string} cardNumber - Card number to validate
+   * @returns {boolean} True if valid
+   */
+  isValidCardNumber(cardNumber) {
+    // Remove spaces and non-digits
+    const cleaned = cardNumber.replace(/\D/g, '');
+    
+    // Check if it's a reasonable length (13-19 digits)
+    if (cleaned.length < 13 || cleaned.length > 19) {
+      return false;
+    }
+    
+    // Luhn algorithm
+    let sum = 0;
+    let isEven = false;
+    
+    for (let i = cleaned.length - 1; i >= 0; i--) {
+      let digit = parseInt(cleaned[i], 10);
+      
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+      
+      sum += digit;
+      isEven = !isEven;
+    }
+    
+    return sum % 10 === 0;
   }
 
   /**
@@ -387,23 +570,33 @@ class BasePaymentProvider {
    * @param {string} transactionId - Transaction ID
    */
   async logPaymentAttempt(paymentData, transactionId) {
-    const query = `
-      INSERT INTO payment_attempts (
-        id, tenant_id, provider, transaction_id, amount, currency,
-        payment_method, status, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
-    `;
+    if (!this.db) {
+      this.logError('Database not available for payment attempt logging', new Error('Database connection missing'));
+      return;
+    }
 
-    await this.db.query(query, [
-      uuidv4(),
-      paymentData.tenantId,
-      this.providerName,
-      transactionId,
-      paymentData.amount,
-      paymentData.currency,
-      paymentData.paymentMethod,
-      'attempted'
-    ]);
+    try {
+      const query = `
+        INSERT INTO payment_attempts (
+          id, tenant_id, provider, transaction_id, amount, currency,
+          payment_method, status, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
+      `;
+
+      await this.db.query(query, [
+        uuidv4(),
+        paymentData.tenantId,
+        this.providerName,
+        transactionId,
+        paymentData.amount,
+        paymentData.currency,
+        paymentData.paymentMethod,
+        'attempted'
+      ]);
+    } catch (error) {
+      this.logError('Failed to log payment attempt', error);
+      // Don't throw - logging failure shouldn't break payment processing
+    }
   }
 
   /**
@@ -413,19 +606,29 @@ class BasePaymentProvider {
    * @param {number} processingTime - Processing time in ms
    */
   async logPaymentResult(transactionId, result, processingTime) {
-    const query = `
-      UPDATE payment_attempts 
-      SET status = $1, provider_transaction_id = $2, processing_time_ms = $3,
-          updated_at = CURRENT_TIMESTAMP
-      WHERE transaction_id = $4
-    `;
+    if (!this.db) {
+      this.logError('Database not available for payment result logging', new Error('Database connection missing'));
+      return;
+    }
 
-    await this.db.query(query, [
-      result.status,
-      result.providerTransactionId,
-      processingTime,
-      transactionId
-    ]);
+    try {
+      const query = `
+        UPDATE payment_attempts 
+        SET status = $1, provider_transaction_id = $2, processing_time_ms = $3,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE transaction_id = $4
+      `;
+
+      await this.db.query(query, [
+        result.status,
+        result.providerTransactionId,
+        processingTime,
+        transactionId
+      ]);
+    } catch (error) {
+      this.logError('Failed to log payment result', error);
+      // Don't throw - logging failure shouldn't break payment processing
+    }
   }
 
   /**
@@ -435,19 +638,29 @@ class BasePaymentProvider {
    * @param {number} processingTime - Processing time in ms
    */
   async logPaymentError(transactionId, error, processingTime) {
-    const query = `
-      UPDATE payment_attempts 
-      SET status = $1, error_message = $2, processing_time_ms = $3,
-          updated_at = CURRENT_TIMESTAMP
-      WHERE transaction_id = $4
-    `;
+    if (!this.db) {
+      this.logError('Database not available for payment error logging', new Error('Database connection missing'));
+      return;
+    }
 
-    await this.db.query(query, [
-      'failed',
-      error.message,
-      processingTime,
-      transactionId
-    ]);
+    try {
+      const query = `
+        UPDATE payment_attempts 
+        SET status = $1, error_message = $2, processing_time_ms = $3,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE transaction_id = $4
+      `;
+
+      await this.db.query(query, [
+        'failed',
+        error.message,
+        processingTime,
+        transactionId
+      ]);
+    } catch (dbError) {
+      this.logError('Failed to log payment error', dbError);
+      // Don't throw - logging failure shouldn't break error handling
+    }
   }
 
   /**
@@ -457,24 +670,34 @@ class BasePaymentProvider {
    * @param {number} processingTime - Processing time in ms
    */
   async logRefundResult(refundId, result, processingTime) {
-    const query = `
-      INSERT INTO refund_attempts (
-        id, tenant_id, provider, refund_id, original_transaction_id,
-        amount, status, provider_refund_id, processing_time_ms, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP)
-    `;
+    if (!this.db) {
+      this.logError('Database not available for refund result logging', new Error('Database connection missing'));
+      return;
+    }
 
-    await this.db.query(query, [
-      uuidv4(),
-      result.tenantId,
-      this.providerName,
-      refundId,
-      result.originalTransactionId,
-      result.amount,
-      result.status,
-      result.providerRefundId,
-      processingTime
-    ]);
+    try {
+      const query = `
+        INSERT INTO refund_attempts (
+          id, tenant_id, provider, refund_id, original_transaction_id,
+          amount, status, provider_refund_id, processing_time_ms, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP)
+      `;
+
+      await this.db.query(query, [
+        uuidv4(),
+        result.tenantId,
+        this.providerName,
+        refundId,
+        result.originalTransactionId,
+        result.amount,
+        result.status,
+        result.providerRefundId,
+        processingTime
+      ]);
+    } catch (error) {
+      this.logError('Failed to log refund result', error);
+      // Don't throw - logging failure shouldn't break refund processing
+    }
   }
 
   /**
@@ -484,23 +707,33 @@ class BasePaymentProvider {
    * @param {number} processingTime - Processing time in ms
    */
   async logRefundError(refundId, error, processingTime) {
-    const query = `
-      INSERT INTO refund_attempts (
-        id, tenant_id, provider, refund_id, amount, status,
-        error_message, processing_time_ms, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
-    `;
+    if (!this.db) {
+      this.logError('Database not available for refund error logging', new Error('Database connection missing'));
+      return;
+    }
 
-    await this.db.query(query, [
-      uuidv4(),
-      'unknown', // tenantId not available in error case
-      this.providerName,
-      refundId,
-      0, // amount not available in error case
-      'failed',
-      error.message,
-      processingTime
-    ]);
+    try {
+      const query = `
+        INSERT INTO refund_attempts (
+          id, tenant_id, provider, refund_id, amount, status,
+          error_message, processing_time_ms, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
+      `;
+
+      await this.db.query(query, [
+        uuidv4(),
+        'unknown', // tenantId not available in error case
+        this.providerName,
+        refundId,
+        0, // amount not available in error case
+        'failed',
+        error.message,
+        processingTime
+      ]);
+    } catch (dbError) {
+      this.logError('Failed to log refund error', dbError);
+      // Don't throw - logging failure shouldn't break error handling
+    }
   }
 
   /**
@@ -509,18 +742,28 @@ class BasePaymentProvider {
    * @param {string} paymentMethodType - Payment method type
    */
   async logTokenization(tokenId, paymentMethodType) {
-    const query = `
-      INSERT INTO payment_method_tokens (
-        id, provider, token_id, payment_method_type, created_at
-      ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-    `;
+    if (!this.db) {
+      this.logError('Database not available for tokenization logging', new Error('Database connection missing'));
+      return;
+    }
 
-    await this.db.query(query, [
-      uuidv4(),
-      this.providerName,
-      tokenId,
-      paymentMethodType
-    ]);
+    try {
+      const query = `
+        INSERT INTO payment_method_tokens (
+          id, provider, token_id, payment_method_type, created_at
+        ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+      `;
+
+      await this.db.query(query, [
+        uuidv4(),
+        this.providerName,
+        tokenId,
+        paymentMethodType
+      ]);
+    } catch (error) {
+      this.logError('Failed to log tokenization', error);
+      // Don't throw - logging failure shouldn't break tokenization
+    }
   }
 
   /**
@@ -530,19 +773,29 @@ class BasePaymentProvider {
    * @param {Object} result - Processing result
    */
   async logWebhookEvent(eventType, eventId, result) {
-    const query = `
-      INSERT INTO webhook_events (
-        id, provider, event_type, event_id, status, created_at
-      ) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
-    `;
+    if (!this.db) {
+      this.logError('Database not available for webhook event logging', new Error('Database connection missing'));
+      return;
+    }
 
-    await this.db.query(query, [
-      uuidv4(),
-      this.providerName,
-      eventType,
-      eventId,
-      result.status || 'processed'
-    ]);
+    try {
+      const query = `
+        INSERT INTO webhook_events (
+          id, provider, event_type, event_id, status, created_at
+        ) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+      `;
+
+      await this.db.query(query, [
+        uuidv4(),
+        this.providerName,
+        eventType,
+        eventId,
+        result.status || 'processed'
+      ]);
+    } catch (error) {
+      this.logError('Failed to log webhook event', error);
+      // Don't throw - logging failure shouldn't break webhook processing
+    }
   }
 
   /**
@@ -551,19 +804,106 @@ class BasePaymentProvider {
    * @param {Error} error - Error object
    */
   async logWebhookError(eventId, error) {
+    if (!this.db) {
+      this.logError('Database not available for webhook error logging', new Error('Database connection missing'));
+      return;
+    }
+
+    try {
+      const query = `
+        INSERT INTO webhook_events (
+          id, provider, event_type, event_id, status, error_message, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+      `;
+
+      await this.db.query(query, [
+        uuidv4(),
+        this.providerName,
+        'unknown',
+        eventId,
+        'failed',
+        error.message
+      ]);
+    } catch (dbError) {
+      this.logError('Failed to log webhook error', dbError);
+      // Don't throw - logging failure shouldn't break error handling
+    }
+  }
+
+  /**
+   * Log error without exposing sensitive information
+   * @param {string} message - Error message
+   * @param {Error} error - Error object
+   */
+  logError(message, error) {
+    // In a production environment, this should use a proper logging service
+    // For now, we'll use a simple approach that doesn't expose sensitive data
+    const safeError = {
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Log to database if available, otherwise use a proper logger
+    if (this.db) {
+      this.logErrorToDatabase(message, safeError).catch((dbError) => {
+        // Fallback to structured logging if database logging fails
+        this.fallbackLogError(message, safeError, dbError);
+      });
+    } else {
+      this.fallbackLogError(message, safeError);
+    }
+  }
+
+  /**
+   * Fallback error logging when database is not available
+   * @param {string} message - Error message
+   * @param {Object} safeError - Safe error data
+   * @param {Error} dbError - Database error (optional)
+   */
+  fallbackLogError(message, safeError, dbError = null) {
+    // Use a proper logging mechanism instead of console
+    // This could be replaced with winston, pino, or another logging library
+    const logEntry = {
+      level: 'error',
+      message,
+      error: safeError,
+      provider: this.providerName,
+      timestamp: new Date().toISOString()
+    };
+    
+    if (dbError) {
+      logEntry.dbError = dbError.message;
+    }
+    
+    // In development, you might want to use console, but in production
+    // this should be replaced with a proper logging service
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error(JSON.stringify(logEntry, null, 2));
+    }
+    
+    // TODO: Replace with proper logging service in production
+    // Example: logger.error(logEntry);
+  }
+
+  /**
+   * Log error to database
+   * @param {string} message - Error message
+   * @param {Object} errorData - Safe error data
+   */
+  async logErrorToDatabase(message, errorData) {
     const query = `
-      INSERT INTO webhook_events (
-        id, provider, event_type, event_id, status, error_message, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+      INSERT INTO error_logs (
+        id, provider, error_message, error_data, created_at
+      ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
     `;
 
     await this.db.query(query, [
       uuidv4(),
       this.providerName,
-      'unknown',
-      eventId,
-      'failed',
-      error.message
+      message,
+      JSON.stringify(errorData)
     ]);
   }
 
@@ -580,14 +920,22 @@ class BasePaymentProvider {
   /**
    * Encrypt sensitive data
    * @param {string} data - Data to encrypt
-   * @returns {string} Encrypted data
+   * @returns {Object} Encrypted data with IV and auth tag
    */
   encryptData(data) {
+    if (!data || typeof data !== 'string') {
+      throw new Error('Data must be a non-empty string');
+    }
+    
+    if (!this.config.encryptionKey) {
+      throw new Error('Encryption key not configured');
+    }
+    
     const algorithm = 'aes-256-gcm';
     const key = Buffer.from(this.config.encryptionKey, 'hex');
     const iv = crypto.randomBytes(16);
     
-    const cipher = crypto.createCipher(algorithm, key);
+    const cipher = crypto.createCipherGCM(algorithm, key, iv);
     cipher.setAAD(Buffer.from('payment-data'));
     
     let encrypted = cipher.update(data, 'utf8', 'hex');
@@ -608,12 +956,24 @@ class BasePaymentProvider {
    * @returns {string} Decrypted data
    */
   decryptData(encryptedData) {
+    if (!encryptedData || typeof encryptedData !== 'object') {
+      throw new Error('Encrypted data must be an object');
+    }
+    
+    if (!encryptedData.encrypted || !encryptedData.iv || !encryptedData.authTag) {
+      throw new Error('Invalid encrypted data format');
+    }
+    
+    if (!this.config.encryptionKey) {
+      throw new Error('Encryption key not configured');
+    }
+    
     const algorithm = 'aes-256-gcm';
     const key = Buffer.from(this.config.encryptionKey, 'hex');
     const iv = Buffer.from(encryptedData.iv, 'hex');
     const authTag = Buffer.from(encryptedData.authTag, 'hex');
     
-    const decipher = crypto.createDecipher(algorithm, key);
+    const decipher = crypto.createDecipherGCM(algorithm, key, iv);
     decipher.setAAD(Buffer.from('payment-data'));
     decipher.setAuthTag(authTag);
     
