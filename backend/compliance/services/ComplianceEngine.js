@@ -9,6 +9,8 @@ const EncryptionVault = require('./EncryptionVault');
 const AuditTrailService = require('./AuditTrailService');
 const DataResidencyService = require('./DataResidencyService');
 const KYCAMLService = require('./KYCAMLService');
+const FERPAService = require("./services/FERPAService");
+const COPPAService = require("./services/COPPAService");
 
 class ComplianceEngine {
   constructor() {
