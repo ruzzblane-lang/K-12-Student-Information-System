@@ -32,17 +32,20 @@ class PayPalProvider extends BasePaymentProvider {
       'GHS', 'UGX', 'TZS', 'ETB', 'MWK', 'ZMW', 'BWP', 'SZL', 'LSL', 'NAD'
     ];
 
-    // PayPal supported payment methods
+    // PayPal supported payment methods (Universal Coverage)
     this.supportedPaymentMethods = [
-      'paypal',
-      'card',
-      'credit',
-      'bank',
-      'paypal_credit',
-      'paypal_plus',
+      // Credit Cards
+      'visa', 'mastercard', 'amex', 'discover', 'jcb', 'unionpay',
+      // Debit Cards
+      'maestro',
+      // Digital Wallets
+      'paypal', 'apple_pay', 'google_pay',
+      // E-Wallets
       'venmo',
-      'apple_pay',
-      'google_pay'
+      // Bank Transfers
+      'ach',
+      // Alternative Payment Methods
+      'paypal_credit', 'paypal_plus', 'paypal_pay_later'
     ];
   }
 
@@ -700,6 +703,149 @@ class PayPalProvider extends BasePaymentProvider {
   }
 
   /**
+   * Check if currency is supported
+   * @param {string} currency - Currency code
+   * @returns {boolean} Is supported
+   */
+  isCurrencySupported(currency) {
+    return this.supportedCurrencies.includes(currency);
+  }
+
+  /**
+   * Check if payment method is supported
+   * @param {string} paymentMethod - Payment method
+   * @returns {boolean} Is supported
+   */
+  isPaymentMethodSupported(paymentMethod) {
+    return this.supportedPaymentMethods.includes(paymentMethod);
+  }
+
+  /**
+   * Get supported payment methods for a specific country
+   * @param {string} country - Country code
+   * @returns {Array} Supported payment methods
+   */
+  getSupportedPaymentMethodsForCountry(country) {
+    const countrySpecificMethods = {
+      'US': ['visa', 'mastercard', 'amex', 'discover', 'paypal', 'apple_pay', 'google_pay', 'venmo', 'ach'],
+      'CA': ['visa', 'mastercard', 'amex', 'discover', 'paypal', 'apple_pay', 'google_pay'],
+      'GB': ['visa', 'mastercard', 'amex', 'jcb', 'maestro', 'paypal', 'apple_pay', 'google_pay'],
+      'AU': ['visa', 'mastercard', 'amex', 'jcb', 'paypal', 'apple_pay', 'google_pay'],
+      'DE': ['visa', 'mastercard', 'amex', 'jcb', 'maestro', 'paypal', 'apple_pay', 'google_pay'],
+      'FR': ['visa', 'mastercard', 'amex', 'jcb', 'maestro', 'paypal', 'apple_pay', 'google_pay'],
+      'IT': ['visa', 'mastercard', 'amex', 'jcb', 'maestro', 'paypal', 'apple_pay', 'google_pay'],
+      'ES': ['visa', 'mastercard', 'amex', 'jcb', 'maestro', 'paypal', 'apple_pay', 'google_pay'],
+      'NL': ['visa', 'mastercard', 'amex', 'jcb', 'maestro', 'paypal', 'apple_pay', 'google_pay'],
+      'JP': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'CN': ['visa', 'mastercard', 'amex', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'KR': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'SG': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'HK': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'TW': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'MY': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'TH': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'ID': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'PH': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+      'IN': ['visa', 'mastercard', 'amex', 'jcb', 'paypal', 'apple_pay', 'google_pay'],
+      'BR': ['visa', 'mastercard', 'amex', 'jcb', 'paypal', 'apple_pay', 'google_pay'],
+      'MX': ['visa', 'mastercard', 'amex', 'jcb', 'paypal', 'apple_pay', 'google_pay']
+    };
+
+    return countrySpecificMethods[country] || this.supportedPaymentMethods;
+  }
+
+  /**
+   * Get payment method configuration
+   * @param {string} paymentMethod - Payment method
+   * @returns {Object} Payment method configuration
+   */
+  getPaymentMethodConfig(paymentMethod) {
+    const configs = {
+      'visa': {
+        type: 'credit_card',
+        brand: 'visa',
+        pattern: /^4[0-9]{12}(?:[0-9]{3})?$/,
+        cvvLength: 3,
+        fees: { percentage: 2.9, fixed: 0.30 }
+      },
+      'mastercard': {
+        type: 'credit_card',
+        brand: 'mastercard',
+        pattern: /^5[1-5][0-9]{14}$/,
+        cvvLength: 3,
+        fees: { percentage: 2.9, fixed: 0.30 }
+      },
+      'amex': {
+        type: 'credit_card',
+        brand: 'amex',
+        pattern: /^3[47][0-9]{13}$/,
+        cvvLength: 4,
+        fees: { percentage: 3.5, fixed: 0.30 }
+      },
+      'discover': {
+        type: 'credit_card',
+        brand: 'discover',
+        pattern: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+        cvvLength: 3,
+        fees: { percentage: 2.9, fixed: 0.30 }
+      },
+      'jcb': {
+        type: 'credit_card',
+        brand: 'jcb',
+        pattern: /^(?:2131|1800|35\d{3})\d{11}$/,
+        cvvLength: 3,
+        fees: { percentage: 3.0, fixed: 0.30 }
+      },
+      'unionpay': {
+        type: 'credit_card',
+        brand: 'unionpay',
+        pattern: /^62[0-9]{14,17}$/,
+        cvvLength: 3,
+        fees: { percentage: 2.8, fixed: 0.30 }
+      },
+      'maestro': {
+        type: 'debit_card',
+        brand: 'maestro',
+        pattern: /^(5[0678]|6[0-9])[0-9]{10,17}$/,
+        cvvLength: 3,
+        fees: { percentage: 1.5, fixed: 0.20 }
+      },
+      'paypal': {
+        type: 'digital_wallet',
+        brand: 'paypal',
+        fees: { percentage: 2.9, fixed: 0.30 },
+        requiresRedirect: true
+      },
+      'apple_pay': {
+        type: 'digital_wallet',
+        brand: 'apple_pay',
+        fees: { percentage: 2.9, fixed: 0.30 },
+        requiresDevice: 'ios'
+      },
+      'google_pay': {
+        type: 'digital_wallet',
+        brand: 'google_pay',
+        fees: { percentage: 2.9, fixed: 0.30 },
+        requiresDevice: 'android'
+      },
+      'venmo': {
+        type: 'e_wallet',
+        brand: 'venmo',
+        fees: { percentage: 1.9, fixed: 0.10 },
+        requiresRedirect: true
+      },
+      'ach': {
+        type: 'bank_transfer',
+        brand: 'ach',
+        fees: { percentage: 0.8, fixed: 0.20 },
+        processingTime: '1-2 business days'
+      }
+    };
+
+    return configs[paymentMethod] || null;
+  }
+
+  /**
    * Get provider capabilities
    * @returns {Object} Provider capabilities
    */
@@ -711,17 +857,34 @@ class PayPalProvider extends BasePaymentProvider {
       features: [
         'paypal_payments',
         'credit_card_payments',
+        'debit_card_payments',
+        'digital_wallet_payments',
+        'e_wallet_payments',
+        'bank_transfer_payments',
         'refunds',
         'webhooks',
         'recurring_payments',
         'multi_currency',
         'buyer_protection',
-        'dispute_management'
+        'dispute_management',
+        'fraud_protection',
+        '3d_secure',
+        'tokenization',
+        'international_payments'
       ],
       limits: {
         maxAmount: 100000.00,
         minAmount: 0.01,
         maxRefundAmount: 100000.00
+      },
+      regions: {
+        'NA': ['visa', 'mastercard', 'amex', 'discover', 'paypal', 'apple_pay', 'google_pay', 'venmo', 'ach'],
+        'EU': ['visa', 'mastercard', 'amex', 'jcb', 'maestro', 'paypal', 'apple_pay', 'google_pay'],
+        'APAC': ['visa', 'mastercard', 'amex', 'jcb', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+        'CN': ['visa', 'mastercard', 'amex', 'unionpay', 'paypal', 'apple_pay', 'google_pay'],
+        'IN': ['visa', 'mastercard', 'amex', 'jcb', 'paypal', 'apple_pay', 'google_pay'],
+        'LATAM': ['visa', 'mastercard', 'amex', 'jcb', 'paypal', 'apple_pay', 'google_pay'],
+        'MEA': ['visa', 'mastercard', 'amex', 'jcb', 'paypal', 'apple_pay', 'google_pay']
       }
     };
   }
