@@ -1,0 +1,13 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+rule: |
+  To optimize workflow efficiency, proactively identify all repetitive or manual tasks that can be automated. For each such task:
+    - Design and implement scripts or automation tools to handle the process.
+    - Launch and execute all automation scripts yourself, ensuring they run reliably and as intended.
+    - Monitor script execution and verify successful completion.
+    - Document each automated workflow, including script purpose, usage, and troubleshooting steps.
+    - Regularly review workflows to identify new automation opportunities and update scripts as needed.
+  This approach ensures maximum efficiency, reduces manual errors, and allows the team to focus on higher-value strategic work.

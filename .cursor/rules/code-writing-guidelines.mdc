@@ -1,0 +1,13 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+rule: |
+  When undertaking large or complex code-writing tasks, always break down the project into clearly defined, manageable segments. For each segment:
+    - Define the scope and deliverables before starting.
+    - Ensure that each segment is self-contained and can be independently reviewed and tested.
+    - Document assumptions, dependencies, and any context needed to resume work seamlessly.
+    - Maintain clear checkpoints between segments to prevent overlap or omissions.
+    - Use version control to track progress and facilitate smooth handoffs or resumptions.
+  This approach guarantees continuity, reduces errors, and upholds the integrity of the codebase throughout the development lifecycle.

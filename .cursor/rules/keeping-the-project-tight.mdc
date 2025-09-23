@@ -1,0 +1,12 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+rule: |
+  After generating ten code files (including scripts, modules, or configuration files), you must:
+    - Conduct a comprehensive project analysis to identify and resolve all outstanding issues, warnings, alerts, and bugs.
+    - Perform a brief audit of the project structure, code quality, and documentation to ensure the project remains well-organized, maintainable, and meets enterprise-grade standards.
+    - Document any actions taken, improvements made, and remaining concerns.
+    - Only proceed with further code generation after confirming the project is in a healthy, production-ready state.
+  This process ensures continuous quality control and prevents technical debt accumulation as the project scales.
