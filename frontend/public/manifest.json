@@ -9,14 +9,14 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
+      "src": "logo192.svg",
+      "type": "image/svg+xml",
       "sizes": "192x192",
       "purpose": "maskable any"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
+      "src": "logo512.svg",
+      "type": "image/svg+xml",
       "sizes": "512x512",
       "purpose": "maskable any"
     }
@@ -31,15 +31,15 @@
   "categories": ["education", "productivity", "business"],
   "screenshots": [
     {
-      "src": "screenshot-mobile.png",
+      "src": "screenshot-mobile.svg",
       "sizes": "390x844",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "form_factor": "narrow"
     },
     {
-      "src": "screenshot-desktop.png",
+      "src": "screenshot-desktop.svg",
       "sizes": "1280x720",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "form_factor": "wide"
     }
   ],
@@ -51,7 +51,7 @@
       "url": "/students",
       "icons": [
         {
-          "src": "icon-students.png",
+          "src": "icon-students.svg",
           "sizes": "96x96"
         }
       ]
@@ -63,7 +63,7 @@
       "url": "/attendance",
       "icons": [
         {
-          "src": "icon-attendance.png",
+          "src": "icon-attendance.svg",
           "sizes": "96x96"
         }
       ]
@@ -75,7 +75,7 @@
       "url": "/grades",
       "icons": [
         {
-          "src": "icon-grades.png",
+          "src": "icon-grades.svg",
           "sizes": "96x96"
         }
       ]

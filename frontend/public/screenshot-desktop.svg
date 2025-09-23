@@ -1,0 +1,7 @@
+
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="720" fill="#f3f4f6" stroke="#d1d5db" stroke-width="2"/>
+  <text x="50%" y="50%" text-anchor="middle" dy="0.35em" 
+        font-family="Arial, sans-serif" font-size="24" 
+        fill="#6b7280">Desktop Screenshot</text>
+</svg>
