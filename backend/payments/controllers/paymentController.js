@@ -10,6 +10,8 @@ const PaymentOrchestrationService = require('../services/PaymentOrchestrationSer
 const FraudDetectionService = require('../services/FraudDetectionService');
 const CurrencyService = require('../services/CurrencyService');
 const WhiteLabelPaymentService = require('../services/WhiteLabelPaymentService');
+const PaymentMethodRegistry = require('../services/PaymentMethodRegistry');
+const PaymentMethodValidationService = require('../services/PaymentMethodValidationService');
 
 class PaymentController {
   constructor(db) {
@@ -18,6 +20,8 @@ class PaymentController {
     this.fraudDetectionService = new FraudDetectionService(db);
     this.currencyService = new CurrencyService(db);
     this.whiteLabelService = new WhiteLabelPaymentService(db);
+    this.registry = new PaymentMethodRegistry();
+    this.validationService = new PaymentMethodValidationService(db);
   }
 
   /**
@@ -658,6 +662,213 @@ class PaymentController {
       res.status(500).json({
         success: false,
         error: error.message
+      });
+    }
+  }
+
+  /**
+   * Get available payment methods
+   * GET /api/payments/methods
+   */
+  async getAvailablePaymentMethods(req, res) {
+    try {
+      const { country, currency, amount, tenantId } = req.query;
+
+      // Get all payment methods
+      let paymentMethods = this.registry.getAllPaymentMethods();
+
+      // Filter by country if provided
+      if (country) {
+        paymentMethods = paymentMethods.filter(method => 
+          method.supportedCountries.includes('GLOBAL') || 
+          method.supportedCountries.includes(country)
+        );
+      }
+
+      // Filter by currency if provided
+      if (currency) {
+        paymentMethods = paymentMethods.filter(method => 
+          method.supportedCurrencies.includes('GLOBAL') || 
+          method.supportedCurrencies.includes(currency)
+        );
+      }
+
+      // Filter by amount if provided
+      if (amount) {
+        const amountNum = parseFloat(amount);
+        paymentMethods = paymentMethods.filter(method => {
+          if (method.minAmount && amountNum < method.minAmount) return false;
+          if (method.maxAmount && amountNum > method.maxAmount) return false;
+          return true;
+        });
+      }
+
+      // Add processing fees for each method
+      const methodsWithFees = paymentMethods.map(method => {
+        const fees = amount ? this.registry.getProcessingFees(method.id, parseFloat(amount)) : null;
+        return {
+          ...method,
+          processingFees: fees,
+          estimatedTotal: amount && fees ? parseFloat(amount) + fees.total : null
+        };
+      });
+
+      res.status(200).json({
+        success: true,
+        data: {
+          paymentMethods: methodsWithFees,
+          total: methodsWithFees.length,
+          filters: { country, currency, amount }
+        }
+      });
+
+    } catch (error) {
+      console.error('Error getting available payment methods:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get available payment methods',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Get payment method details
+   * GET /api/payments/methods/:paymentMethodId
+   */
+  async getPaymentMethodDetails(req, res) {
+    try {
+      const { paymentMethodId } = req.params;
+      const { amount } = req.query;
+
+      const method = this.registry.getPaymentMethod(paymentMethodId);
+      if (!method) {
+        return res.status(404).json({
+          success: false,
+          error: 'Payment method not found'
+        });
+      }
+
+      const fees = amount ? this.registry.getProcessingFees(paymentMethodId, parseFloat(amount)) : null;
+
+      res.status(200).json({
+        success: true,
+        data: {
+          paymentMethod: {
+            ...method,
+            processingFees: fees,
+            estimatedTotal: amount && fees ? parseFloat(amount) + fees.total : null
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Error getting payment method details:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get payment method details',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Validate payment method data
+   * POST /api/payments/methods/:paymentMethodId/validate
+   */
+  async validatePaymentMethod(req, res) {
+    try {
+      const { paymentMethodId } = req.params;
+      const { data, options = {} } = req.body;
+
+      if (!data) {
+        return res.status(400).json({
+          success: false,
+          error: 'Payment data is required'
+        });
+      }
+
+      const validationResult = await this.validationService.validatePaymentMethod(
+        paymentMethodId, 
+        data, 
+        options
+      );
+
+      res.status(200).json({
+        success: true,
+        data: {
+          validation: validationResult
+        }
+      });
+
+    } catch (error) {
+      console.error('Error validating payment method:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to validate payment method',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Get supported countries
+   * GET /api/payments/countries
+   */
+  async getSupportedCountries(req, res) {
+    try {
+      const countries = this.registry.getAllPaymentMethods()
+        .reduce((acc, method) => {
+          method.supportedCountries.forEach(country => {
+            if (country !== 'GLOBAL' && !acc.includes(country)) {
+              acc.push(country);
+            }
+          });
+          return acc;
+        }, [])
+        .sort();
+
+      res.status(200).json({
+        success: true,
+        data: {
+          countries: ['GLOBAL', ...countries],
+          total: countries.length + 1
+        }
+      });
+
+    } catch (error) {
+      console.error('Error getting supported countries:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get supported countries',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Get payment method statistics
+   * GET /api/payments/methods/stats
+   */
+  async getPaymentMethodStats(req, res) {
+    try {
+      const stats = this.registry.getStatistics();
+      const validationStats = this.validationService.getValidationStatistics();
+
+      res.status(200).json({
+        success: true,
+        data: {
+          registry: stats,
+          validation: validationStats
+        }
+      });
+
+    } catch (error) {
+      console.error('Error getting payment method statistics:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get payment method statistics',
+        message: error.message
       });
     }
   }

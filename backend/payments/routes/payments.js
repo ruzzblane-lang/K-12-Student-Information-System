@@ -398,6 +398,81 @@ router.get('/capabilities',
   }
 );
 
+/**
+ * @route   GET /api/payments/methods
+ * @desc    Get available payment methods with filtering
+ * @access  Private (Authenticated users)
+ * @query   { country, currency, amount, tenantId }
+ */
+router.get('/methods',
+  authenticateToken,
+  requireTenant,
+  ensureController,
+  async (req, res) => {
+    await paymentController.getAvailablePaymentMethods(req, res);
+  }
+);
+
+/**
+ * @route   GET /api/payments/methods/:paymentMethodId
+ * @desc    Get payment method details
+ * @access  Private (Authenticated users)
+ * @params  { paymentMethodId }
+ * @query   { amount }
+ */
+router.get('/methods/:paymentMethodId',
+  authenticateToken,
+  requireTenant,
+  ensureController,
+  async (req, res) => {
+    await paymentController.getPaymentMethodDetails(req, res);
+  }
+);
+
+/**
+ * @route   POST /api/payments/methods/:paymentMethodId/validate
+ * @desc    Validate payment method data
+ * @access  Private (Authenticated users)
+ * @params  { paymentMethodId }
+ * @body    { data, options }
+ */
+router.post('/methods/:paymentMethodId/validate',
+  authenticateToken,
+  requireTenant,
+  ensureController,
+  async (req, res) => {
+    await paymentController.validatePaymentMethod(req, res);
+  }
+);
+
+/**
+ * @route   GET /api/payments/countries
+ * @desc    Get supported countries
+ * @access  Private (Authenticated users)
+ */
+router.get('/countries',
+  authenticateToken,
+  requireTenant,
+  ensureController,
+  async (req, res) => {
+    await paymentController.getSupportedCountries(req, res);
+  }
+);
+
+/**
+ * @route   GET /api/payments/methods/stats
+ * @desc    Get payment method statistics
+ * @access  Private (Authenticated users)
+ */
+router.get('/methods/stats',
+  authenticateToken,
+  requireTenant,
+  ensureController,
+  async (req, res) => {
+    await paymentController.getPaymentMethodStats(req, res);
+  }
+);
+
 // Export router and initialization function
 module.exports = {
   router,
