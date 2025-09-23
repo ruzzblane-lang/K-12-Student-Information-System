@@ -1,0 +1,73 @@
+{
+  "name": "school-sis-compliance",
+  "version": "1.0.0",
+  "description": "Comprehensive compliance system for K-12 SIS (PCI DSS, GDPR, FERPA, COPPA, LGPD, PSD2, SOC 2)",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "compliance",
+    "pci-dss",
+    "gdpr",
+    "ferpa",
+    "coppa",
+    "lgpd",
+    "psd2",
+    "soc2",
+    "kyc",
+    "aml",
+    "audit",
+    "encryption",
+    "tokenization"
+  ],
+  "author": "School SIS Team",
+  "license": "MIT",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "uuid": "^9.0.1",
+    "axios": "^1.6.0",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "pg": "^8.11.3",
+    "redis": "^4.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "express-slow-down": "^2.0.1",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "node-cron": "^3.0.3",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
+    "lodash": "^4.17.21",
+    "joi": "^17.11.0",
+    "crypto-js": "^4.2.0",
+    "node-forge": "^1.3.1",
+    "speakeasy": "^2.0.0",
+    "qrcode": "^1.5.3",
+    "stripe": "^14.0.0",
+    "paypal-rest-sdk": "^1.8.1",
+    "@adyen/api-library": "^8.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.55.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
