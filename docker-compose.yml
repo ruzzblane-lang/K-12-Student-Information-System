@@ -36,17 +36,13 @@ services:
       retries: 3
       start_period: 40s
 
-  # Caddy - Static File Server for Frontend
-  caddy:
-    image: caddy:2-alpine
-    container_name: school-sis-caddy
+  # Frontend - React SPA
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: school-sis-frontend
     restart: unless-stopped
-    volumes:
-      - ./frontend/dist:/srv
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-      - ./logs/caddy:/var/log/caddy
     networks:
       - traefik-public
     labels:
@@ -56,6 +52,30 @@ services:
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Caddy - Static File Server for Frontend (Alternative)
+  caddy:
+    image: caddy:2-alpine
+    container_name: school-sis-caddy
+    restart: unless-stopped
+    volumes:
+      - ./frontend/build:/srv
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./logs/caddy:/var/log/caddy
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=false"  # Disabled in favor of frontend service
+    profiles:
+      - caddy  # Use profile to enable: docker-compose --profile caddy up
     healthcheck:
       test: ["CMD", "caddy", "healthcheck", "--config", "/etc/caddy/Caddyfile"]
       interval: 30s

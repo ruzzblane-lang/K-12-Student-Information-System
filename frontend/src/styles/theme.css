@@ -1,0 +1,291 @@
+/**
+ * White-Label Theme CSS Variables
+ * 
+ * This file defines CSS custom properties for tenant-specific branding.
+ * These variables can be dynamically updated via JavaScript to change
+ * the appearance of the entire application.
+ * 
+ * Usage:
+ * - Colors: Use var(--color-primary) instead of hardcoded colors
+ * - Fonts: Use var(--font-primary) for consistent typography
+ * - Layout: Use var(--layout-sidebarWidth) for consistent spacing
+ * 
+ * Customization Points:
+ * - Primary colors for branding
+ * - Typography and font families
+ * - Layout dimensions and spacing
+ * - Component-specific styling
+ */
+
+:root {
+  /* Color Palette */
+  --color-primary: #3B82F6;
+  --color-secondary: #10B981;
+  --color-accent: #F59E0B;
+  --color-background: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-text: #111827;
+  --color-textSecondary: #6B7280;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Typography */
+  --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-secondary: 'Roboto', system-ui, sans-serif;
+  --font-monospace: 'Fira Code', Consolas, monospace;
+
+  /* Layout */
+  --layout-sidebarWidth: 16rem;
+  --layout-headerHeight: 4rem;
+  --layout-borderRadius: 0.5rem;
+  --layout-spacing: 1.5rem;
+
+  /* Component Specific */
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --card-shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --button-borderRadius: 0.375rem;
+  --input-borderRadius: 0.375rem;
+  --table-borderRadius: 0.5rem;
+
+  /* Animation */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] {
+  --color-background: #111827;
+  --color-surface: #1F2937;
+  --color-text: #F9FAFB;
+  --color-textSecondary: #D1D5DB;
+  --color-primary: #60A5FA;
+  --color-secondary: #34D399;
+  --color-accent: #FBBF24;
+  --color-success: #34D399;
+  --color-warning: #FBBF24;
+  --color-error: #F87171;
+  --color-info: #60A5FA;
+}
+
+/* High Contrast Theme Support */
+[data-theme="high-contrast"] {
+  --color-background: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-text: #000000;
+  --color-textSecondary: #333333;
+  --color-primary: #0000FF;
+  --color-secondary: #008000;
+  --color-accent: #FF8000;
+  --color-success: #008000;
+  --color-warning: #FF8000;
+  --color-error: #FF0000;
+  --color-info: #0000FF;
+}
+
+/* Component Base Styles */
+.theme-card {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--layout-borderRadius);
+  box-shadow: var(--card-shadow);
+  font-family: var(--font-primary);
+}
+
+.theme-card-elevated {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--layout-borderRadius);
+  box-shadow: var(--card-shadow-elevated);
+  font-family: var(--font-primary);
+}
+
+.theme-button {
+  font-family: var(--font-primary);
+  border-radius: var(--button-borderRadius);
+  transition: all var(--transition-fast);
+}
+
+.theme-button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+}
+
+.theme-button-primary:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
+  border-color: color-mix(in srgb, var(--color-primary) 85%, black);
+}
+
+.theme-button-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+  border: 1px solid var(--color-secondary);
+}
+
+.theme-button-secondary:hover {
+  background-color: color-mix(in srgb, var(--color-secondary) 85%, black);
+  border-color: color-mix(in srgb, var(--color-secondary) 85%, black);
+}
+
+.theme-input {
+  font-family: var(--font-primary);
+  border-radius: var(--input-borderRadius);
+  border: 1px solid #D1D5DB;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+}
+
+.theme-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.theme-table {
+  font-family: var(--font-primary);
+  border-radius: var(--table-borderRadius);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.theme-badge {
+  font-family: var(--font-primary);
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.theme-badge-primary {
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
+.theme-badge-success {
+  background-color: color-mix(in srgb, var(--color-success) 10%, transparent);
+  color: var(--color-success);
+}
+
+.theme-badge-warning {
+  background-color: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  color: var(--color-warning);
+}
+
+.theme-badge-error {
+  background-color: color-mix(in srgb, var(--color-error) 10%, transparent);
+  color: var(--color-error);
+}
+
+/* Utility Classes */
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-textSecondary);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-secondary {
+  background-color: var(--color-secondary);
+}
+
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.bg-background {
+  background-color: var(--color-background);
+}
+
+.border-primary {
+  border-color: var(--color-primary);
+}
+
+.shadow-theme {
+  box-shadow: var(--card-shadow);
+}
+
+.shadow-theme-elevated {
+  box-shadow: var(--card-shadow-elevated);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --layout-sidebarWidth: 100%;
+    --layout-spacing: 1rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  :root {
+    --color-background: #FFFFFF;
+    --color-surface: #FFFFFF;
+    --color-text: #000000;
+    --color-textSecondary: #333333;
+    --card-shadow: none;
+    --card-shadow-elevated: none;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+    --transition-slow: 0ms;
+  }
+}
+
+/* Focus Styles for Accessibility */
+.theme-focus:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-textSecondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text);
+}
+
+/* Selection Styles */
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  color: var(--color-text);
+}
+
+/* Loading Animation */
+@keyframes theme-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.theme-loading {
+  animation: theme-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

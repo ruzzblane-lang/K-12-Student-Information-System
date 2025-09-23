@@ -12,12 +12,15 @@ const MainLayout = ({ children }) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊' },
+    { name: 'Portal', href: '/portal', icon: '🌐' },
+    { name: 'Yearbook', href: '/yearbook', icon: '📖' },
+    { name: 'Payments', href: '/payments', icon: '💳' },
+    { name: 'Archive', href: '/archive', icon: '📁' },
     { name: 'Students', href: '/students', icon: '👨‍🎓' },
     { name: 'Teachers', href: '/teachers', icon: '👩‍🏫' },
     { name: 'Courses', href: '/courses', icon: '📚' },
     { name: 'Grades', href: '/grades', icon: '📝' },
     { name: 'Attendance', href: '/attendance', icon: '✅' },
-    { name: 'Yearbooks', href: '/yearbooks', icon: '📖' },
     { name: 'Announcements', href: '/announcements', icon: '📢' },
     { name: 'Messages', href: '/messages', icon: '💬' },
   ];
