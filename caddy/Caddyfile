@@ -1,0 +1,115 @@
+# Caddy Configuration for School SIS Frontend
+# Static file server with SPA support and optimization
+
+{
+    # Global options
+    auto_https off
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 100mb
+            roll_keep 5
+            roll_keep_for 720h
+        }
+        format json
+    }
+    servers {
+        metrics
+    }
+}
+
+# Main site configuration
+:80 {
+    # Root directory for static files
+    root * /srv
+    
+    # Enable file server
+    file_server
+    
+    # Enable compression
+    encode gzip zstd
+    
+    # Security headers
+    header {
+        # Security headers
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        
+        # Cache control for static assets
+        Cache-Control "public, max-age=31536000, immutable" {
+            path *.js
+            path *.css
+            path *.png
+            path *.jpg
+            path *.jpeg
+            path *.gif
+            path *.svg
+            path *.ico
+            path *.woff
+            path *.woff2
+            path *.ttf
+            path *.eot
+        }
+        
+        # Cache control for HTML files
+        Cache-Control "public, max-age=0, must-revalidate" {
+            path *.html
+            path /index.html
+        }
+        
+        # Remove server header
+        -Server
+    }
+    
+    # Handle static assets with long-term caching
+    handle /assets/* {
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+    
+    # Handle API routes - proxy to backend (though Traefik should handle this)
+    handle /api/* {
+        reverse_proxy backend:3000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # Health check endpoint
+    handle /health {
+        respond "OK" 200
+    }
+    
+    # Handle SPA routing - serve index.html for all other routes
+    handle {
+        try_files {path} {path}/ /index.html
+    }
+    
+    # Error handling
+    handle_errors {
+        @404 {
+            expression {http.error.status_code} == 404
+        }
+        rewrite @404 /index.html
+        file_server
+    }
+    
+    # Logging
+    log {
+        output file /var/log/caddy/error.log {
+            roll_size 100mb
+            roll_keep 5
+            roll_keep_for 720h
+        }
+        level ERROR
+    }
+}
+
+# Metrics endpoint (internal)
+:2019 {
+    metrics /metrics
+}

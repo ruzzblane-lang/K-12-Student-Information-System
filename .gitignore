@@ -221,3 +221,4 @@ frontend/public/oracleJdk-25/lib/jrt-fs.jar
 frontend/public/oracleJdk-25/lib/ct.sym
 frontend/public/oracleJdk-25/lib/classlist
 backend/payments/.eslintrc.js
+.dockerignore

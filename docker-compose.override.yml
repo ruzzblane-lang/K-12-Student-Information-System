@@ -1,0 +1,77 @@
+# Docker Compose Override for Development
+# This file provides development-specific overrides
+
+version: '3.8'
+
+services:
+  # Development overrides for backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DEBUG=*
+    command: npm run dev
+    ports:
+      - "3000:3000"  # Expose backend port for direct access
+
+  # Development overrides for frontend (if needed)
+  frontend-dev:
+    image: node:18-alpine
+    container_name: school-sis-frontend-dev
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3001:3000"
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:3000
+    profiles:
+      - dev
+
+  # Development database with exposed port
+  postgres:
+    ports:
+      - "5432:5432"  # Expose PostgreSQL port for direct access
+    environment:
+      - POSTGRES_LOG_STATEMENT=all
+      - POSTGRES_LOG_MIN_DURATION_STATEMENT=0
+
+  # Development Redis with exposed port
+  redis:
+    ports:
+      - "6379:6379"  # Expose Redis port for direct access
+
+  # Development Traefik with insecure dashboard
+  traefik:
+    ports:
+      - "8080:8080"  # Expose Traefik dashboard
+    environment:
+      - TRAEFIK_LOG_LEVEL=DEBUG
+    labels:
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.service=api@internal"
+
+  # Development Caddy with exposed port
+  caddy:
+    ports:
+      - "80:80"  # Expose Caddy port for direct access
+    volumes:
+      - ./frontend/public:/srv  # Serve from public directory in development
+
+# Development networks
+networks:
+  traefik-public:
+    external: false
+  backend-internal:
+    driver: bridge
+    internal: false  # Allow external access in development
