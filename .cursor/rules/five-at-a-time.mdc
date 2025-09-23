@@ -1,0 +1,10 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+rule: |
+  When generating or modifying files, you must only write between three to five files at a time in a single operation. 
+  If you reach the five file limit, pause and check in with the user before proceeding further.
+  This rule applies to all automated code generation, migrations, or bulk file operations.
+  Do not exceed five files per batch without explicit user confirmation to continue.
