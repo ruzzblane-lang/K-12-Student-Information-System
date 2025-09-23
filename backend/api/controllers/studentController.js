@@ -2,7 +2,7 @@ const studentService = require('../../services/studentService');
 const { validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
 const { body, param, query, validationResult: expressValidationResult } = require('express-validator');
-const DOMPurify = require('isomorphic-dompurify');
+// const DOMPurify = require('isomorphic-dompurify'); // Removed due to Node.js version compatibility
 const validator = require('validator');
 
 class StudentController {
@@ -55,7 +55,7 @@ class StudentController {
 
     // Validate and sanitize search parameter
     if (queryParams.search) {
-      const search = DOMPurify.sanitize(queryParams.search.toString().trim());
+      const search = validator.escape(queryParams.search.toString().trim());
       if (search.length > 100) {
         errors.push('Search term must be 100 characters or less');
       } else if (search.length < 2) {
@@ -199,7 +199,7 @@ class StudentController {
 
     stringFields.forEach(field => {
       if (sanitized[field] && typeof sanitized[field] === 'string') {
-        sanitized[field] = DOMPurify.sanitize(sanitized[field].trim());
+        sanitized[field] = validator.escape(sanitized[field].trim());
       }
     });
 

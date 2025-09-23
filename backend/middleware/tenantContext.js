@@ -166,7 +166,7 @@ const validateUserTenant = async (req, res, _next) => {
 };
 
 module.exports = {
-  _tenantContextMiddleware,
+  tenantContextMiddleware: _tenantContextMiddleware,
   requireTenantContext,
   validateUserTenant
 };

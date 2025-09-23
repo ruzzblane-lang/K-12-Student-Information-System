@@ -10,16 +10,16 @@
  * - Real-time preview system
  */
 
-const { _Pool } = require('pg');
+const { Pool } = require('pg');
 const fs = require('fs').promises;
-const _path = require('_path');
+const path = require('path');
 const sharp = require('sharp');
 const crypto = require('crypto');
 
 class WhiteLabelingService {
   constructor(db) {
     this.db = db;
-    this.uploadPath = process.env.UPLOAD_PATH || _path.join(__dirname, '../uploads');
+    this.uploadPath = process.env.UPLOAD_PATH || path.join(__dirname, '../uploads');
     this.cdnBaseUrl = process.env.CDN_BASE_URL || 'http://localhost:3000/uploads';
     this.maxFileSize = 5 * 1024 * 1024; // 5MB
     this.allowedImageTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'];
@@ -629,13 +629,13 @@ a:hover, .link:hover {
       }
 
       // Create upload directory for tenant
-      const tenantUploadDir = _path.join(this.uploadPath, 'branding', tenantId);
+      const tenantUploadDir = path.join(this.uploadPath, 'branding', tenantId);
       await fs.mkdir(tenantUploadDir, { recursive: true });
 
       // Generate unique filename
-      const fileExtension = _path.extname(fileName);
+      const fileExtension = path.extname(fileName);
       const uniqueFileName = `${assetType}_${Date.now()}_${crypto.randomBytes(8).toString('hex')}${fileExtension}`;
-      const filePath = _path.join(tenantUploadDir, uniqueFileName);
+      const filePath = path.join(tenantUploadDir, uniqueFileName);
 
       // Process and save file based on type
       let processedBuffer = fileData;
@@ -953,14 +953,14 @@ a:hover, .link:hover {
    */
   async cacheGeneratedCSS(tenantId, css) {
     try {
-      const cacheDir = _path.join(this.uploadPath, 'css', 'cache');
+      const cacheDir = path.join(this.uploadPath, 'css', 'cache');
       await fs.mkdir(cacheDir, { recursive: true });
 
-      const cacheFile = _path.join(cacheDir, `${tenantId}.css`);
+      const cacheFile = path.join(cacheDir, `${tenantId}.css`);
       await fs.writeFile(cacheFile, css);
 
       // Set cache expiry (1 hour)
-      const expiryFile = _path.join(cacheDir, `${tenantId}.expiry`);
+      const expiryFile = path.join(cacheDir, `${tenantId}.expiry`);
       await fs.writeFile(expiryFile, (Date.now() + 3600000).toString());
 
     } catch (error) {

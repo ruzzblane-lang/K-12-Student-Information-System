@@ -137,7 +137,7 @@ const generateRefreshToken = (user) => {
 };
 
 module.exports = {
-  _authMiddleware,
+  authMiddleware: _authMiddleware,
   optionalAuth,
   generateToken,
   generateRefreshToken
