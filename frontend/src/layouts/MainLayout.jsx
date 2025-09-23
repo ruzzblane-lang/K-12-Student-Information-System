@@ -17,6 +17,7 @@ const MainLayout = ({ children }) => {
     { name: 'Courses', href: '/courses', icon: '📚' },
     { name: 'Grades', href: '/grades', icon: '📝' },
     { name: 'Attendance', href: '/attendance', icon: '✅' },
+    { name: 'Yearbooks', href: '/yearbooks', icon: '📖' },
     { name: 'Announcements', href: '/announcements', icon: '📢' },
     { name: 'Messages', href: '/messages', icon: '💬' },
   ];

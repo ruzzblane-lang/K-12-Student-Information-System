@@ -1,0 +1,580 @@
+/* Yearbook Photo Uploader Styles */
+.yearbook-photo-uploader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.uploader-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 12px 12px 0 0;
+}
+
+.uploader-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f3f4f6;
+}
+
+.uploader-content {
+  background: white;
+  border-radius: 0 0 12px 12px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Upload Section */
+.upload-section {
+  padding: 2rem;
+}
+
+.drop-zone {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f9fafb;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.drop-zone.has-files {
+  padding: 1rem;
+  text-align: left;
+}
+
+.drop-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.drop-zone-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.drop-zone-content h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.drop-zone-content p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Selected Files */
+.selected-files h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.file-preview {
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.preview-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.file-info {
+  padding: 0.75rem;
+}
+
+.file-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.remove-file {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.remove-file:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Tagging Section */
+.tagging-section,
+.student-tagging-section,
+.club-tagging-section,
+.event-tagging-section,
+.metadata-section {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.tagging-section h3,
+.student-tagging-section h3,
+.club-tagging-section h3,
+.event-tagging-section h3,
+.metadata-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tags-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tag-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.tag-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.add-tag-button {
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.add-tag-button:hover {
+  background: #2563eb;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.remove-tag {
+  background: none;
+  border: none;
+  color: #1d4ed8;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.remove-tag:hover {
+  background: rgba(29, 78, 216, 0.1);
+}
+
+/* Student Tagging */
+.student-search {
+  margin-bottom: 1rem;
+}
+
+.student-search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.student-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.selected-students {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.selected-student {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f0fdf4;
+  color: #166534;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.remove-student {
+  background: none;
+  border: none;
+  color: #166534;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.remove-student:hover {
+  background: rgba(22, 101, 52, 0.1);
+}
+
+/* Club and Event Tagging */
+.clubs-list,
+.events-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.club-option,
+.event-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.club-option:hover,
+.event-option:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.club-option input,
+.event-option input {
+  margin: 0;
+}
+
+.club-option span,
+.event-option span {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+/* Metadata Section */
+.metadata-fields {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.metadata-input,
+.metadata-textarea {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.metadata-input:focus,
+.metadata-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.metadata-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 2rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.error-icon {
+  font-size: 1rem;
+}
+
+/* Upload Progress */
+.upload-progress {
+  padding: 1rem 2rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  display: block;
+}
+
+/* Action Buttons */
+.uploader-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #f3f4f6;
+  background: #f9fafb;
+  border-radius: 0 0 12px 12px;
+}
+
+.cancel-button,
+.upload-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.upload-button {
+  background: #3b82f6;
+  border: none;
+  color: white;
+}
+
+.upload-button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.cancel-button:disabled,
+.upload-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .yearbook-photo-uploader {
+    padding: 1rem;
+  }
+  
+  .uploader-content {
+    max-height: 90vh;
+  }
+  
+  .upload-section,
+  .tagging-section,
+  .student-tagging-section,
+  .club-tagging-section,
+  .event-tagging-section,
+  .metadata-section {
+    padding: 1rem;
+  }
+  
+  .uploader-actions {
+    padding: 1rem;
+    flex-direction: column;
+  }
+  
+  .cancel-button,
+  .upload-button {
+    width: 100%;
+  }
+  
+  .files-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .clubs-list,
+  .events-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .tags-input {
+    flex-direction: column;
+  }
+  
+  .add-tag-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .drop-zone {
+    padding: 2rem 1rem;
+  }
+  
+  .drop-zone.has-files {
+    padding: 0.75rem;
+  }
+  
+  .files-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .preview-image {
+    height: 100px;
+  }
+  
+  .file-info {
+    padding: 0.5rem;
+  }
+  
+  .file-name {
+    font-size: 0.75rem;
+  }
+  
+  .file-size {
+    font-size: 0.7rem;
+  }
+}
