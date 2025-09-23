@@ -275,6 +275,723 @@ class PaymentMethodRegistry {
       minAmount: 50.00,
       maxAmount: 100000.00
     });
+
+    // US/Canada Regional Payment Methods
+    this.registerPaymentMethod('interac_e_transfer', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'Interac e-Transfer',
+      description: 'Interac e-Transfer for Canada',
+      icon: 'interac',
+      supportedCountries: ['CA'],
+      supportedCurrencies: ['CAD'],
+      processingFees: { percentage: 0.5, fixed: 0.15 },
+      features: ['instant_transfer', 'email_payment', 'secure'],
+      providers: ['interac'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('interac_online', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'Interac Online',
+      description: 'Interac Online banking for Canada',
+      icon: 'interac_online',
+      supportedCountries: ['CA'],
+      supportedCurrencies: ['CAD'],
+      processingFees: { percentage: 0.3, fixed: 0.10 },
+      features: ['online_banking', 'secure', 'instant'],
+      providers: ['interac'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('ach_direct_debit', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'ACH Direct Debit',
+      description: 'ACH Direct Debit for US',
+      icon: 'ach',
+      supportedCountries: ['US'],
+      supportedCurrencies: ['USD'],
+      processingFees: { percentage: 0.8, fixed: 0.20 },
+      features: ['recurring', 'low_cost', 'domestic'],
+      providers: ['ach_direct_debit'],
+      processingTime: '1-2 business days',
+      minAmount: 1.00,
+      maxAmount: 25000.00
+    });
+
+    this.registerPaymentMethod('ach_credit', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'ACH Credit',
+      description: 'ACH Credit transfer for US',
+      icon: 'ach_credit',
+      supportedCountries: ['US'],
+      supportedCurrencies: ['USD'],
+      processingFees: { percentage: 0.5, fixed: 0.15 },
+      features: ['credit_transfer', 'low_cost', 'domestic'],
+      providers: ['ach_direct_debit'],
+      processingTime: '1-2 business days',
+      minAmount: 1.00,
+      maxAmount: 25000.00
+    });
+
+    this.registerPaymentMethod('ach_web_debit', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'ACH Web Debit',
+      description: 'ACH Web Debit for US',
+      icon: 'ach_web',
+      supportedCountries: ['US'],
+      supportedCurrencies: ['USD'],
+      processingFees: { percentage: 0.9, fixed: 0.25 },
+      features: ['web_based', 'instant_setup', 'domestic'],
+      providers: ['ach_direct_debit'],
+      processingTime: '1-2 business days',
+      requiresRedirect: true
+    });
+
+    // EU/UK Regional Payment Methods
+    this.registerPaymentMethod('sepa_direct_debit', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'SEPA Direct Debit',
+      description: 'SEPA Direct Debit for EU',
+      icon: 'sepa',
+      supportedCountries: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB', 'IS', 'LI', 'NO', 'CH', 'MC', 'SM', 'VA'],
+      supportedCurrencies: ['EUR', 'GBP', 'CHF', 'SEK', 'NOK', 'DKK'],
+      processingFees: { percentage: 0.4, fixed: 0.15 },
+      features: ['recurring', 'mandate_based', 'pan_european'],
+      providers: ['sepa'],
+      processingTime: '1-2 business days',
+      minAmount: 0.01,
+      maxAmount: 15000.00
+    });
+
+    this.registerPaymentMethod('sepa_credit_transfer', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'SEPA Credit Transfer',
+      description: 'SEPA Credit Transfer for EU',
+      icon: 'sepa_credit',
+      supportedCountries: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB', 'IS', 'LI', 'NO', 'CH', 'MC', 'SM', 'VA'],
+      supportedCurrencies: ['EUR', 'GBP', 'CHF', 'SEK', 'NOK', 'DKK'],
+      processingFees: { percentage: 0.3, fixed: 0.10 },
+      features: ['credit_transfer', 'pan_european', 'low_cost'],
+      providers: ['sepa'],
+      processingTime: '1-2 business days',
+      minAmount: 0.01,
+      maxAmount: 15000.00
+    });
+
+    this.registerPaymentMethod('sepa_instant_credit', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'SEPA Instant Credit',
+      description: 'SEPA Instant Credit for EU',
+      icon: 'sepa_instant',
+      supportedCountries: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB', 'IS', 'LI', 'NO', 'CH', 'MC', 'SM', 'VA'],
+      supportedCurrencies: ['EUR'],
+      processingFees: { percentage: 0.5, fixed: 0.20 },
+      features: ['instant', 'pan_european', 'real_time'],
+      providers: ['sepa'],
+      processingTime: 'instant',
+      minAmount: 0.01,
+      maxAmount: 15000.00
+    });
+
+    this.registerPaymentMethod('ideal', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'iDEAL',
+      description: 'iDEAL online banking for Netherlands',
+      icon: 'ideal',
+      supportedCountries: ['NL'],
+      supportedCurrencies: ['EUR'],
+      processingFees: { percentage: 0.35, fixed: 0.25 },
+      features: ['online_banking', 'secure', 'instant'],
+      providers: ['ideal'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('giropay', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'Giropay',
+      description: 'Giropay online banking for Germany',
+      icon: 'giropay',
+      supportedCountries: ['DE', 'AT'],
+      supportedCurrencies: ['EUR'],
+      processingFees: { percentage: 0.3, fixed: 0.20 },
+      features: ['online_banking', 'secure', 'instant'],
+      providers: ['giropay'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('bancontact', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'Bancontact',
+      description: 'Bancontact payment for Belgium',
+      icon: 'bancontact',
+      supportedCountries: ['BE'],
+      supportedCurrencies: ['EUR'],
+      processingFees: { percentage: 0.4, fixed: 0.25 },
+      features: ['online_banking', 'secure', 'instant'],
+      providers: ['bancontact'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('sofort', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'Sofort',
+      description: 'Sofort online banking for EU',
+      icon: 'sofort',
+      supportedCountries: ['DE', 'AT', 'BE', 'NL', 'IT', 'ES', 'FR', 'PL', 'CH'],
+      supportedCurrencies: ['EUR', 'CHF'],
+      processingFees: { percentage: 0.9, fixed: 0.30 },
+      features: ['online_banking', 'multi_country', 'instant'],
+      providers: ['sofort'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    // Australia/NZ Regional Payment Methods
+    this.registerPaymentMethod('poli', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'POLi',
+      description: 'POLi online banking for Australia/NZ',
+      icon: 'poli',
+      supportedCountries: ['AU', 'NZ'],
+      supportedCurrencies: ['AUD', 'NZD'],
+      processingFees: { percentage: 0.75, fixed: 0.30 },
+      features: ['online_banking', 'secure', 'instant'],
+      providers: ['poli'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('payid', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'PayID',
+      description: 'PayID instant payments for Australia',
+      icon: 'payid',
+      supportedCountries: ['AU'],
+      supportedCurrencies: ['AUD'],
+      processingFees: { percentage: 0.2, fixed: 0.10 },
+      features: ['instant', 'email_phone_abn', 'npp'],
+      providers: ['payid'],
+      processingTime: 'instant',
+      minAmount: 0.01,
+      maxAmount: 10000.00
+    });
+
+    this.registerPaymentMethod('npp_instant', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'NPP Instant',
+      description: 'NPP Instant payments for Australia',
+      icon: 'npp',
+      supportedCountries: ['AU'],
+      supportedCurrencies: ['AUD'],
+      processingFees: { percentage: 0.3, fixed: 0.15 },
+      features: ['instant', 'bsb_account', 'npp'],
+      providers: ['payid'],
+      processingTime: 'instant',
+      minAmount: 0.01,
+      maxAmount: 10000.00
+    });
+
+    this.registerPaymentMethod('bpay', {
+      type: 'bill_payment',
+      category: 'bill',
+      name: 'BPAY',
+      description: 'BPAY bill payments for Australia',
+      icon: 'bpay',
+      supportedCountries: ['AU'],
+      supportedCurrencies: ['AUD'],
+      processingFees: { percentage: 0.4, fixed: 0.25 },
+      features: ['bill_payment', 'recurring', 'biller_code'],
+      providers: ['bpay'],
+      processingTime: '1-2 business days',
+      minAmount: 1.00,
+      maxAmount: 50000.00
+    });
+
+    this.registerPaymentMethod('bpay_recurring', {
+      type: 'bill_payment',
+      category: 'bill',
+      name: 'BPAY Recurring',
+      description: 'BPAY recurring payments for Australia',
+      icon: 'bpay_recurring',
+      supportedCountries: ['AU'],
+      supportedCurrencies: ['AUD'],
+      processingFees: { percentage: 0.3, fixed: 0.20 },
+      features: ['recurring', 'automated', 'biller_code'],
+      providers: ['bpay'],
+      processingTime: '1-2 business days',
+      minAmount: 1.00,
+      maxAmount: 50000.00
+    });
+
+    // Asia-Pacific Regional Payment Methods
+    this.registerPaymentMethod('grabpay', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'GrabPay',
+      description: 'GrabPay digital wallet for Southeast Asia',
+      icon: 'grabpay',
+      supportedCountries: ['SG', 'MY', 'TH', 'ID', 'PH', 'VN', 'KH', 'MM'],
+      supportedCurrencies: ['SGD', 'MYR', 'THB', 'IDR', 'PHP', 'VND', 'KHR', 'MMK'],
+      processingFees: { percentage: 2.5, fixed: 0.20 },
+      features: ['mobile_wallet', 'qr_code', 'instant'],
+      providers: ['grabpay'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('grabpay_qr', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'GrabPay QR',
+      description: 'GrabPay QR code payments',
+      icon: 'grabpay_qr',
+      supportedCountries: ['SG', 'MY', 'TH', 'ID', 'PH', 'VN', 'KH', 'MM'],
+      supportedCurrencies: ['SGD', 'MYR', 'THB', 'IDR', 'PHP', 'VND', 'KHR', 'MMK'],
+      processingFees: { percentage: 2.0, fixed: 0.15 },
+      features: ['qr_code', 'instant', 'mobile_wallet'],
+      providers: ['grabpay'],
+      processingTime: 'instant'
+    });
+
+    this.registerPaymentMethod('gopay', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'GoPay',
+      description: 'GoPay digital wallet for Indonesia',
+      icon: 'gopay',
+      supportedCountries: ['ID'],
+      supportedCurrencies: ['IDR'],
+      processingFees: { percentage: 2.5, fixed: 0.25 },
+      features: ['mobile_wallet', 'qr_code', 'instant'],
+      providers: ['gopay'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('gopay_qr', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'GoPay QR',
+      description: 'GoPay QR code payments',
+      icon: 'gopay_qr',
+      supportedCountries: ['ID'],
+      supportedCurrencies: ['IDR'],
+      processingFees: { percentage: 2.0, fixed: 0.20 },
+      features: ['qr_code', 'instant', 'mobile_wallet'],
+      providers: ['gopay'],
+      processingTime: 'instant'
+    });
+
+    this.registerPaymentMethod('ovo', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'OVO',
+      description: 'OVO digital wallet for Indonesia',
+      icon: 'ovo',
+      supportedCountries: ['ID'],
+      supportedCurrencies: ['IDR'],
+      processingFees: { percentage: 2.5, fixed: 0.25 },
+      features: ['mobile_wallet', 'qr_code', 'instant'],
+      providers: ['ovo'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('ovo_qr', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'OVO QR',
+      description: 'OVO QR code payments',
+      icon: 'ovo_qr',
+      supportedCountries: ['ID'],
+      supportedCurrencies: ['IDR'],
+      processingFees: { percentage: 2.0, fixed: 0.20 },
+      features: ['qr_code', 'instant', 'mobile_wallet'],
+      providers: ['ovo'],
+      processingTime: 'instant'
+    });
+
+    this.registerPaymentMethod('dana', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'DANA',
+      description: 'DANA digital wallet for Indonesia',
+      icon: 'dana',
+      supportedCountries: ['ID'],
+      supportedCurrencies: ['IDR'],
+      processingFees: { percentage: 2.5, fixed: 0.25 },
+      features: ['mobile_wallet', 'qr_code', 'instant'],
+      providers: ['dana'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('dana_qr', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'DANA QR',
+      description: 'DANA QR code payments',
+      icon: 'dana_qr',
+      supportedCountries: ['ID'],
+      supportedCurrencies: ['IDR'],
+      processingFees: { percentage: 2.0, fixed: 0.20 },
+      features: ['qr_code', 'instant', 'mobile_wallet'],
+      providers: ['dana'],
+      processingTime: 'instant'
+    });
+
+    // India Regional Payment Methods
+    this.registerPaymentMethod('upi', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'UPI',
+      description: 'Unified Payments Interface for India',
+      icon: 'upi',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 0.5, fixed: 0.00 },
+      features: ['instant', 'mobile_payment', 'qr_code'],
+      providers: ['upi'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('upi_qr', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'UPI QR',
+      description: 'UPI QR code payments',
+      icon: 'upi_qr',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 0.4, fixed: 0.00 },
+      features: ['qr_code', 'instant', 'mobile_payment'],
+      providers: ['upi'],
+      processingTime: 'instant'
+    });
+
+    this.registerPaymentMethod('upi_vpa', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'UPI VPA',
+      description: 'UPI Virtual Payment Address',
+      icon: 'upi_vpa',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 0.3, fixed: 0.00 },
+      features: ['vpa', 'instant', 'email_phone'],
+      providers: ['upi'],
+      processingTime: 'instant',
+      minAmount: 1.00,
+      maxAmount: 100000.00
+    });
+
+    this.registerPaymentMethod('paytm_wallet', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'Paytm Wallet',
+      description: 'Paytm digital wallet for India',
+      icon: 'paytm',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 2.0, fixed: 0.20 },
+      features: ['mobile_wallet', 'instant', 'recharge'],
+      providers: ['paytm'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('paytm_upi', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'Paytm UPI',
+      description: 'Paytm UPI payments for India',
+      icon: 'paytm_upi',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 0.5, fixed: 0.00 },
+      features: ['upi', 'instant', 'mobile_payment'],
+      providers: ['paytm'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('paytm_qr', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'Paytm QR',
+      description: 'Paytm QR code payments',
+      icon: 'paytm_qr',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 1.5, fixed: 0.15 },
+      features: ['qr_code', 'instant', 'mobile_payment'],
+      providers: ['paytm'],
+      processingTime: 'instant'
+    });
+
+    this.registerPaymentMethod('phonepe_upi', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'PhonePe UPI',
+      description: 'PhonePe UPI payments for India',
+      icon: 'phonepe',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 0.5, fixed: 0.00 },
+      features: ['upi', 'instant', 'mobile_payment'],
+      providers: ['phonepe'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('phonepe_wallet', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'PhonePe Wallet',
+      description: 'PhonePe digital wallet for India',
+      icon: 'phonepe_wallet',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 2.0, fixed: 0.20 },
+      features: ['mobile_wallet', 'instant', 'recharge'],
+      providers: ['phonepe'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('phonepe_qr', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'PhonePe QR',
+      description: 'PhonePe QR code payments',
+      icon: 'phonepe_qr',
+      supportedCountries: ['IN'],
+      supportedCurrencies: ['INR'],
+      processingFees: { percentage: 1.5, fixed: 0.15 },
+      features: ['qr_code', 'instant', 'mobile_payment'],
+      providers: ['phonepe'],
+      processingTime: 'instant'
+    });
+
+    // Latin America Regional Payment Methods
+    this.registerPaymentMethod('boleto_bancario', {
+      type: 'bill_payment',
+      category: 'bill',
+      name: 'Boleto Bancário',
+      description: 'Boleto Bancário for Brazil',
+      icon: 'boleto',
+      supportedCountries: ['BR'],
+      supportedCurrencies: ['BRL'],
+      processingFees: { percentage: 1.5, fixed: 2.00 },
+      features: ['bill_payment', 'bank_slip', 'cash_payment'],
+      providers: ['boleto_bancario'],
+      processingTime: '3-5 business days',
+      minAmount: 1.00,
+      maxAmount: 50000.00
+    });
+
+    this.registerPaymentMethod('boleto_express', {
+      type: 'bill_payment',
+      category: 'bill',
+      name: 'Boleto Express',
+      description: 'Boleto Express for Brazil',
+      icon: 'boleto_express',
+      supportedCountries: ['BR'],
+      supportedCurrencies: ['BRL'],
+      processingFees: { percentage: 2.0, fixed: 3.00 },
+      features: ['express', 'bill_payment', 'bank_slip'],
+      providers: ['boleto_bancario'],
+      processingTime: '1-2 business days',
+      minAmount: 1.00,
+      maxAmount: 50000.00
+    });
+
+    this.registerPaymentMethod('oxxo', {
+      type: 'cash_payment',
+      category: 'cash',
+      name: 'OXXO',
+      description: 'OXXO convenience store payments for Mexico',
+      icon: 'oxxo',
+      supportedCountries: ['MX'],
+      supportedCurrencies: ['MXN'],
+      processingFees: { percentage: 3.5, fixed: 5.00 },
+      features: ['cash_payment', 'convenience_store', 'offline'],
+      providers: ['oxxo'],
+      processingTime: '1-7 days',
+      minAmount: 10.00,
+      maxAmount: 10000.00
+    });
+
+    this.registerPaymentMethod('oxxo_pay', {
+      type: 'cash_payment',
+      category: 'cash',
+      name: 'OXXO Pay',
+      description: 'OXXO Pay digital payments for Mexico',
+      icon: 'oxxo_pay',
+      supportedCountries: ['MX'],
+      supportedCurrencies: ['MXN'],
+      processingFees: { percentage: 2.9, fixed: 3.00 },
+      features: ['digital_payment', 'convenience_store', 'mobile'],
+      providers: ['oxxo'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('pix', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'PIX',
+      description: 'PIX instant payments for Brazil',
+      icon: 'pix',
+      supportedCountries: ['BR'],
+      supportedCurrencies: ['BRL'],
+      processingFees: { percentage: 0.5, fixed: 0.00 },
+      features: ['instant', 'pix_key', 'qr_code'],
+      providers: ['pix'],
+      processingTime: 'instant',
+      minAmount: 0.01,
+      maxAmount: 500000.00
+    });
+
+    this.registerPaymentMethod('pix_qr', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'PIX QR',
+      description: 'PIX QR code payments',
+      icon: 'pix_qr',
+      supportedCountries: ['BR'],
+      supportedCurrencies: ['BRL'],
+      processingFees: { percentage: 0.4, fixed: 0.00 },
+      features: ['qr_code', 'instant', 'mobile_payment'],
+      providers: ['pix'],
+      processingTime: 'instant'
+    });
+
+    this.registerPaymentMethod('pix_copy_paste', {
+      type: 'bank_transfer',
+      category: 'bank',
+      name: 'PIX Copy & Paste',
+      description: 'PIX Copy & Paste code payments',
+      icon: 'pix_copy_paste',
+      supportedCountries: ['BR'],
+      supportedCurrencies: ['BRL'],
+      processingFees: { percentage: 0.3, fixed: 0.00 },
+      features: ['copy_paste', 'instant', 'manual_entry'],
+      providers: ['pix'],
+      processingTime: 'instant'
+    });
+
+    // Middle East Regional Payment Methods
+    this.registerPaymentMethod('mada', {
+      type: 'card_payment',
+      category: 'card',
+      name: 'Mada',
+      description: 'Mada card payments for Saudi Arabia',
+      icon: 'mada',
+      supportedCountries: ['SA'],
+      supportedCurrencies: ['SAR'],
+      processingFees: { percentage: 1.5, fixed: 0.50 },
+      features: ['local_card', 'secure', 'instant'],
+      providers: ['mada'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('mada_digital', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'Mada Digital',
+      description: 'Mada digital wallet for Saudi Arabia',
+      icon: 'mada_digital',
+      supportedCountries: ['SA'],
+      supportedCurrencies: ['SAR'],
+      processingFees: { percentage: 2.0, fixed: 0.75 },
+      features: ['digital_wallet', 'mobile_payment', 'instant'],
+      providers: ['mada'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('fawry', {
+      type: 'cash_payment',
+      category: 'cash',
+      name: 'Fawry',
+      description: 'Fawry bill payments for Egypt',
+      icon: 'fawry',
+      supportedCountries: ['EG'],
+      supportedCurrencies: ['EGP'],
+      processingFees: { percentage: 2.5, fixed: 2.00 },
+      features: ['bill_payment', 'cash_payment', 'outlets'],
+      providers: ['fawry'],
+      processingTime: '1-3 days',
+      minAmount: 1.00,
+      maxAmount: 50000.00
+    });
+
+    this.registerPaymentMethod('fawry_wallet', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'Fawry Wallet',
+      description: 'Fawry digital wallet for Egypt',
+      icon: 'fawry_wallet',
+      supportedCountries: ['EG'],
+      supportedCurrencies: ['EGP'],
+      processingFees: { percentage: 1.8, fixed: 1.50 },
+      features: ['digital_wallet', 'mobile_payment', 'instant'],
+      providers: ['fawry'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('stc_pay', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'STC Pay',
+      description: 'STC Pay digital wallet for Saudi Arabia',
+      icon: 'stc_pay',
+      supportedCountries: ['SA'],
+      supportedCurrencies: ['SAR'],
+      processingFees: { percentage: 2.0, fixed: 0.50 },
+      features: ['digital_wallet', 'mobile_payment', 'instant'],
+      providers: ['stc_pay'],
+      processingTime: 'instant',
+      requiresRedirect: true
+    });
+
+    this.registerPaymentMethod('stc_pay_qr', {
+      type: 'e_wallet',
+      category: 'wallet',
+      name: 'STC Pay QR',
+      description: 'STC Pay QR code payments',
+      icon: 'stc_pay_qr',
+      supportedCountries: ['SA'],
+      supportedCurrencies: ['SAR'],
+      processingFees: { percentage: 1.5, fixed: 0.25 },
+      features: ['qr_code', 'instant', 'mobile_wallet'],
+      providers: ['stc_pay'],
+      processingTime: 'instant'
+    });
   }
 
   /**
@@ -323,6 +1040,106 @@ class PaymentMethodRegistry {
       'visa', 'mastercard', 'amex', 'discover', 'jcb',
       'ach'
     ]);
+
+    // Regional Provider Mappings
+    // US/Canada
+    this.providerMappings.set('interac', [
+      'interac_e_transfer', 'interac_online'
+    ]);
+
+    this.providerMappings.set('ach_direct_debit', [
+      'ach_direct_debit', 'ach_credit', 'ach_web_debit'
+    ]);
+
+    // EU/UK
+    this.providerMappings.set('sepa', [
+      'sepa_direct_debit', 'sepa_credit_transfer', 'sepa_instant_credit'
+    ]);
+
+    this.providerMappings.set('ideal', [
+      'ideal'
+    ]);
+
+    this.providerMappings.set('giropay', [
+      'giropay'
+    ]);
+
+    this.providerMappings.set('bancontact', [
+      'bancontact'
+    ]);
+
+    this.providerMappings.set('sofort', [
+      'sofort'
+    ]);
+
+    // Australia/NZ
+    this.providerMappings.set('poli', [
+      'poli'
+    ]);
+
+    this.providerMappings.set('payid', [
+      'payid', 'npp_instant'
+    ]);
+
+    this.providerMappings.set('bpay', [
+      'bpay', 'bpay_recurring'
+    ]);
+
+    // Asia-Pacific
+    this.providerMappings.set('grabpay', [
+      'grabpay', 'grabpay_qr'
+    ]);
+
+    this.providerMappings.set('gopay', [
+      'gopay', 'gopay_qr'
+    ]);
+
+    this.providerMappings.set('ovo', [
+      'ovo', 'ovo_qr'
+    ]);
+
+    this.providerMappings.set('dana', [
+      'dana', 'dana_qr'
+    ]);
+
+    // India
+    this.providerMappings.set('upi', [
+      'upi', 'upi_qr', 'upi_vpa'
+    ]);
+
+    this.providerMappings.set('paytm', [
+      'paytm_wallet', 'paytm_upi', 'paytm_qr'
+    ]);
+
+    this.providerMappings.set('phonepe', [
+      'phonepe_upi', 'phonepe_wallet', 'phonepe_qr'
+    ]);
+
+    // Latin America
+    this.providerMappings.set('boleto_bancario', [
+      'boleto_bancario', 'boleto_express'
+    ]);
+
+    this.providerMappings.set('oxxo', [
+      'oxxo', 'oxxo_pay'
+    ]);
+
+    this.providerMappings.set('pix', [
+      'pix', 'pix_qr', 'pix_copy_paste'
+    ]);
+
+    // Middle East
+    this.providerMappings.set('mada', [
+      'mada', 'mada_digital'
+    ]);
+
+    this.providerMappings.set('fawry', [
+      'fawry', 'fawry_wallet'
+    ]);
+
+    this.providerMappings.set('stc_pay', [
+      'stc_pay', 'stc_pay_qr'
+    ]);
   }
 
   /**
@@ -332,19 +1149,30 @@ class PaymentMethodRegistry {
     // North America
     this.regionalMappings.set('NA', [
       'visa', 'mastercard', 'amex', 'discover', 'ach',
-      'paypal', 'apple_pay', 'google_pay', 'venmo', 'cash_app'
+      'paypal', 'apple_pay', 'google_pay', 'venmo', 'cash_app',
+      'interac_e_transfer', 'interac_online', 'ach_direct_debit', 'ach_credit', 'ach_web_debit'
     ]);
 
     // Europe
     this.regionalMappings.set('EU', [
       'visa', 'mastercard', 'amex', 'jcb', 'maestro',
-      'paypal', 'apple_pay', 'google_pay', 'swift'
+      'paypal', 'apple_pay', 'google_pay', 'swift',
+      'sepa_direct_debit', 'sepa_credit_transfer', 'sepa_instant_credit',
+      'ideal', 'giropay', 'bancontact', 'sofort'
     ]);
 
     // Asia Pacific
     this.regionalMappings.set('APAC', [
       'visa', 'mastercard', 'amex', 'jcb', 'unionpay',
-      'paypal', 'apple_pay', 'google_pay', 'alipay', 'wechat_pay', 'swift'
+      'paypal', 'apple_pay', 'google_pay', 'alipay', 'wechat_pay', 'swift',
+      'grabpay', 'grabpay_qr', 'gopay', 'gopay_qr', 'ovo', 'ovo_qr', 'dana', 'dana_qr'
+    ]);
+
+    // Australia/NZ
+    this.regionalMappings.set('AU_NZ', [
+      'visa', 'mastercard', 'amex', 'jcb', 'maestro',
+      'paypal', 'apple_pay', 'google_pay', 'swift',
+      'poli', 'payid', 'npp_instant', 'bpay', 'bpay_recurring'
     ]);
 
     // China
@@ -356,19 +1184,115 @@ class PaymentMethodRegistry {
     // India
     this.regionalMappings.set('IN', [
       'visa', 'mastercard', 'amex', 'jcb',
-      'paypal', 'apple_pay', 'google_pay', 'swift'
+      'paypal', 'apple_pay', 'google_pay', 'swift',
+      'upi', 'upi_qr', 'upi_vpa', 'paytm_wallet', 'paytm_upi', 'paytm_qr',
+      'phonepe_upi', 'phonepe_wallet', 'phonepe_qr'
     ]);
 
     // Latin America
     this.regionalMappings.set('LATAM', [
       'visa', 'mastercard', 'amex', 'jcb',
-      'paypal', 'apple_pay', 'google_pay', 'swift'
+      'paypal', 'apple_pay', 'google_pay', 'swift',
+      'boleto_bancario', 'boleto_express', 'oxxo', 'oxxo_pay', 'pix', 'pix_qr', 'pix_copy_paste'
     ]);
 
     // Middle East & Africa
     this.regionalMappings.set('MEA', [
       'visa', 'mastercard', 'amex', 'jcb',
-      'paypal', 'apple_pay', 'google_pay', 'swift'
+      'paypal', 'apple_pay', 'google_pay', 'swift',
+      'mada', 'mada_digital', 'fawry', 'fawry_wallet', 'stc_pay', 'stc_pay_qr'
+    ]);
+
+    // Country-specific mappings
+    // US
+    this.regionalMappings.set('US', [
+      'visa', 'mastercard', 'amex', 'discover', 'ach',
+      'paypal', 'apple_pay', 'google_pay', 'venmo', 'cash_app',
+      'ach_direct_debit', 'ach_credit', 'ach_web_debit'
+    ]);
+
+    // Canada
+    this.regionalMappings.set('CA', [
+      'visa', 'mastercard', 'amex', 'discover',
+      'paypal', 'apple_pay', 'google_pay',
+      'interac_e_transfer', 'interac_online'
+    ]);
+
+    // Australia
+    this.regionalMappings.set('AU', [
+      'visa', 'mastercard', 'amex', 'jcb', 'maestro',
+      'paypal', 'apple_pay', 'google_pay',
+      'poli', 'payid', 'npp_instant', 'bpay', 'bpay_recurring'
+    ]);
+
+    // New Zealand
+    this.regionalMappings.set('NZ', [
+      'visa', 'mastercard', 'amex', 'jcb', 'maestro',
+      'paypal', 'apple_pay', 'google_pay',
+      'poli'
+    ]);
+
+    // Netherlands
+    this.regionalMappings.set('NL', [
+      'visa', 'mastercard', 'amex', 'jcb', 'maestro',
+      'paypal', 'apple_pay', 'google_pay',
+      'sepa_direct_debit', 'sepa_credit_transfer', 'sepa_instant_credit', 'ideal'
+    ]);
+
+    // Germany
+    this.regionalMappings.set('DE', [
+      'visa', 'mastercard', 'amex', 'jcb', 'maestro',
+      'paypal', 'apple_pay', 'google_pay',
+      'sepa_direct_debit', 'sepa_credit_transfer', 'sepa_instant_credit', 'giropay', 'sofort'
+    ]);
+
+    // Belgium
+    this.regionalMappings.set('BE', [
+      'visa', 'mastercard', 'amex', 'jcb', 'maestro',
+      'paypal', 'apple_pay', 'google_pay',
+      'sepa_direct_debit', 'sepa_credit_transfer', 'sepa_instant_credit', 'bancontact', 'sofort'
+    ]);
+
+    // Singapore
+    this.regionalMappings.set('SG', [
+      'visa', 'mastercard', 'amex', 'jcb', 'unionpay',
+      'paypal', 'apple_pay', 'google_pay', 'alipay', 'wechat_pay',
+      'grabpay', 'grabpay_qr'
+    ]);
+
+    // Indonesia
+    this.regionalMappings.set('ID', [
+      'visa', 'mastercard', 'amex', 'jcb', 'unionpay',
+      'paypal', 'apple_pay', 'google_pay', 'alipay', 'wechat_pay',
+      'grabpay', 'grabpay_qr', 'gopay', 'gopay_qr', 'ovo', 'ovo_qr', 'dana', 'dana_qr'
+    ]);
+
+    // Brazil
+    this.regionalMappings.set('BR', [
+      'visa', 'mastercard', 'amex', 'jcb',
+      'paypal', 'apple_pay', 'google_pay',
+      'boleto_bancario', 'boleto_express', 'pix', 'pix_qr', 'pix_copy_paste'
+    ]);
+
+    // Mexico
+    this.regionalMappings.set('MX', [
+      'visa', 'mastercard', 'amex', 'jcb',
+      'paypal', 'apple_pay', 'google_pay',
+      'oxxo', 'oxxo_pay'
+    ]);
+
+    // Saudi Arabia
+    this.regionalMappings.set('SA', [
+      'visa', 'mastercard', 'amex', 'jcb',
+      'paypal', 'apple_pay', 'google_pay',
+      'mada', 'mada_digital', 'stc_pay', 'stc_pay_qr'
+    ]);
+
+    // Egypt
+    this.regionalMappings.set('EG', [
+      'visa', 'mastercard', 'amex', 'jcb',
+      'paypal', 'apple_pay', 'google_pay',
+      'fawry', 'fawry_wallet'
     ]);
   }
 

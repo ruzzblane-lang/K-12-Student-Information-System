@@ -12,6 +12,9 @@ const { authenticateToken } = require('../../middleware/auth');
 const { requireTenant } = require('../../middleware/tenantContext');
 const { validatePaymentData, validateRefundData } = require('../middleware/validation');
 
+// Import manual payment routes
+const { router: manualPaymentRouter, initializeController: initializeManualPaymentController } = require('./manualPayments');
+
 // Initialize payment controller
 let paymentController;
 
@@ -20,6 +23,10 @@ const initializeController = (db) => {
   if (!paymentController) {
     paymentController = new PaymentController(db);
   }
+  
+  // Initialize manual payment controller
+  initializeManualPaymentController(db);
+  
   return paymentController;
 };
 
@@ -472,6 +479,9 @@ router.get('/methods/stats',
     await paymentController.getPaymentMethodStats(req, res);
   }
 );
+
+// Mount manual payment routes
+router.use('/manual', manualPaymentRouter);
 
 // Export router and initialization function
 module.exports = {

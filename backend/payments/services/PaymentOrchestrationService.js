@@ -21,12 +21,56 @@ class PaymentOrchestrationService {
     // Provider priority order (can be configured per tenant)
     this.defaultProviderPriority = ['stripe', 'paypal', 'adyen'];
     
+    // Regional provider mappings
+    this.regionalProviders = new Map();
+    this.initializeRegionalProviders();
+    
     // Retry configuration
     this.retryConfig = {
       maxRetries: 3,
       retryDelay: 1000, // 1 second
       backoffMultiplier: 2
     };
+  }
+
+  /**
+   * Initialize regional provider mappings
+   */
+  initializeRegionalProviders() {
+    // US/Canada
+    this.regionalProviders.set('US', ['ach_direct_debit']);
+    this.regionalProviders.set('CA', ['interac']);
+    
+    // EU/UK
+    this.regionalProviders.set('NL', ['ideal']);
+    this.regionalProviders.set('DE', ['giropay']);
+    this.regionalProviders.set('BE', ['bancontact']);
+    this.regionalProviders.set('AT', ['giropay']);
+    
+    // Australia/NZ
+    this.regionalProviders.set('AU', ['poli', 'payid', 'bpay']);
+    this.regionalProviders.set('NZ', ['poli']);
+    
+    // Asia-Pacific
+    this.regionalProviders.set('SG', ['grabpay']);
+    this.regionalProviders.set('MY', ['grabpay']);
+    this.regionalProviders.set('TH', ['grabpay']);
+    this.regionalProviders.set('ID', ['grabpay', 'gopay', 'ovo', 'dana']);
+    this.regionalProviders.set('PH', ['grabpay']);
+    this.regionalProviders.set('VN', ['grabpay']);
+    this.regionalProviders.set('KH', ['grabpay']);
+    this.regionalProviders.set('MM', ['grabpay']);
+    
+    // India
+    this.regionalProviders.set('IN', ['upi', 'paytm', 'phonepe']);
+    
+    // Latin America
+    this.regionalProviders.set('BR', ['boleto_bancario', 'pix']);
+    this.regionalProviders.set('MX', ['oxxo']);
+    
+    // Middle East
+    this.regionalProviders.set('SA', ['mada', 'stc_pay']);
+    this.regionalProviders.set('EG', ['fawry']);
   }
 
   /**
@@ -37,6 +81,29 @@ class PaymentOrchestrationService {
   registerProvider(name, provider) {
     this.providers.set(name, provider);
     console.log(`Payment provider registered: ${name}`);
+  }
+
+  /**
+   * Get regional providers for a country
+   * @param {string} country - Country code
+   * @returns {Array} Array of regional provider names
+   */
+  getRegionalProviders(country) {
+    return this.regionalProviders.get(country) || [];
+  }
+
+  /**
+   * Get provider priority list with regional providers
+   * @param {string} country - Country code
+   * @param {Array} tenantProviderPriority - Tenant-specific provider priority
+   * @returns {Array} Provider priority list
+   */
+  getProviderPriority(country, tenantProviderPriority = null) {
+    const basePriority = tenantProviderPriority || this.defaultProviderPriority;
+    const regionalProviders = this.getRegionalProviders(country);
+    
+    // Combine regional providers with base providers, prioritizing regional ones
+    return [...regionalProviders, ...basePriority.filter(p => !regionalProviders.includes(p))];
   }
 
   /**
@@ -72,7 +139,11 @@ class PaymentOrchestrationService {
       }
 
       // Get provider priority for this tenant
-      const providerPriority = tenantConfig.providerPriority || this.defaultProviderPriority;
+      // Use regional provider priority if country is provided
+      const providerPriority = this.getProviderPriority(
+        paymentData.country,
+        tenantConfig.providerPriority
+      );
 
       // Try providers in priority order
       let lastError;
